@@ -7,6 +7,10 @@ target_include_directories(list_processing
   $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
   $<INSTALL_INTERFACE:${list_processing_INSTALL_INCLUDEDIR}>)
 
+target_link_libraries(list_processing
+  INTERFACE
+  type_utility::type_utility)
+
 add_library(list_processing::list_processing ALIAS list_processing)
   
 install(TARGETS list_processing

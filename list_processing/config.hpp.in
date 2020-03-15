@@ -1,6 +1,6 @@
 #pragma once
 
-namespace list_processing::Config
+namespace ListProcessing::Config
 {
   struct Info {
     static constexpr char name[] = ${PROJECT_NAME};
