@@ -63,4 +63,17 @@ namespace ListProcessing::Testing {
         [](auto xs) { return push(xs, 0); }));
   }
 
+  TEST(Stack, Dup)
+  {
+    ASSERT_EQ(
+      pipe(
+        empty_stack<int>,
+        [](auto xs) { return push(xs, 0); },
+        [](auto xs) { return dup(xs); }),
+      pipe(
+        empty_stack<int>,
+        [](auto xs) { return push(xs, 0); },
+        [](auto xs) { return push(xs, 0); }));
+  }
+
 } // end of namespace ListProcessing::Testing
