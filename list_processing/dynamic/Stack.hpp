@@ -105,7 +105,7 @@ namespace ListProcessing::Dynamic::Details {
     friend Stack
     nip(Stack xs)
     {
-      return push(dop2(xs), top(xs));
+      return push(drop2(xs), top(xs));
     }
 
     friend Stack
