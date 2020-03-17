@@ -87,4 +87,34 @@ namespace ListProcessing::Testing {
       pipe(empty_stack<int>, [](auto xs) { return push(xs, 1); }));
   }
 
+  TEST(Stack, Tuck)
+  {
+    ASSERT_EQ(
+      pipe(
+        empty_stack<int>,
+        [](auto xs) { return push(xs, 0); },
+        [](auto xs) { return push(xs, 1); },
+        [](auto xs) { return tuck(xs); }),
+      pipe(
+        empty_stack<int>,
+        [](auto xs) { return push(xs, 1); },
+        [](auto xs) { return push(xs, 0); },
+        [](auto xs) { return push(xs, 1); }));
+  }
+
+  TEST(Stack, Over)
+  {
+    ASSERT_EQ(
+      pipe(
+        empty_stack<int>,
+        [](auto xs) { return push(xs, 0); },
+        [](auto xs) { return push(xs, 1); },
+        [](auto xs) { return over(xs); }),
+      pipe(
+        empty_stack<int>,
+        [](auto xs) { return push(xs, 0); },
+        [](auto xs) { return push(xs, 1); },
+        [](auto xs) { return push(xs, 0); }));
+  }
+
 } // end of namespace ListProcessing::Testing
