@@ -144,6 +144,20 @@ namespace ListProcessing::Dynamic::Details {
                     : false);
     }
 
+    template<typename F>
+    friend Stack
+    app1(Stack xs, F f)
+    {
+      return push(drop(xs), f(top(xs)));
+    }
+
+    template<typename F>
+    friend Stack
+    app2(Stack xs, F f)
+    {
+      return push(drop2(xs), f(top(xs), top(drop(xs))));
+    }
+
     friend bool
     operator!=(Stack xs, Stack ys)
     {
