@@ -1,8 +1,11 @@
 configure_file(config.hpp.in config.hpp)
 
-add_library(list_processing INTERFACE)
+add_library(list_processing dynamic/Range.cpp)
+set_target_properties(list_processing
+  PROPERTIES
+  CXX_STANDARD 17)
 target_include_directories(list_processing
-  INTERFACE
+  PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
   $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
   $<INSTALL_INTERFACE:${list_processing_INSTALL_INCLUDEDIR}>)
@@ -10,6 +13,7 @@ target_include_directories(list_processing
 target_link_libraries(list_processing
   INTERFACE
   type_utility::type_utility)
+
 
 add_library(list_processing::list_processing ALIAS list_processing)
   

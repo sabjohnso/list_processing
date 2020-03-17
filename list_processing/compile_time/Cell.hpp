@@ -75,16 +75,18 @@ namespace ListProcessing::CompileTime::Details {
       return head(xs) == head(ys) && tail(xs) == tail(ys);
     }
 
-    template<typename V,
-             typename Check = enable_if_t<!ispair_type(type<V>), void>>
+    template<
+      typename V,
+      typename Check = enable_if_t<!ispair_type(type<V>), void>>
     friend constexpr bool
     operator==(Cell const& xs, V const&)
     {
       return false;
     }
 
-    template<typename V,
-             typename Check = enable_if_t<!ispair_type(type<V>), void>>
+    template<
+      typename V,
+      typename Check = enable_if_t<!ispair_type(type<V>), void>>
     friend constexpr bool
     operator==(V const&, Cell const& xs)
     {
@@ -92,7 +94,7 @@ namespace ListProcessing::CompileTime::Details {
     }
 
     friend constexpr bool
-    operator==(Cell const& xs, Nothing const&)
+    operator==(Cell const&, Nothing const&)
     {
       return false;
     }
@@ -149,7 +151,7 @@ namespace ListProcessing::CompileTime::Details {
     }
 
     friend constexpr auto
-    take(Nat<0>, Cell const& xs)
+    take(Nat<0>, Cell const&)
     {
       return nothing;
     }

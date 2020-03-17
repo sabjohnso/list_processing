@@ -117,7 +117,7 @@ namespace ListProcessing::CompileTime::Details {
 
     template<typename F, typename T>
     friend constexpr auto
-    foldl(F f, T const& init, Nothing const&)
+    foldl(F, T const& init, Nothing const&)
     {
       return init;
     }
