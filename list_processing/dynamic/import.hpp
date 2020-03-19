@@ -19,6 +19,7 @@ namespace ListProcessing::Dynamic::Details {
   using integer = std::ptrdiff_t;
   using size_type = integer;
   using index_type = integer;
+  using offset_type = integer;
 
   using std::logic_error;
   using std::make_shared;

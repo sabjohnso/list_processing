@@ -138,4 +138,15 @@ namespace ListProcessing::Testing {
       pipe(empty_stack<int>, [](auto xs) { return push(xs, 3); }));
   }
 
+  TEST(Stack, App2Subtract)
+  {
+    ASSERT_EQ(
+      pipe(
+        empty_stack<int>,
+        [](auto xs) { return push(xs, 1); },
+        [](auto xs) { return push(xs, 2); },
+        [](auto xs) { return app2(xs, [](auto x, auto y) { return x - y; }); }),
+      pipe(empty_stack<int>, [](auto xs) { return push(xs, 1); }));
+  }
+
 } // end of namespace ListProcessing::Testing
