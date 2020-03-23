@@ -10,7 +10,14 @@ endmacro()
 
 list_processing_add_test(
   compile_time compile_time_test compile_time_test.cpp)
-list_processing_add_test(dynamic dynamic_test
-  dynamic_test.cpp
+list_processing_add_test(
+  dynamic dynamic_test
   dynamic_stack_test.cpp
-  dynamic_zipper_test.cpp)
+  dynamic_zipper_test.cpp
+  dynamic_chunk_data_test.cpp
+  dynamic_list_test.cpp)
+
+list_processing_add_test(
+  short_list short_list_test short_list_test.cpp)
+  
+

@@ -1,0 +1,22 @@
+#+TITLE: List Processing
+#+SUBTITLE: A collection of persistent data structures
+
+* About
+  *List Processing* contains a collection of persistent data
+   structures for compile-time and runtime evaluation.
+
+* Work
+** TODO Compile-time data structures
+*** TODO List
+*** TODO Stack
+*** TODO Zipper
+*** TODO Queue
+*** TODO Deque
+*** TODO Tree
+** TODO Dynamic data structures
+*** TODO List
+*** TODO Stack
+*** TODO Zipper
+*** TODO Queue
+*** TODO Deque
+*** TODO Tree

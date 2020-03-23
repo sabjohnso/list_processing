@@ -3,9 +3,10 @@
 //
 // ... List Processing header files
 //
-#include <list_processing/dynamic/Cell.hpp>
+#include <list_processing/dynamic/List.hpp>
 
-namespace ListProcessing::Dynamic::Details {
+namespace ListProcessing::Dynamic::Details
+{
 
   template<typename T>
   constexpr auto
@@ -31,11 +32,11 @@ namespace ListProcessing::Dynamic::Details {
     using const_reference = value_type const&;
 
     Stack()
-      : data(nothing<value_type>)
+      : data(nil<value_type>)
     {}
 
   private:
-    using data_type = Cell<value_type>;
+    using data_type = List<value_type>;
 
     Stack(data_type xs)
       : data(xs)
@@ -52,7 +53,7 @@ namespace ListProcessing::Dynamic::Details {
     friend bool
     isempty(Stack xs)
     {
-      return isnothing(xs.data);
+      return isNull(xs.data);
     }
 
     friend value_type

@@ -3,10 +3,11 @@
 //
 // ... List Processing header files
 //
-#include <list_processing/dynamic/Cell.hpp>
+#include <list_processing/dynamic/List.hpp>
 #include <list_processing/dynamic/import.hpp>
 
-namespace ListProcessing::Dynamic::Details {
+namespace ListProcessing::Dynamic::Details
+{
   template<typename T>
   class Zipper
   {
@@ -16,12 +17,12 @@ namespace ListProcessing::Dynamic::Details {
     using const_reference = value_type const&;
 
     Zipper()
-      : data(nothing<value_type>)
-      , context(nothing<value_type>)
+      : data(nil<value_type>)
+      , context(nil<value_type>)
     {}
 
   private:
-    using data_type = Cell<value_type>;
+    using data_type = List<value_type>;
 
     Zipper(data_type input_data, data_type input_context)
       : data(input_data)
@@ -46,13 +47,13 @@ namespace ListProcessing::Dynamic::Details {
     friend bool
     isAtBack(Zipper xs)
     {
-      return isnothing(xs.data);
+      return isNull(xs.data);
     }
 
     friend bool
     isAtFront(Zipper xs)
     {
-      return isnothing(xs.context);
+      return isNull(xs.context);
     }
 
     friend bool
@@ -118,8 +119,9 @@ namespace ListProcessing::Dynamic::Details {
     friend Zipper
     moveBy(Zipper xs, offset_type offset)
     {
-      return (offset > 0) ? moveBy(fwd(xs), offset - 1)
-                          : ((offset < 0) ? moveBy(bwd(xs), offset + 1) : xs);
+      return (offset > 0)
+               ? moveBy(fwd(xs), offset - 1)
+               : ((offset < 0) ? moveBy(bwd(xs), offset + 1) : xs);
     }
 
     friend Zipper
@@ -131,13 +133,13 @@ namespace ListProcessing::Dynamic::Details {
     friend Zipper
     toFront(Zipper xs)
     {
-      return Zipper(rappend(xs.context, xs.data), nothing<value_type>);
+      return Zipper(rappend(xs.context, xs.data), nil<value_type>);
     }
 
     friend Zipper
     toBack(Zipper xs)
     {
-      return Zipper(nothing<value_type>, rappend(xs.data, xs.context));
+      return Zipper(nil<value_type>, rappend(xs.data, xs.context));
     }
 
   }; // end of class Zipper

@@ -3,14 +3,18 @@
 //
 // ... List Processing header files
 //
-#include <list_processing/dynamic/Cell.hpp>
+// #include <list_processing/dynamic/Cell.hpp>
+
+#include <list_processing/dynamic/List.hpp>
 #include <list_processing/dynamic/Stack.hpp>
 #include <list_processing/dynamic/Zipper.hpp>
 
-namespace ListProcessing::Dynamic {
+namespace ListProcessing::Dynamic
+{
 
+  using Details::buildList;
   using Details::list;
-  using Details::nothing;
+  using Details::nil;
 
   using Details::empty_stack;
   using Details::pipe;

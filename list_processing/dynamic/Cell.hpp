@@ -5,7 +5,8 @@
 //
 #include <list_processing/dynamic/import.hpp>
 
-namespace ListProcessing::Dynamic::Details {
+namespace ListProcessing::Dynamic::Details
+{
 
   template<typename T>
   class Cell
@@ -42,7 +43,9 @@ namespace ListProcessing::Dynamic::Details {
       Cell tail;
     }; // end of class Kernel
 
-    shared_ptr<const Kernel> ptr;
+    using KernelPointer = shared_ptr<const Kernel>;
+
+    KernelPointer ptr;
 
     friend bool
     hasdata(Cell xs)
@@ -65,8 +68,7 @@ namespace ListProcessing::Dynamic::Details {
     friend auto
     head(Cell xs)
     {
-      return hasdata(xs) ? xs.ptr->head
-                         : throw logic_error("empty list has no head");
+      return hasdata(xs) ? xs.ptr->head : throw logic_error("empty list has no head");
     }
 
     friend auto
@@ -92,9 +94,8 @@ namespace ListProcessing::Dynamic::Details {
     {
       return isnothing(xs) && isnothing(ys)
                ? true
-               : (hasdata(xs) && hasdata(ys)
-                    ? (head(xs) == head(ys) && tail(xs) == tail(ys))
-                    : false);
+               : (hasdata(xs) && hasdata(ys) ? (head(xs) == head(ys) && tail(xs) == tail(ys))
+                                             : false);
     }
 
     friend Cell
@@ -124,9 +125,8 @@ namespace ListProcessing::Dynamic::Details {
     static Cell
     take_aux(Cell xs, size_type n, Cell accum)
     {
-      return hasdata(xs) && n > 0
-               ? take_aux(tail(xs), n - 1, cons(head(xs), accum))
-               : reverse(accum);
+      return hasdata(xs) && n > 0 ? take_aux(tail(xs), n - 1, cons(head(xs), accum))
+                                  : reverse(accum);
     }
 
     friend Cell
@@ -139,12 +139,9 @@ namespace ListProcessing::Dynamic::Details {
     static Accum
     map_aux(Accum accum, F f, Cell xs, Us... yss)
     {
-      return hasdata(xs) ? map_aux(
-                             cons(f(head(xs), head(yss)...), accum),
-                             f,
-                             tail(xs),
-                             tail(yss)...)
-                         : reverse(accum);
+      return hasdata(xs)
+               ? map_aux(cons(f(head(xs), head(yss)...), accum), f, tail(xs), tail(yss)...)
+               : reverse(accum);
     }
 
     template<typename F, typename... Us>
@@ -180,8 +177,7 @@ namespace ListProcessing::Dynamic::Details {
     {
       return index >= 0 && index < length(xs)
                ? listref_aux(xs, index)
-               : throw logic_error(
-                   "listref called with invalid index:" + to_string(index));
+               : throw logic_error("listref called with invalid index:" + to_string(index));
     }
 
     template<typename F, typename... Us>
