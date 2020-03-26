@@ -5,6 +5,7 @@
 //
 #include <list_processing/compile_time/Cell.hpp>
 #include <list_processing/compile_time/Nothing.hpp>
+#include <list_processing/compile_time/Queue.hpp>
 #include <list_processing/compile_time/Stack.hpp>
 #include <list_processing/compile_time/Zipper.hpp>
 
@@ -22,5 +23,8 @@ namespace ListProcessing::CompileTime
 
   using Details::empty_zipper;
   using Details::makeZipper;
+
+  using Details::empty_queue;
+  using Details::makeQueue;
 
 } // end of namespace ListProcessing::CompileTime
