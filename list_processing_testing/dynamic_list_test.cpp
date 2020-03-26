@@ -18,6 +18,7 @@ using namespace std::literals::string_literals;
 using ListProcessing::Dynamic::buildList;
 using ListProcessing::Dynamic::list;
 using ListProcessing::Dynamic::nil;
+using ListProcessing::Dynamic::size_type;
 using ListProcessing::Dynamic::Details::List;
 
 namespace ListProcessing::Testing
@@ -220,28 +221,23 @@ namespace ListProcessing::Testing
 
   TEST(DynamicList, FoldL)
   {
-    ASSERT_EQ(
-      foldL([](auto x, auto y) { return x + y; }, 0, list(1, 2, 3)), 6);
+    ASSERT_EQ(foldL([](auto x, auto y) { return x + y; }, 0, list(1, 2, 3)), 6);
   }
 
   TEST(DynamicList, FoldR)
   {
-    ASSERT_EQ(
-      foldR([](auto x, auto y) { return x - y; }, list(1, 2, 3), 6), 0);
+    ASSERT_EQ(foldR([](auto x, auto y) { return y - x; }, list(1, 2, 3), 6), 0);
   }
 
   TEST(DynamicList, FMapIntToDouble)
   {
-    ASSERT_EQ(
-      fMap([](auto x) { return double(x); }, list(1, 2, 3)),
-      list(1.0, 2.0, 3.0));
+    ASSERT_EQ(fMap([](auto x) { return double(x); }, list(1, 2, 3)), list(1.0, 2.0, 3.0));
   }
 
   TEST(DynamicList, FMapIntToString)
   {
     ASSERT_EQ(
-      fMap([](auto x) { return std::to_string(x); }, list(1, 2, 3)),
-      list("1"s, "2"s, "3"s));
+      fMap([](auto x) { return std::to_string(x); }, list(1, 2, 3)), list("1"s, "2"s, "3"s));
   }
 
   TEST(DynamicList, FoldString)
@@ -300,6 +296,13 @@ namespace ListProcessing::Testing
   }
 
   TEST(DynamicListChunked, BuildList)
-  {}
+  {
+    constexpr size_type n = 129;
+    auto xs = buildList([](auto i) { return i; }, n);
+    ASSERT_EQ(length(xs), n);
+    for (size_type i = 0; i < n; ++i) {
+      ASSERT_EQ(listRef(xs, i), i);
+    }
+  }
 
 } // end of namespace ListProcessing::Testing

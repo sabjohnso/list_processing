@@ -11,6 +11,10 @@
 
 namespace ListProcessing::Dynamic
 {
+  using Details::index_type;
+  using Details::integer;
+  using Details::offset_type;
+  using Details::size_type;
 
   using Details::buildList;
   using Details::list;

@@ -59,9 +59,7 @@ namespace ListProcessing::Dynamic::Details
     friend value_type
     top(Stack xs)
     {
-      return (!isempty(xs))
-               ? head(xs.data)
-               : throw logic_error("Cannot read top of empty stack");
+      return (!isempty(xs)) ? head(xs.data) : throw logic_error("Cannot read top of empty stack");
     }
 
     friend Stack
@@ -138,11 +136,10 @@ namespace ListProcessing::Dynamic::Details
     friend bool
     operator==(Stack xs, Stack ys)
     {
-      return (isempty(xs) && isempty(ys))
-               ? true
-               : (((!isempty(xs)) && (!isempty(ys)))
-                    ? (top(xs) == top(ys)) && (drop(xs) == drop(ys))
-                    : false);
+      return (isempty(xs) && isempty(ys)) ? true
+                                          : (((!isempty(xs)) && (!isempty(ys)))
+                                               ? (top(xs) == top(ys)) && (drop(xs) == drop(ys))
+                                               : false);
     }
 
     template<typename F>

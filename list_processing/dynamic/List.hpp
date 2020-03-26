@@ -5,18 +5,33 @@
 //
 #include <list_processing/dynamic/ListOperators.hpp>
 #include <list_processing/dynamic/ListTraits.hpp>
+#include <list_processing/dynamic/ShortList.hpp>
 #include <list_processing/dynamic/import.hpp>
 
 namespace ListProcessing::Dynamic::Details
 {
 
+  /**
+   * @brief A class template describing homogeneous dynamic lists.
+   *
+   * @details Specializations of this class implement a persistent (functional)
+   * list data structure where specializations provide optimizations for some
+   * value types but present a uniform interface
+   *
+   * @tparam T - a type parameter specifying the list element type
+   *
+   * @tparam N - an integral type parameter specifying the chunk size for
+   * the underlying kernel. The chunk size is use to reduce the memory overhead of
+   * lists with certain value types.
+   */
   template<typename T, size_type N>
   class List;
 
+  /**
+   * @brief Reference specialization of the List class template
+   */
   template<typename T>
-  class List<T, 1>
-    : public ListOperators<List<T, 1>, T>
-    , public ListTraits<T>
+  class List<T, 1> : public ListTraits<T>
   {
   public:
     using value_type = T;
@@ -54,10 +69,22 @@ namespace ListProcessing::Dynamic::Details
     using kernel_pointer = shared_ptr<const Kernel>;
     kernel_pointer ptr;
 
+    friend List
+    cons(const_reference x, List xs)
+    {
+      return List(x, xs);
+    }
+
     friend bool
     hasData(List xs)
     {
       return bool(xs.ptr);
+    }
+
+    friend bool
+    isNull(List xs)
+    {
+      return !hasData(xs);
     }
 
     // clang-format off
@@ -73,6 +100,18 @@ namespace ListProcessing::Dynamic::Details
     tail(List xs)
     {
       return hasData(xs) ? xs.ptr->tail : xs;
+    }
+
+    static size_type
+    lengthAux(List xs, size_type accum){
+      return hasData(xs)
+        ? lengthAux(tail(xs), accum+1)
+        : accum;
+    }
+
+    friend size_type
+    length(List xs){
+      return lengthAux(xs, 0);
     }
 
 
@@ -93,33 +132,130 @@ namespace ListProcessing::Dynamic::Details
     }
     // clang-format on
 
+    friend List
+    rappend(List xs, List ys)
+    {
+      return hasData(xs) ? rappend(tail(xs), cons(head(xs), ys)) : ys;
+    }
+
+    friend List
+    reverse(List xs)
+    {
+      return rappend(xs, nil);
+    }
+
+    friend List
+    append(List xs, List ys)
+    {
+      return rappend(reverse(xs), ys);
+    }
+
+    template<typename F, typename U>
+    friend U
+    foldL(F f, U const& init, List xs)
+    {
+      return hasData(xs) ? foldL(f, f(init, head(xs)), tail(xs)) : init;
+    }
+
+    template<typename F, typename U>
+    friend U
+    foldR(F f, List xs, U const& init)
+    {
+      return hasData(xs) ? foldR(f, tail(xs), f(head(xs), init)) : init;
+    }
+
+    template<typename F, typename U = decay_t<result_of_t<F(T)>>>
+    static List<U>
+    fMapAux(F f, List xs, List<U> ys)
+    {
+      return hasData(xs) ? fMapAux(f, tail(xs), cons(f(head(xs)), ys)) : reverse(ys);
+    }
+
+    template<typename F, typename U = decay_t<result_of_t<F(T)>>>
+    friend List<U>
+    fMap(F f, List xs)
+    {
+      return fMapAux(f, xs, List<U>::nil);
+    }
+
+    template<typename F>
+    friend List
+    buildListAux(F f, size_type n, List xs)
+    {
+      return n > 0 ? buildListAux(f, n - 1, cons(f(n - 1), xs)) : xs;
+    }
+
+    friend List
+    drop(List xs, size_type n)
+    {
+      return n > 0 ? drop(tail(xs), n - 1) : xs;
+    }
+
+    static List
+    takeAux(List xs, size_type n, List accum)
+    {
+      return (n > 0 && hasData(xs)) ? takeAux(tail(xs), n - 1, cons(head(xs), accum))
+                                    : reverse(accum);
+    }
+
+    friend List
+    take(List xs, size_type n)
+    {
+      return takeAux(xs, n, nil);
+    }
+
+    friend value_type
+    listRef(List xs, index_type index)
+    {
+      return head(drop(xs, index));
+    }
+
+    friend bool
+    operator==(List xs, List ys)
+    {
+      return hasData(xs) && hasData(ys) ? head(xs) == head(ys) && tail(xs) == tail(ys)
+                                        : (isNull(xs) && isNull(ys) ? true : false);
+    }
+
+    friend bool
+    operator!=(List xs, List ys)
+    {
+      return !(xs == ys);
+    }
+
   public:
     inline static const List nil{};
   };
 
+  /**
+   * @brief Optimized specialization of the List class template
+   *
+   * @details This specialization of the List class template
+   * implements an improvement in memory utilization for small
+   * list element types.
+   */
   template<typename T, size_type N>
   class List
   {
   public:
     using value_type = T;
     using const_reference = value_type const&;
-    using Storage = Chunk<T, N>;
-    using Datum = Chunk<T, N>;
-    using Data = List<Storage, 1>;
+    using Datum = ShortList<T, N>;
+    using Data = List<Datum, 1>;
+    static constexpr size_type chunk_size = N;
 
   private:
     Data data;
 
   public:
     List()
-      : data(List<Storage>::nil)
+      : data(Data::nil)
     {}
 
     List(const_reference x, List const& xs)
       : data(
-          (isNull(xs.data) || isFull(head(xs.data)))
-            ? cons(Storage(x), xs.data)
-            : cons(Storage(x, head(xs.data)), tail(xs.data)))
+          (isNull(xs.data) || isFull(head(xs.data))) ? cons(Datum(x), xs.data)
+                                                     : cons(cons(x, head(xs.data)), tail(xs.data)))
     {}
 
     List(Data input_data)
@@ -143,35 +279,24 @@ namespace ListProcessing::Dynamic::Details
     friend value_type
     head(List xs)
     {
-      return hasData(xs) ? head(xs.data)[length(head(xs.data)) - 1]
-                         : throw logic_error(
-                             "Cannot access the head of an empty list");
+      return hasData(xs) ? head(head(xs.data))
+                         : throw logic_error("Cannot access the head of an empty list");
     }
 
     friend List
     tail(List xs)
     {
       return hasData(xs)
-               ? ((length(head(xs.data)) == 1)
-                    ? List(tail(xs.data))
-                    : List(cons(
-                        Datum(head(xs.data), length(head(xs.data)) - 1),
-                        tail(xs.data))))
+               ? ((length(head(xs.data)) == 1) ? List(tail(xs.data))
+                                               : List(cons(tail(head(xs.data)), tail(xs.data))))
                : nil;
     }
 
     friend size_type
     length(List xs)
     {
-      return foldL(
-        [](auto accum, auto chunk) { return accum + length(chunk); },
-        0,
-        xs.data);
+      return foldL([](auto accum, auto chunk) { return accum + length(chunk); }, 0, xs.data);
     }
-
-    friend List
-    rappend(List xs, List ys)
-    {}
 
     friend List
     cons(const_reference x, List xs)
@@ -181,9 +306,128 @@ namespace ListProcessing::Dynamic::Details
 
     template<typename F>
     friend List
-    buildList(F f, size_type n, List xs)
+    buildListAux(F f, size_type n, List xs)
     {
-      return n > 0 ? buildList(f, n - 1, cons(f(n - 1), xs)) : xs;
+      return n > 0 ? buildListAux(f, n - 1, cons(f(n - 1), xs)) : xs;
+    }
+
+    friend List
+    drop(List xs, size_type n)
+    {
+      return hasData(xs) ? ((n >= length(head(xs.data)))
+                              ? drop(List(tail(xs.data)), n - length(head(xs.data)))
+                              : ((n > 0) ? List(cons(drop(head(xs.data), n), tail(xs.data))) : xs))
+                         : xs;
+    }
+
+    static List
+    takeAux(List xs, size_type n, Data accum)
+    {
+      return hasData(xs)
+               ? ((n > length(head(xs.data)))
+                    ? takeAux(
+                        List(tail(xs.data)), n - length(head(xs.data)), cons(head(xs.data), accum))
+                    : (n > 0 ? List(reverse(cons(take(head(xs.data), n), accum)))
+                             : List(reverse(accum))))
+               : List(accum);
+    }
+
+    friend List
+    take(List xs, size_type n)
+    {
+      return takeAux(xs, n, Data::nil);
+    }
+
+    friend value_type
+    listRef(List xs, index_type index)
+    {
+      return head(drop(xs, index));
+    }
+
+    friend bool
+    operator==(List xs, List ys)
+    {
+      return hasData(xs) && hasData(ys) ? head(xs) == head(ys) && tail(xs) == tail(ys)
+                                        : (isNull(xs) && isNull(ys) ? true : false);
+    }
+
+    template<typename U>
+    friend bool
+    operator!=(List xs, U ys)
+    {
+      return !(xs == ys);
+    }
+
+    template<size_type M>
+    friend bool
+    operator==(List xs, List<T, M> ys)
+    {
+      static_assert(M < N);
+      return hasData(xs) && hasData(ys) ? head(xs) == head(ys) && tail(xs) == tail(ys)
+                                        : (isNull(xs) && isNull(ys) ? true : false);
+    }
+
+    friend List
+    rappend(List xs, List ys)
+    {
+      return hasData(xs) ? rappend(List(tail(xs.data)), List(cons(reverse(head(xs.data)), ys.data)))
+                         : ys;
+    }
+
+    friend List
+    reverse(List xs)
+    {
+      return rappend(xs, nil);
+    }
+
+    friend List
+    append(List xs, List ys)
+    {
+      return rappend(reverse(xs), ys);
+    }
+
+    template<typename F, typename U>
+    static U
+    foldLAux(F f, U const& init, List xs)
+    {
+      return hasData(xs) ? foldLAux(f, foldL(f, init, head(xs.data)), List(tail(xs.data))) : init;
+    }
+
+    template<typename F, typename U>
+    friend U
+    foldL(F f, U const& init, List xs)
+    {
+      return foldLAux(f, init, xs);
+    }
+
+    template<typename F, typename U>
+    static U
+    foldRAux(F f, List rxs, U init)
+    {
+      return hasData(rxs) ? foldRAux(f, List(tail(rxs.data)), foldR(f, head(rxs.data), init))
+                          : init;
+    }
+
+    template<typename F, typename U>
+    friend U
+    foldR(F f, List xs, U init)
+    {
+      return foldRAux(f, List(reverse(xs.data)), init);
+    }
+
+    template<typename F, typename U = decay_t<result_of_t<F(T)>>>
+    static List<U, N>
+    fMapAux(F f, Data xs, typename List<U, N>::Data accum)
+    {
+      return hasData(xs) ? fMapAux(f, tail(xs), cons(fMap(f, head(xs)), accum))
+                         : List<U, N>(reverse(accum));
+    }
+
+    template<typename F, typename U = decay_t<result_of_t<F(T)>>>
+    friend List<U, N>
+    fMap(F f, List xs)
+    {
+      return fMapAux(f, xs.data, List<U, N>::Data::nil);
     }
 
   }; // end of class List<T,N>
@@ -213,23 +457,20 @@ namespace ListProcessing::Dynamic::Details
     typename T1,
     typename T2,
     typename... Ts,
-    typename T =
-      common_type_t<decay_t<T1>, decay_t<T2>, decay_t<Ts>...>>
+    typename T = common_type_t<decay_t<T1>, decay_t<T2>, decay_t<Ts>...>>
   List<T>
   list(T1&& x1, T2&& x2, Ts&&... xs)
   {
-    return listOf<T>(
-      forward<T1>(x1), forward<T2>(x2), forward<Ts>(xs)...);
+    return listOf<T>(forward<T1>(x1), forward<T2>(x2), forward<Ts>(xs)...);
   }
 
   template<typename T>
-  const List<T, ListTraits<T>::chunk_size> nil =
-    List<T, ListTraits<T>::chunk_size>::nil;
+  const List<T, ListTraits<T>::chunk_size> nil = List<T, ListTraits<T>::chunk_size>::nil;
 
-  template<typename T, typename F>
+  template<typename F, typename T = decay_t<result_of_t<F(index_type)>>>
   List<T>
   buildList(F f, size_type n)
   {
-    return buildList(f, n, nil<T>);
+    return buildListAux(f, n, nil<T>);
   }
 } // end of namespace ListProcessing::Dynamic::Details

@@ -213,10 +213,16 @@ namespace ListProcessing::Dynamic::Details
     {}
 
     friend size_type
-    length(ShortList const& xs)
+    length(ShortList xs)
     {
       assert(xs.fillpoint > 0);
       return xs.fillpoint;
+    }
+
+    friend bool
+    isFull(ShortList xs)
+    {
+      return length(xs) == extent;
     }
 
     friend bool
@@ -315,6 +321,28 @@ namespace ListProcessing::Dynamic::Details
     {
       return ShortList<U, N>(
         [=](auto index) { return f(listRef(xs, index)); }, length(xs), build_tag{});
+    }
+
+    template<typename F, typename U>
+    friend U
+    foldL(F f, U init, ShortList xs)
+    {
+      size_type n = length(xs);
+      for (index_type i = 0; i < n; ++i) {
+        init = f(init, listRef(xs, i));
+      }
+      return init;
+    }
+
+    template<typename F, typename U>
+    friend U
+    foldR(F f, ShortList xs, U init)
+    {
+      size_type n = length(xs);
+      for (index_type i = 0; i < n; ++i) {
+        init = f(listRef(xs, n - i - 1), init);
+      }
+      return init;
     }
   };
 

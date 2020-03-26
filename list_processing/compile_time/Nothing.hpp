@@ -5,7 +5,8 @@
 //
 #include <list_processing/compile_time/import.hpp>
 
-namespace ListProcessing::CompileTime::Details {
+namespace ListProcessing::CompileTime::Details
+{
 
   struct Nothing
   {
@@ -25,6 +26,12 @@ namespace ListProcessing::CompileTime::Details {
 
     friend constexpr bool
     isnothing(Nothing const&)
+    {
+      return true;
+    }
+
+    friend constexpr bool
+    isNull(Nothing const&)
     {
       return true;
     }
@@ -138,17 +145,24 @@ namespace ListProcessing::CompileTime::Details {
 
   }; // end of struct Nothing
 
-  constexpr bool length_(Type<Nothing>) { return 0; }
+  constexpr bool length_(Type<Nothing>)
+  {
+    return 0;
+  }
 
   template<typename T>
-  constexpr bool islist_type(Type<T>)
+  constexpr bool isListType(Type<T>)
   {
     return false;
   }
 
-  constexpr bool islist_type(Type<Nothing>) { return true; }
+  constexpr bool isListType(Type<Nothing>)
+  {
+    return true;
+  }
 
   constexpr Nothing nothing{};
+  constexpr Nothing nil = nothing;
 
   constexpr Nothing
   list()

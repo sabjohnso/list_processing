@@ -6,7 +6,8 @@
 #include <list_processing/compile_time/Nothing.hpp>
 #include <list_processing/compile_time/import.hpp>
 
-namespace ListProcessing::CompileTime::Details {
+namespace ListProcessing::CompileTime::Details
+{
 
   template<typename T, typename U>
   class Cell;
@@ -18,9 +19,9 @@ namespace ListProcessing::CompileTime::Details {
   }
 
   template<typename T, typename U>
-  constexpr bool islist_type(Type<Cell<T, U>>)
+  constexpr bool isListType(Type<Cell<T, U>>)
   {
-    return islist_type(type<U>);
+    return isListType(type<U>);
   }
 
   template<typename T, typename U>
@@ -47,13 +48,19 @@ namespace ListProcessing::CompileTime::Details {
     friend constexpr bool
     islist(Cell const&)
     {
-      return islist_type(type<TailType>);
+      return isListType(type<TailType>);
     }
 
     friend constexpr bool
     isnothing(Cell const&)
     {
       return false;
+    }
+
+    friend constexpr bool
+    isNull(Cell const& xs)
+    {
+      return isnothing(xs);
     }
 
     friend constexpr bool
@@ -187,7 +194,8 @@ namespace ListProcessing::CompileTime::Details {
     friend constexpr auto
     foldr(F f, V const& init, Cell const& xs)
     {
-      return foldl([=](auto x, auto y) { return f(y, x); }, init, reverse(xs));
+      return foldl(
+        [=](auto x, auto y) { return f(y, x); }, init, reverse(xs));
     }
 
     template<typename F, typename... Us>

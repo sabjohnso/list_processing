@@ -43,6 +43,7 @@ namespace ListProcessing::Dynamic::Details
 
   using std::is_assignable_v;
   using std::is_default_constructible_v;
+  using std::is_fundamental_v;
   using std::is_invocable_r_v;
 
   using std::common_type_t;

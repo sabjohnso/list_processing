@@ -11,11 +11,14 @@
 //
 #include <type_utility/type_utility.hpp>
 
-namespace ListProcessing::CompileTime::Details {
+namespace ListProcessing::CompileTime::Details
+{
   using integer = std::ptrdiff_t;
   using size_type = integer;
   using index_type = integer;
+  using offset_type = integer;
 
+  using std::declval;
   using std::forward;
   using std::pair;
 
@@ -28,5 +31,8 @@ namespace ListProcessing::CompileTime::Details {
   using TypeUtility::nat;
   using TypeUtility::Type;
   using TypeUtility::type;
+
+  template<integer I>
+  constexpr integral_constant<integer, I> idx{};
 
 } // end of namespace ListProcessing::CompileTime::Details
