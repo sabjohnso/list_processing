@@ -9,6 +9,8 @@
 #include <list_processing/compile_time.hpp>
 
 using ListProcessing::CompileTime::empty_tree;
+using ListProcessing::CompileTime::list;
+using ListProcessing::CompileTime::tree;
 
 namespace ListProcessing::Testing
 {
@@ -36,6 +38,17 @@ namespace ListProcessing::Testing
   TEST(CompileTimeTree, InsertBranch)
   {
     ASSERT_FALSE(isEmpty(insertBranch(empty_tree)));
+  }
+
+  TEST(CompileTimeTree, Make)
+  {
+    constexpr auto t = tree(tree('a'), tree('b'), tree('c'));
+    ASSERT_FALSE(isEmpty(t));
+    ASSERT_EQ(position(t), list(0L));
+
+    ASSERT_EQ(open(open(t)), 'a');
+
+    ASSERT_EQ(open(open(fwd(close(open(t))))), 'b');
   }
 
 } // end of namespace ListProcessing::Testing

@@ -44,6 +44,12 @@ namespace ListProcessing::CompileTime::Details
       , context(c)
     {}
 
+    constexpr Data const&
+    getData() const&
+    {
+      return data;
+    }
+
   private:
     Data data;
     Context context;
@@ -123,7 +129,7 @@ namespace ListProcessing::CompileTime::Details
     {
       if constexpr (IsTree<decltype(read(xs.data))>::value) {
         return constructTree(
-          read(xs.data).data, cons(remove(xs.data), xs.context));
+          read(xs.data).getData(), cons(remove(xs.data), xs.context));
       } else {
         return read(xs.data);
       }
@@ -165,6 +171,18 @@ namespace ListProcessing::CompileTime::Details
       }
     }
 
+    friend constexpr auto
+    operator==(Tree const& xs, Tree const& ys)
+    {
+      return (xs.data == ys.data) && (xs.context == ys.context);
+    }
+
+    friend constexpr auto
+    operator!=(Tree const& xs, Tree const& ys)
+    {
+      return !(xs == ys);
+    }
+
   }; // end of class Tree
 
   template<typename D, typename C>
@@ -181,7 +199,7 @@ namespace ListProcessing::CompileTime::Details
 
   template<typename T, typename... Ts>
   constexpr auto
-  makeTree(T const& x, Ts const&... xs)
+  tree(T const& x, Ts const&... xs)
   {
     return Tree(makeZipper(x, xs...), nil);
   }

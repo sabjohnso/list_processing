@@ -17,7 +17,7 @@ namespace ListProcessing::CompileTime::Details
   makeQueue(T const& x, Ts const&... xs);
 
   template<typename I, typename O>
-  constexpr auto
+  constexpr Queue<I, O>
   constructQueue(I const& in, O const& out);
 
   template<typename I, typename O>
@@ -56,9 +56,9 @@ namespace ListProcessing::CompileTime::Details
     friend constexpr auto
     pop(Queue const& xs)
     {
-      if constexpr (length(xs.output) == 0) {
+      if constexpr (length_(type<O>) == 0) {
         return constructQueue(nil, nil);
-      } else if constexpr (length(xs.output) == 1) {
+      } else if constexpr (length_(type<O>) == 1) {
         return constructQueue(nil, reverse(xs.input));
       } else {
         return constructQueue(xs.input, tail(xs.output));
@@ -69,7 +69,7 @@ namespace ListProcessing::CompileTime::Details
     friend constexpr auto
     push(Queue const& xs, T const& x)
     {
-      if constexpr (isNull(xs.output)) {
+      if constexpr (length_(type<O>) == 0) {
         return constructQueue(nil, list(x));
       } else {
         return constructQueue(cons(x, xs.input), xs.output);
@@ -89,7 +89,7 @@ namespace ListProcessing::CompileTime::Details
   constexpr Queue<Nothing, Nothing> empty_queue{ nil, nil };
 
   template<typename I, typename O>
-  constexpr auto
+  constexpr Queue<I, O>
   constructQueue(I const& in, O const& out)
   {
     return Queue<I, O>(in, out);

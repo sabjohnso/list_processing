@@ -82,7 +82,7 @@ namespace ListProcessing::Dynamic::Details
     friend Chunk<R, N>
     fMap(F f, Chunk xs)
     {
-      Chunk<R, N> result();
+      Chunk<R, N> result{};
       result.ptr = fMap(f, *xs.ptr, xs.fillpoint);
       result.ptr = xs.fillpoint;
       return result;

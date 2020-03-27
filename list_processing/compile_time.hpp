@@ -29,5 +29,6 @@ namespace ListProcessing::CompileTime
   using Details::makeQueue;
 
   using Details::empty_tree;
+  using Details::tree;
 
 } // end of namespace ListProcessing::CompileTime

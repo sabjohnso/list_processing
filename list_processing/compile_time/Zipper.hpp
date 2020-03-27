@@ -101,7 +101,7 @@ namespace ListProcessing::CompileTime::Details
     friend constexpr auto
     fwd(Zipper const& xs)
     {
-      if constexpr (isAtBack(xs)) {
+      if constexpr (length_(type<D>) == 0) {
         return xs;
       } else {
         return constructZipper(
@@ -112,7 +112,7 @@ namespace ListProcessing::CompileTime::Details
     friend constexpr auto
     bwd(Zipper const& xs)
     {
-      if constexpr (isAtFront(xs)) {
+      if constexpr (length_(type<C>) == 0) {
         return xs;
       } else {
         return constructZipper(
