@@ -64,6 +64,12 @@ namespace ListProcessing::CompileTime::Details
     }
 
     friend constexpr bool
+    isEmpty(Cell const& xs)
+    {
+      return isnothing(xs);
+    }
+
+    friend constexpr bool
     ispair(Cell const&)
     {
       return true;
@@ -239,5 +245,9 @@ namespace ListProcessing::CompileTime::Details
   {
     return cons(forward<T>(x), list(forward<Ts>(xs)...));
   }
+
+  template<typename T, typename U>
+  struct IsList<Cell<T, U>> : IsList<U>
+  {};
 
 } // end of namespace ListProcessing::CompileTime::Details

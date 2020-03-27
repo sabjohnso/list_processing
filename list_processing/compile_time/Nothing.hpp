@@ -8,6 +8,14 @@
 namespace ListProcessing::CompileTime::Details
 {
 
+  template<typename T>
+  struct IsList
+    : conditional_t<
+        is_same_v<T, decay_t<T>>,
+        false_type,
+        IsList<decay_t<T>>>
+  {};
+
   struct Nothing
   {
 
@@ -32,6 +40,12 @@ namespace ListProcessing::CompileTime::Details
 
     friend constexpr bool
     isNull(Nothing const&)
+    {
+      return true;
+    }
+
+    friend constexpr bool
+    isEmpty(Nothing const&)
     {
       return true;
     }
@@ -169,5 +183,9 @@ namespace ListProcessing::CompileTime::Details
   {
     return {};
   }
+
+  template<>
+  struct IsList<Nothing> : true_type
+  {};
 
 } // end of namespace ListProcessing::CompileTime::Details

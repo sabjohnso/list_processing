@@ -178,6 +178,18 @@ namespace ListProcessing::CompileTime::Details
     }
   };
 
+  template<typename T>
+  struct IsZipper
+    : conditional_t<
+        is_same_v<T, decay_t<T>>,
+        false_type,
+        IsZipper<decay_t<T>>>
+  {};
+
+  template<typename D, typename C>
+  struct IsZipper<Zipper<D, C>> : true_type
+  {};
+
   template<typename D, typename C>
   Zipper(D const& data, C const& context) -> Zipper<D, C>;
 

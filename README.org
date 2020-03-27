@@ -10,14 +10,12 @@
 ** TODO Compile-time data structures
 *** DONE List
 *** DONE Stack
-*** TODO Zipper
-*** TODO Queue
-*** TODO Deque
+*** DONE Zipper
+*** DONE Queue
 *** TODO Tree
 ** TODO Dynamic data structures
 *** DONE List
 *** DONE Stack
 *** DONE Zipper
 *** TODO Queue
-*** TODO Deque
 *** TODO Tree
