@@ -9,14 +9,14 @@
 namespace ListProcessing::Dynamic::Details
 {
   template<typename T>
-  class Zipper
+  class Tape
   {
   public:
     using value_type = T;
     using reference = value_type&;
     using const_reference = value_type const&;
 
-    Zipper()
+    Tape()
       : data(nil<value_type>)
       , context(nil<value_type>)
     {}
@@ -24,7 +24,7 @@ namespace ListProcessing::Dynamic::Details
   private:
     using data_type = List<value_type>;
 
-    Zipper(data_type input_data, data_type input_context)
+    Tape(data_type input_data, data_type input_context)
       : data(input_data)
       , context(input_context)
     {}
@@ -33,139 +33,139 @@ namespace ListProcessing::Dynamic::Details
     data_type context;
 
     friend bool
-    operator==(Zipper xs, Zipper ys)
+    operator==(Tape xs, Tape ys)
     {
       return xs.data == ys.data && xs.context == ys.context;
     }
 
     friend bool
-    operator!=(Zipper xs, Zipper ys)
+    operator!=(Tape xs, Tape ys)
     {
       return !(xs == ys);
     }
 
     friend bool
-    isAtBack(Zipper xs)
+    isAtBack(Tape xs)
     {
       return isNull(xs.data);
     }
 
     friend bool
-    isAtFront(Zipper xs)
+    isAtFront(Tape xs)
     {
       return isNull(xs.context);
     }
 
     friend bool
-    isEmpty(Zipper xs)
+    isEmpty(Tape xs)
     {
       return isAtFront(xs) && isAtBack(xs);
     }
 
-    friend Zipper
-    insert(Zipper xs, const_reference x)
+    friend Tape
+    insert(Tape xs, const_reference x)
     {
-      return Zipper(cons(x, xs.data), xs.context);
+      return Tape(cons(x, xs.data), xs.context);
     }
 
-    friend Zipper
-    remove(Zipper xs)
+    friend Tape
+    remove(Tape xs)
     {
-      return Zipper(tail(xs.data), xs.context);
+      return Tape(tail(xs.data), xs.context);
     }
 
-    friend Zipper
-    write(Zipper xs, const_reference x)
+    friend Tape
+    write(Tape xs, const_reference x)
     {
       return insert(remove(xs), x);
     }
 
     friend value_type
-    read(Zipper xs)
+    read(Tape xs)
     {
       return head(xs.data);
     }
 
     friend index_type
-    position(Zipper xs)
+    position(Tape xs)
     {
       return length(xs.context);
     }
 
     friend size_type
-    remaining(Zipper xs)
+    remaining(Tape xs)
     {
       return length(xs.data);
     }
 
     friend size_type
-    length(Zipper xs)
+    length(Tape xs)
     {
       return position(xs) + remaining(xs);
     }
 
-    friend Zipper
-    fwd(Zipper xs)
+    friend Tape
+    fwd(Tape xs)
     {
-      return Zipper(tail(xs.data), cons(head(xs.data), xs.context));
+      return Tape(tail(xs.data), cons(head(xs.data), xs.context));
     }
 
-    friend Zipper
-    bwd(Zipper xs)
+    friend Tape
+    bwd(Tape xs)
     {
-      return Zipper(cons(head(xs.context), xs.data), tail(xs.context));
+      return Tape(cons(head(xs.context), xs.data), tail(xs.context));
     }
 
-    friend Zipper
-    moveBy(Zipper xs, offset_type offset)
+    friend Tape
+    moveBy(Tape xs, offset_type offset)
     {
       return (offset > 0)
                ? moveBy(fwd(xs), offset - 1)
                : ((offset < 0) ? moveBy(bwd(xs), offset + 1) : xs);
     }
 
-    friend Zipper
-    moveTo(Zipper xs, index_type index)
+    friend Tape
+    moveTo(Tape xs, index_type index)
     {
       return moveBy(xs, index - position(xs));
     }
 
-    friend Zipper
-    toFront(Zipper xs)
+    friend Tape
+    toFront(Tape xs)
     {
-      return Zipper(rappend(xs.context, xs.data), nil<value_type>);
+      return Tape(rappend(xs.context, xs.data), nil<value_type>);
     }
 
-    friend Zipper
-    toBack(Zipper xs)
+    friend Tape
+    toBack(Tape xs)
     {
-      return Zipper(nil<value_type>, rappend(xs.data, xs.context));
+      return Tape(nil<value_type>, rappend(xs.data, xs.context));
     }
 
-  }; // end of class Zipper
+  }; // end of class Tape
 
   template<typename T>
-  const Zipper<T> empty_zipper{};
+  const Tape<T> empty_tape{};
 
   template<typename T>
-  Zipper<T>
-  zipperOf()
+  Tape<T>
+  tapeOf()
   {
-    return empty_zipper<T>;
+    return empty_tape<T>;
   }
 
   template<typename T, typename T1, typename... Ts>
-  Zipper<T>
-  zipperOf(T1 const& x, Ts const&... xs)
+  Tape<T>
+  tapeOf(T1 const& x, Ts const&... xs)
   {
-    return insert(zipperOf<T>(xs...), x);
+    return insert(tapeOf<T>(xs...), x);
   }
 
   template<typename T>
-  Zipper<T>
-  zipper(T const& x)
+  Tape<T>
+  tape(T const& x)
   {
-    return zipperOf<T>(x);
+    return tapeOf<T>(x);
   }
 
   template<
@@ -173,10 +173,10 @@ namespace ListProcessing::Dynamic::Details
     typename T2,
     typename... Ts,
     typename T = common_type_t<T1, T2, Ts...>>
-  Zipper<T>
-  zipper(T1 const& x1, T2 const& x2, Ts const&... xs)
+  Tape<T>
+  tape(T1 const& x1, T2 const& x2, Ts const&... xs)
   {
-    return zipperOf<T>(x1, x2, xs...);
+    return tapeOf<T>(x1, x2, xs...);
   }
 
 } // end of namespace ListProcessing::Dynamic::Details

@@ -7,7 +7,7 @@
 
 #include <list_processing/dynamic/List.hpp>
 #include <list_processing/dynamic/Stack.hpp>
-#include <list_processing/dynamic/Zipper.hpp>
+#include <list_processing/dynamic/Tape.hpp>
 
 namespace ListProcessing::Dynamic
 {
@@ -24,7 +24,7 @@ namespace ListProcessing::Dynamic
   using Details::pipe;
   using Details::Stack;
 
-  using Details::empty_zipper;
-  using Details::zipper;
+  using Details::empty_tape;
+  using Details::tape;
 
 } // end of namespace ListProcessing::Dynamic

@@ -18,7 +18,7 @@ list_processing_add_test(compile_time compile_time_test
 list_processing_add_test( dynamic dynamic_test
   dynamic_list_test.cpp
   dynamic_stack_test.cpp
-  dynamic_zipper_test.cpp
+  dynamic_tape_test.cpp
   range_test.cpp)
 
 list_processing_add_test(
