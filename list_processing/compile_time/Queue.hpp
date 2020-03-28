@@ -81,6 +81,32 @@ namespace ListProcessing::CompileTime::Details
     {
       return push(pop(xs), front(xs));
     }
+
+    template<typename Stream>
+    friend Stream&
+    operator<<(Stream& os, Queue const& xs)
+    {
+      if constexpr (length_(type<O>) == 0) {
+        os << "#Queue()";
+      } else {
+        os << "#Queue(" << front(xs) << ", ...)";
+      }
+      return os;
+    }
+
+    // This concrete stream type implementation
+    // is to disambiguate the ostream operators when
+    // using gtest.
+    friend ostream&
+    operator<<(ostream& os, Queue const& xs)
+    {
+      if constexpr (length_(type<O>) == 0) {
+        os << "#Queue()";
+      } else {
+        os << "#Queue(" << front(xs) << ", ...)";
+      }
+      return os;
+    }
   };
 
   template<typename I, typename O>

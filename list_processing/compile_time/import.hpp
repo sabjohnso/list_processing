@@ -3,6 +3,7 @@
 // ... Standard header files
 //
 #include <cstddef>
+#include <iostream>
 #include <type_traits>
 #include <utility>
 
@@ -38,5 +39,7 @@ namespace ListProcessing::CompileTime::Details
 
   template<integer I>
   constexpr integral_constant<integer, I> idx{};
+
+  using std::ostream;
 
 } // end of namespace ListProcessing::CompileTime::Details

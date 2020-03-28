@@ -218,6 +218,34 @@ namespace ListProcessing::CompileTime::Details
       return app_(f, xs);
     }
 
+    template<typename Stream>
+    friend Stream&
+    printElements(Stream& os, Cell const& xs)
+    {
+      printElements(os << ' ' << head(xs), tail(xs));
+      return os;
+    }
+
+    template<typename Stream>
+    friend Stream&
+    operator<<(Stream& os, Cell const& xs)
+    {
+      printElements(os << '(', xs);
+      os << ')';
+      return os;
+    }
+
+    // This concrete stream type implementation
+    // is to disambiguate the ostream operators when
+    // using gtest.
+    friend ostream&
+    operator<<(ostream& os, Cell const& xs)
+    {
+      printElements(os << '(' << head(xs), tail(xs));
+      os << ')';
+      return os;
+    }
+
   }; // end of class Cell
 
   template<typename T>

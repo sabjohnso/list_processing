@@ -98,6 +98,21 @@ namespace ListProcessing::CompileTime::Details
     {
       return false;
     }
+
+    template<typename Stream>
+    friend Stream&
+    operator<<(Stream& os, Stack const&)
+    {
+      os << "#stack()";
+      return os;
+    }
+
+    friend ostream&
+    operator<<(ostream& os, Stack const&)
+    {
+      os << "#stack()";
+      return os;
+    }
   };
 
   constexpr Stack<Nothing> empty_stack{};
@@ -246,6 +261,24 @@ namespace ListProcessing::CompileTime::Details
     operator!=(Stack const& xs, V const& ys)
     {
       return !(xs == ys);
+    }
+
+    template<typename Stream>
+    friend Stream&
+    operator<<(Stream& os, Stack const& xs)
+    {
+      os << "#Stack(" << top(xs) << " ...)";
+      return os;
+    }
+
+    // This concrete stream type implementation
+    // is to disambiguate the ostream operators when
+    // using gtest.
+    friend ostream&
+    operator<<(ostream& os, Stack const& xs)
+    {
+      os << "#Stack(" << top(xs) << " ...)";
+      return os;
     }
   };
 

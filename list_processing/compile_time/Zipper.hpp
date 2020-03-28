@@ -176,6 +176,40 @@ namespace ListProcessing::CompileTime::Details
           index_type,
           length_(type<C>) + length_(type<D>)>{});
     }
+
+    template<typename Stream>
+    friend Stream&
+    operator<<(Stream& os, Zipper const& xs)
+    {
+      if constexpr (length_(type<D>) == 0 && length_(type<C>) == 0) {
+        os << "#Zipper()";
+      } else if constexpr (length_(type<C>) == 0) {
+        os << "#Zippper(" << read(xs) << ", ...)";
+      } else if constexpr (length_(type<D>) == 0) {
+        os << "#Zipper(..., nil)";
+      } else {
+        os << "#Zipper(..., " << read(xs) << ", ...)";
+      }
+      return os;
+    }
+
+    // This concrete stream type implementation
+    // is to disambiguate the ostream operators when
+    // using gtest.
+    friend ostream&
+    operator<<(ostream& os, Zipper const& xs)
+    {
+      if constexpr (length_(type<D>) == 0 && length_(type<C>) == 0) {
+        os << "#Zipper()";
+      } else if constexpr (length_(type<C>) == 0) {
+        os << "#Zippper(" << read(xs) << ", ...)";
+      } else if constexpr (length_(type<D>) == 0) {
+        os << "#Zipper(..., nil)";
+      } else {
+        os << "#Zipper(..., " << read(xs) << ", ...)";
+      }
+      return os;
+    }
   };
 
   template<typename T>

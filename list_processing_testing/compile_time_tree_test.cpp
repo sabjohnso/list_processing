@@ -42,12 +42,14 @@ namespace ListProcessing::Testing
 
   TEST(CompileTimeTree, Make)
   {
-    constexpr auto t = tree(tree('a'), tree('b'), tree('c'));
+    constexpr auto t = tree(
+      tree('a', tree(1, 2, 3)),
+      tree('b', tree(4, 5, 6)),
+      tree('c', tree(7, 8, 9)));
+    std::cout << list(1, 2, 3) << std::endl;
     ASSERT_FALSE(isEmpty(t));
     ASSERT_EQ(position(t), list(0L));
-
     ASSERT_EQ(open(open(t)), 'a');
-
     ASSERT_EQ(open(open(fwd(close(open(t))))), 'b');
   }
 

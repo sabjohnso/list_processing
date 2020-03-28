@@ -157,6 +157,31 @@ namespace ListProcessing::CompileTime::Details
       return f();
     }
 
+    template<typename Stream>
+    friend Stream&
+    operator<<(Stream& os, Nothing const&)
+    {
+      os << "nil";
+      return os;
+    }
+
+    // This concrete stream type implementation
+    // is to disambiguate the ostream operators when
+    // using gtest.
+    friend ostream&
+    operator<<(ostream& os, Nothing const&)
+    {
+      os << "nil";
+      return os;
+    }
+
+    template<typename Stream>
+    friend Stream&
+    printElements(Stream& os, Nothing const&)
+    {
+      return os;
+    }
+
   }; // end of struct Nothing
 
   constexpr bool length_(Type<Nothing>)

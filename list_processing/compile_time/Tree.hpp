@@ -183,6 +183,21 @@ namespace ListProcessing::CompileTime::Details
       return !(xs == ys);
     }
 
+    template<typename Stream>
+    friend Stream&
+    operator<<(Stream& os, Tree const& xs)
+    {
+      os << "#<Tree>";
+      return os;
+    }
+
+    friend ostream&
+    operator<<(ostream& os, Tree const& xs)
+    {
+      os << "#<Tree>";
+      return os;
+    }
+
   }; // end of class Tree
 
   template<typename D, typename C>
