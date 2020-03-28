@@ -14,16 +14,21 @@ target_link_libraries(library
   INTERFACE
   type_utility::type_utility)
 
+set_target_properties(library
+  PROPERTIES
+  OUTPUT_NAME list_processing)
+
 add_library(ListProcessing::library ALIAS library)
 
 add_executable(config
   config.cpp
   config/Driver.hpp config/Driver.cpp
   config/ExceptionHandler.hpp config/ExceptionHandler.cpp)
+
 set_target_properties(config
   PROPERTIES
-  CXX_STANDARD 17)
-
+  CXX_STANDARD 17
+  OUTPUT_NAME list_processing_config)
 
 target_link_libraries(config
   PRIVATE ListProcessing::library)
@@ -43,4 +48,5 @@ install(FILES
 install(DIRECTORY
   ${CMAKE_CURRENT_SOURCE_DIR}/compile_time
   ${CMAKE_CURRENT_SOURCE_DIR}/dynamic
-  DESTINATION ${list_processing_INSTALL_INCLUDEDIR}/list_processing)
+  DESTINATION ${list_processing_INSTALL_INCLUDEDIR}/list_processing
+  FILES_MATCHING PATTERN "*.hpp")

@@ -19,7 +19,7 @@ list_processing_add_test( dynamic dynamic_test
   dynamic_list_test.cpp
   dynamic_stack_test.cpp
   dynamic_zipper_test.cpp
-  dynamic_chunk_data_test.cpp)
+  range_test.cpp)
 
 list_processing_add_test(
   short_list short_list_test short_list_test.cpp)
