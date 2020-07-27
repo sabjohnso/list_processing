@@ -16,7 +16,7 @@ namespace ListProcessing::Dynamic::Details
 {
 
   /**
-   * @brief A tag using to indicate the build constructor
+   * @brief A tag to indicate the build constructor
    */
   struct build_tag
   {};
@@ -24,23 +24,25 @@ namespace ListProcessing::Dynamic::Details
   /**
    * @brief A non-user-facing class template describing short lists
    *
-   * @details The ShortList class template is implemented as a
-   * non-empty list with a maximum length statically specified through
-   * the template parameters: N. This means that every instance has at
-   * least one element, leaving the representation of the absence of data
-   * as the responsibility of classes using this class template.
+   * @details This class template is intended to improve memory usage by
+   * storing list values in pre-allocated chunks of a statically selected
+   * length. In addition to memory usage, there may be performance benefits
+   * for some list operations. The efficacy of the optimization,
+   * aswell as the appropriate seletion of maximum length depend on
+   * the element type.
    *
-   * This class template is intended as an optimization of the
-   * storage and some list operations, where list values are stored in
-   * pre-allocated, contiguous chunks. The optimal size of the chunks,
-   * and whether this class should be used depends on the value type
-   * of the list. Whether optimal or not, there are some restrictions on
+   * List values are stored in pre-allocated, contiguous chunks.
+   * Whether optimal or not, there are some restrictions on
    * the list value type that must be satisfied to use this class template:
    *
    *   - the value type must be default constructible
    *   - the value type must be assignable
    *
-   *
+   * The ShortList class template is implemented as a
+   * non-empty list with a maximum length statically specified through
+   * the template parameters: N. Every instance has at
+   * least one element, leaving the representation of the absence of data
+   * as the responsibility of classes using this class template.
    *
    */
   template<typename T, size_type N>

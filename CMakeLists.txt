@@ -6,6 +6,10 @@ option(list_processing_BUILD_TESTING "Build the list_processing tests" ON)
 set(list_processing_DEFAULT_CHUNK_SIZE 32 CACHE STRING
   "Default number of elements per chunk for optimized lists")
 
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
 include(GNUInstallDirs)
 set(list_processing_INSTALL_BINDIR ${CMAKE_INSTALL_BINDIR})
 set(list_processing_INSTALL_LIBDIR ${CMAKE_INSTALL_LIBDIR})
@@ -30,6 +34,6 @@ install(EXPORT list_processing_EXPORTS
   FILE list_processing-exports.cmake
   DESTINATION ${list_processing_INSTALL_CONFDIR})
 
-configure_file(list_processing-config.cmake.in list_processing-config.cmake)
+configure_file(list_processing-config.cmake.in list_processing-config.cmake @ONLY)
 install(FILES ${PROJECT_BINARY_DIR}/list_processing-config.cmake
   DESTINATION ${list_processing_INSTALL_CONFDIR})

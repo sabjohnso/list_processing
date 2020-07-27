@@ -8,6 +8,8 @@
 #include <list_processing/dynamic/List.hpp>
 #include <list_processing/dynamic/Stack.hpp>
 #include <list_processing/dynamic/Tape.hpp>
+#include <list_processing/dynamic/Queue.hpp>
+#include <list_processing/dynamic/Tree.hpp>
 
 namespace ListProcessing::Dynamic
 {
@@ -26,5 +28,10 @@ namespace ListProcessing::Dynamic
 
   using Details::empty_tape;
   using Details::tape;
+
+  using Details::empty_queue;
+  using Details::queue;
+
+  using Details::empty_tree;
 
 } // end of namespace ListProcessing::Dynamic

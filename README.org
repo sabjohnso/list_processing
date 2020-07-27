@@ -1,4 +1,3 @@
-
 #+TITLE: List Processing
 #+SUBTITLE: A collection of persistent data structures
 
@@ -10,12 +9,14 @@
 ** TODO Compile-time data structures
 *** DONE List
 *** DONE Stack
-*** DONE Zipper
+*** DONE Tape
 *** DONE Queue
 *** TODO Tree
+*** TODO Vector
 ** TODO Dynamic data structures
 *** DONE List
 *** DONE Stack
-*** DONE Zipper
+*** DONE Tape
 *** TODO Queue
 *** TODO Tree
+*** TODO Vector

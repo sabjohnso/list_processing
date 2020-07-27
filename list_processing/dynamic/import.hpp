@@ -11,6 +11,7 @@
 #include <mutex>
 #include <stdexcept>
 #include <string>
+#include <variant>
 #include <type_traits>
 #include <utility>
 
@@ -29,6 +30,7 @@ namespace ListProcessing::Dynamic::Details
 
   using std::forward;
   using std::move;
+  using std::get;
 
   using std::logic_error;
 
@@ -52,6 +54,9 @@ namespace ListProcessing::Dynamic::Details
   using std::result_of_t;
 
   using std::array;
+
+  using std::variant;
+  using std::holds_alternative;
 
   using std::ostream;
   using std::to_string;

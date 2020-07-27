@@ -89,7 +89,7 @@ namespace ListProcessing::Dynamic::Details
 
     // clang-format off
     List const&
-    getTail() const 
+    getTail() const
     {
       return hasData(*this)
         ? ptr->tail
@@ -492,8 +492,7 @@ namespace ListProcessing::Dynamic::Details
   List<T>
   list(T1&& x1, T2&& x2, Ts&&... xs)
   {
-    return listOf<T>(
-      forward<T1>(x1), forward<T2>(x2), forward<Ts>(xs)...);
+    return listOf<T>(forward<T1>(x1), forward<T2>(x2), forward<Ts>(xs)...);
   }
 
   // template<typename T>

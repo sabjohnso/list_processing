@@ -19,6 +19,8 @@ list_processing_add_test( dynamic dynamic_test
   dynamic_list_test.cpp
   dynamic_stack_test.cpp
   dynamic_tape_test.cpp
+  dynamic_queue_test.cpp
+  dynamic_tree_test.cpp
   range_test.cpp)
 
 list_processing_add_test(
