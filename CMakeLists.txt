@@ -30,7 +30,7 @@ if(list_processing_BUILD_TESTING)
 endif()
 
 install(EXPORT list_processing_EXPORTS
-  NAMESPACE ListProcessing::
+  NAMESPACE list_processing::
   FILE list_processing-exports.cmake
   DESTINATION ${list_processing_INSTALL_CONFDIR})
 

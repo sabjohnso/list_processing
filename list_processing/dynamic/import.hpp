@@ -3,6 +3,7 @@
 //
 // ... Standard header files
 //
+#include <cassert>
 #include <algorithm>
 #include <array>
 #include <cstddef>

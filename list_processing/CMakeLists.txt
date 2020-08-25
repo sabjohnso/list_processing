@@ -1,39 +1,37 @@
 configure_file(config.hpp.in config.hpp)
 
-add_library(library dynamic/Range.cpp)
-set_target_properties(library
+add_library(list_processing_header dynamic/Range.cpp)
+set_target_properties(list_processing_header
   PROPERTIES
   CXX_STANDARD 17)
-target_include_directories(library
+set_target_properties(list_processing_header PROPERTIES EXPORT_NAME header)
+target_include_directories(list_processing_header
   PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
   $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
   $<INSTALL_INTERFACE:${list_processing_INSTALL_INCLUDEDIR}>)
 
-target_link_libraries(library
+target_link_libraries(list_processing_header
   INTERFACE
   type_utility::type_utility)
 
-set_target_properties(library
-  PROPERTIES
-  OUTPUT_NAME list_processing)
+add_library(list_processing::header ALIAS list_processing_header)
 
-add_library(ListProcessing::library ALIAS library)
-
-add_executable(config
+add_executable(list_processing_config
   config.cpp
   config/Driver.hpp config/Driver.cpp
   config/ExceptionHandler.hpp config/ExceptionHandler.cpp)
 
-set_target_properties(config
+set_target_properties(list_processing_config
   PROPERTIES
   CXX_STANDARD 17
-  OUTPUT_NAME list_processing_config)
+  OUTPUT_NAME list_processing_config.hpp)
 
-target_link_libraries(config
-  PRIVATE ListProcessing::library)
+target_link_libraries(list_processing_config PRIVATE list_processing::header)
+
+add_executable(list_processing::config ALIAS list_processing_config)
   
-install(TARGETS library config
+install(TARGETS list_processing_header list_processing_config
   EXPORT list_processing_EXPORTS
   RUNTIME DESTINATION ${list_processing_INSTALL_BINDIR}
   LIBRARY DESTINATION ${list_processing_INSTALL_LIBDIR}
