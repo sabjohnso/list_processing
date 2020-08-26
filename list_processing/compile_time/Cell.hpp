@@ -163,6 +163,20 @@ namespace ListProcessing::CompileTime::Details
       return rappend(reverse(xs), ys);
     }
 
+
+    friend constexpr auto
+    listRef(Cell const& xs, Nat<0>){
+      return head(xs);
+    }
+
+    template<size_t N>
+    friend constexpr auto
+    listRef(Cell const& xs, Nat<N>){
+      static_assert(N < length_(type<Cell>));
+      return listRef(tail(xs), nat<N-1>);
+
+    }
+
     friend constexpr auto
     take(Nat<0>, Cell const&)
     {
