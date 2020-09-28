@@ -3,7 +3,6 @@
 //
 // ... List Processing header files
 //
-// #include <list_processing/dynamic/Cell.hpp>
 
 #include <list_processing/dynamic/List.hpp>
 #include <list_processing/dynamic/Stack.hpp>

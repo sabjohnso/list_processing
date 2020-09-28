@@ -79,6 +79,13 @@ namespace ListProcessing::Dynamic::Details
       , reversed(false)
     {}
 
+    const_reference
+    getHead() const {
+      return isReversed(*this)
+        ? (*data)[0]
+        : (*data)[fillpoint - 1];
+    }
+
   private:
     /**
      * @brief A private nested class describing the shared shorage

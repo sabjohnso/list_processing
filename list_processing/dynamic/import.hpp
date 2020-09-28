@@ -32,6 +32,7 @@ namespace ListProcessing::Dynamic::Details
   using std::forward;
   using std::move;
   using std::get;
+  using std::declval;
 
   using std::logic_error;
 

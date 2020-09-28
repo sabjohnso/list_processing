@@ -56,4 +56,6 @@ namespace ListProcessing::Testing
   {
     ASSERT_TRUE(isBranchEmpty(open(insertBranch(empty_tree<char>))));
   }
+
+
 } // end of namespace ListProcessing::Testing

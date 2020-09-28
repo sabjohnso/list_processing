@@ -232,6 +232,19 @@ namespace ListProcessing::CompileTime::Details
       return app_(f, xs);
     }
 
+    template<typename F>
+    friend constexpr auto
+    mapList(F f, Cell const& xs){
+      return cons(f(head(xs)), mapList(f, tail(xs)));
+    }
+
+    template<typename F>
+    friend void
+    doList(Cell const& xs, F f){
+      f(head(xs));
+      doList(tail(xs), f);
+    }
+
     template<typename Stream>
     friend Stream&
     printElements(Stream& os, Cell const& xs)

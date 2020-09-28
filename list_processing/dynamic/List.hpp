@@ -10,6 +10,14 @@
 
 namespace ListProcessing::Dynamic::Details
 {
+  template<
+    typename T1,
+    typename T2,
+    typename... Ts,
+    typename T = common_type_t<decay_t<T1>, decay_t<T2>, decay_t<Ts>...>>
+  List<T>
+  list(T1&& x1, T2&& x2, Ts&&... xs);
+
 
   /**
    * @brief A class template describing homogeneous dynamic lists.
@@ -87,6 +95,7 @@ namespace ListProcessing::Dynamic::Details
       return !hasData(xs);
     }
 
+  public:
     // clang-format off
     List const&
     getTail() const
@@ -95,6 +104,7 @@ namespace ListProcessing::Dynamic::Details
         ? ptr->tail
         : *this;
     }
+  private:
 
     friend List
     tail(List xs)
@@ -114,7 +124,7 @@ namespace ListProcessing::Dynamic::Details
       return lengthAux(xs, 0);
     }
 
-
+  public:
     const_reference
     getHead() const
     {
@@ -122,6 +132,7 @@ namespace ListProcessing::Dynamic::Details
         ? ptr->head
         : throw logic_error("Cannot access the head of an empty list");
     }
+  private:
 
     friend value_type
     head(List xs)
@@ -166,18 +177,49 @@ namespace ListProcessing::Dynamic::Details
 
     template<typename F, typename U = decay_t<result_of_t<F(T)>>>
     static List<U>
-    fMapAux(F f, List xs, List<U> ys)
+    rfMapAux(F f, List xs, List<U> ys)
     {
-      return hasData(xs) ? fMapAux(f, tail(xs), cons(f(head(xs)), ys))
-                         : reverse(ys);
+      return hasData(xs)
+        ? rfMapAux(f, tail(xs), cons(f(head(xs)), ys))
+        : ys;
     }
 
     template<typename F, typename U = decay_t<result_of_t<F(T)>>>
-    friend List<U>
+    static List<U>
+    fMapAux(F f, List xs, List<U> ys)
+    {
+      return reverse(rfMapAux(f, xs, ys));
+    }
+
+    template<typename F, typename U = decay_t<result_of_t<F(T)>>>
+    friend decay_t<decltype(list(declval<U>(), declval<U>()))>
     fMap(F f, List xs)
     {
       return fMapAux(f, xs, List<U>::nil);
     }
+
+    template<typename F, size_type M, typename U = decay_t<result_of_t<F(T)>>>
+    static decay_t<decltype(fMap(declval<F>(), declval<List>()))>
+    aMapAux(List<F,M> fs, List xs){
+      return hasData(fs)
+        ? append(fMap(head(fs), xs), aMapAux(tail(fs), xs))
+        : List<U>::nil;
+    }
+
+
+    template<typename F, size_type M>
+    friend auto
+    aMap(List<F,M> fs, List xs){
+      return aMapAux(fs, xs);
+    }
+
+    template<typename F, size_type M, typename Us, typename ... Vss>
+    friend auto
+    aMap(List<F,M> fs, List xs, Us ys, Vss ... zss)
+    {
+      return aMap(aMap(fs, xs), ys, zss ...);
+    }
+
 
     template<typename F>
     friend List
@@ -224,6 +266,19 @@ namespace ListProcessing::Dynamic::Details
     operator!=(List xs, List ys)
     {
       return !(xs == ys);
+    }
+
+    template<typename F>
+    friend F
+    doList(List xs, F f)
+    {
+      unique_ptr<List> ptr(make_unique<List>(xs));
+      while(! isNull(*ptr))
+      {
+        f(head(*ptr));
+        ptr = make_unique<List>(tail(*ptr));
+      }
+      return f;
     }
 
   public:
@@ -280,6 +335,10 @@ namespace ListProcessing::Dynamic::Details
       return !(hasData(xs));
     }
 
+    const value_type&
+    getHead() const { return data.getHead().getHead(); }
+
+
     friend value_type
     head(List xs)
     {
@@ -294,8 +353,7 @@ namespace ListProcessing::Dynamic::Details
       return hasData(xs)
                ? ((length(head(xs.data)) == 1)
                     ? List(tail(xs.data))
-                    : List(cons(tail(head(xs.data)), tail(xs.data))))
-               : nil;
+                    : List(cons(tail(head(xs.data)), tail(xs.data))))               : nil;
     }
 
     friend size_type
@@ -444,13 +502,20 @@ namespace ListProcessing::Dynamic::Details
       return foldRAux(f, List(reverse(xs.data)), init);
     }
 
+    template<typename F, typename R>
+    static R
+    rFMapAux(F f, Data xs, R accum)
+    {
+      return hasData(xs)
+        ? rFMapAux(f, tail(xs), cons(fMap(f, head(xs)), accum))
+        : accum;
+    }
+
     template<typename F, typename U = decay_t<result_of_t<F(T)>>>
     static List<U, N>
     fMapAux(F f, Data xs, typename List<U, N>::Data accum)
     {
-      return hasData(xs)
-               ? fMapAux(f, tail(xs), cons(fMap(f, head(xs)), accum))
-               : List<U, N>(reverse(accum));
+      return reverse(rFMapAux(f, xs, accum));
     }
 
     template<typename F, typename U = decay_t<result_of_t<F(T)>>>
@@ -460,6 +525,48 @@ namespace ListProcessing::Dynamic::Details
       return fMapAux(f, xs.data, List<U, N>::Data::nil);
     }
 
+
+    template<
+      typename F,
+      size_type M,
+      typename U = decay_t<result_of_t<F(T)>>,
+      typename R = decay_t<decltype(fMap(declval<F>(), declval<List>()))>
+      >
+    static R
+    aMapAux(List<F,M> fs, List xs)
+    {
+      return hasData(fs)
+        ? append(fMap(head(fs), xs), aMapAux( tail(fs), xs ))
+        : R::nil;
+    }
+
+
+    template<typename F, size_type M>
+    friend auto
+    aMap(List<F,M> fs, List xs)
+    {
+      return aMapAux(fs, xs);
+    }
+
+    template<typename F, size_type M, typename Us, typename ... Vss>
+    friend auto
+    aMap(List<F,M> fs, List xs, Us ys, Vss ... zss)
+    {
+      return aMap(aMap(fs, xs), ys, zss ...);
+    }
+
+    template<typename F>
+    friend F
+    doList(List xs, F f)
+    {
+      unique_ptr<List> ptr(make_unique<List>(xs));
+      while(! isNull(*ptr))
+      {
+        f(head(*ptr));
+        ptr = make_unique<List>(tail(*ptr));
+      }
+      return f;
+    }
   }; // end of class List<T,N>
 
   template<typename T>
@@ -477,7 +584,7 @@ namespace ListProcessing::Dynamic::Details
   }
 
   template<typename T>
-  auto
+  List<decay_t<T>>
   list(T&& x)
   {
     return listOf<decay_t<T>>(forward<T>(x));
@@ -487,17 +594,14 @@ namespace ListProcessing::Dynamic::Details
     typename T1,
     typename T2,
     typename... Ts,
-    typename T =
-      common_type_t<decay_t<T1>, decay_t<T2>, decay_t<Ts>...>>
+    typename T = common_type_t<decay_t<T1>, decay_t<T2>, decay_t<Ts>...>>
   List<T>
   list(T1&& x1, T2&& x2, Ts&&... xs)
   {
     return listOf<T>(forward<T1>(x1), forward<T2>(x2), forward<Ts>(xs)...);
   }
 
-  // template<typename T>
-  // const List<T, ListTraits<T>::chunk_size> nil = List<T,
-  // ListTraits<T>::chunk_size>::nil;
+
 
   template<typename F, typename T = decay_t<result_of_t<F(index_type)>>>
   List<T>

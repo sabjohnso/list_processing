@@ -2,21 +2,40 @@
 #+SUBTITLE: A collection of persistent data structures
 
 * About
-  *List Processing* contains a collection of persistent data
-   structures for compile-time and runtime evaluation.
+  *List Processing* contains a collection of persistent (immutable)
+  data structures for compile-time and runtime evaluation.
 
 * Work
+** TODO Documentation
+*** TODO
 ** TODO Compile-time data structures
 *** DONE List
 *** DONE Stack
 *** DONE Tape
 *** DONE Queue
-*** TODO Tree
+*** DONE Tree
 *** TODO Vector
+*** TODO Stream (Lazy List)
 ** TODO Dynamic data structures
 *** DONE List
 *** DONE Stack
 *** DONE Tape
-*** TODO Queue
-*** TODO Tree
+*** DONE Queue
+*** DONE Tree
 *** TODO Vector
+*** TODO Stream (Lazy List)
+** TODO Dept, Rework and Enhancement
+*** TODO Static list dynamic element access
+Generally, accessing an element of a compile-time list needs the index
+to be determinable at compile time to be able to resolve the type.
+This burden can be reduced somewhat by allowing a variant or a common
+type of the elements to be returned.  This will significantly expand
+the number of use cases for the compile-time lists.
+*** TODO Dynamic List chunk size
+The determination of the chunk size for dynamic lists is awkward and
+is resulting in code that is difficult to understand.
+*** TODO Unify list operators
+There is a significant amount of essentially duplicate code for lists.
+*** TODO List aMap
+The definition of aMap need improvement.  This is being deferred for now.
+

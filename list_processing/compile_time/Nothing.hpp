@@ -157,6 +157,14 @@ namespace ListProcessing::CompileTime::Details
       return f();
     }
 
+    template<typename F>
+    friend constexpr Nothing
+    mapList(F, Nothing){ return Nothing{}; }
+
+    template<typename F>
+    friend void
+    doList(Nothing, F){}
+
     template<typename Stream>
     friend Stream&
     operator<<(Stream& os, Nothing const&)

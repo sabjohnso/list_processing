@@ -20,7 +20,6 @@ namespace ListProcessing::Dynamic::Details
       return static_cast<L const&>(*this);
     }
 
-
     constexpr
     operator L&&() &&
     {

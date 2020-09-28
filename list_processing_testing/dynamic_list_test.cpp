@@ -2,6 +2,7 @@
 // ... Standard header files
 //
 #include <string>
+#include <functional>
 
 //
 // ... Testing header files
@@ -14,6 +15,7 @@
 #include <list_processing/dynamic.hpp>
 
 using namespace std::literals::string_literals;
+using std::function;
 
 using ListProcessing::Dynamic::buildList;
 using ListProcessing::Dynamic::list;
@@ -249,6 +251,44 @@ namespace ListProcessing::Testing
         fMap([](auto x) { return std::to_string(x); }, list(1, 2, 3))),
       "123"s);
   }
+
+  TEST(DynamicList, AMapDoubles)
+  {
+    ASSERT_EQ(
+      aMap(list(function<double(double)>([](auto x){ return x+x; }),
+                function<double(double)>([](auto x){ return x*x; })),
+           list(1.0, 2.0, 3.0)),
+      list(2.0, 4.0, 6.0, 1.0, 4.0, 9.0));
+
+  }
+
+  TEST(DynamicList, AMapStrings)
+  {
+    using function_type = function<std::string(std::string)>;
+    ASSERT_EQ(
+      aMap(list(function_type([](auto x){ return x+x; }),
+                function_type([](auto x){ return "-"s + x; })),
+           list("a"s, "b"s, "c"s)),
+      list("aa"s, "bb"s, "cc"s, "-a"s, "-b"s, "-c"s));
+  }
+
+  TEST(DynamicList, AMapBinary)
+  {
+    using function_type = function<function<double(double)>(double)>;
+    constexpr auto curryDouble2 = [](auto f){
+      return function_type([=](double x){
+        return function<double(double)>(
+          [=](double y){ return f(x, y); }); });
+    };
+
+    ASSERT_EQ(
+      aMap(list(curryDouble2(std::plus{}), curryDouble2(std::multiplies{})),
+           list(1.0, 2.0),
+           list(3.0, 4.0)),
+      list(4.0, 5.0, 5.0, 6.0, 3.0, 4.0, 6.0, 8.0));
+  }
+
+
 
   TEST(DynamicListChunked, NilIsNull)
   {
