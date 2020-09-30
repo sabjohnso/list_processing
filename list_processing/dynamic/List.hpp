@@ -19,6 +19,7 @@ namespace ListProcessing::Dynamic::Details
   list(T1&& x1, T2&& x2, Ts&&... xs);
 
 
+
   /**
    * @brief A class template describing homogeneous dynamic lists.
    *
@@ -34,6 +35,10 @@ namespace ListProcessing::Dynamic::Details
    */
   template<typename T, size_type N>
   class List;
+
+
+  template<typename T>
+  using ListType = List<T, ListTraits<T>::chunk_size>;
 
   /**
    * @brief Reference specialization of the List class template
@@ -192,14 +197,14 @@ namespace ListProcessing::Dynamic::Details
     }
 
     template<typename F, typename U = decay_t<result_of_t<F(T)>>>
-    friend decay_t<decltype(list(declval<U>(), declval<U>()))>
+    friend ListType<U>
     fMap(F f, List xs)
     {
       return fMapAux(f, xs, List<U>::nil);
     }
 
     template<typename F, size_type M, typename U = decay_t<result_of_t<F(T)>>>
-    static decay_t<decltype(fMap(declval<F>(), declval<List>()))>
+    static ListType<U>
     aMapAux(List<F,M> fs, List xs){
       return hasData(fs)
         ? append(fMap(head(fs), xs), aMapAux(tail(fs), xs))
