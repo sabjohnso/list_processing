@@ -82,18 +82,28 @@ namespace ListProcessing::Dynamic::Details
     using kernel_pointer = shared_ptr<const Kernel>;
     kernel_pointer ptr;
 
+    /**
+     * @brief Return a list equivalent to the input with the
+     * input value at the front.
+     */
     friend List
     cons(const_reference x, List xs)
     {
       return List(x, xs);
     }
 
+    /**
+     * @brief Return true if the input list has data and false otherwise.
+     */
     friend bool
     hasData(List xs)
     {
       return bool(xs.ptr);
     }
 
+    /**
+     * @brief Return true if the list is empty and false otherwise
+     */
     friend bool
     isNull(List xs)
     {
@@ -111,11 +121,16 @@ namespace ListProcessing::Dynamic::Details
     }
   private:
 
+    /**
+     * @brief Return a list that is equivalent to the tail of
+     * the input list.
+     */
     friend List
     tail(List xs)
     {
       return hasData(xs) ? xs.ptr->tail : xs;
     }
+
 
     static size_type
     lengthAux(List xs, size_type accum){
@@ -124,6 +139,9 @@ namespace ListProcessing::Dynamic::Details
         : accum;
     }
 
+    /**
+     * @brief Return the number of elements in the input list
+     */
     friend size_type
     length(List xs){
       return lengthAux(xs, 0);
@@ -139,6 +157,12 @@ namespace ListProcessing::Dynamic::Details
     }
   private:
 
+    /**
+     * @brief Return the value that is at the front of the list.
+     *
+     * @details It is an error to call this functio with an empty
+     * list and in the case it is, an exception will be thrown.
+     */
     friend value_type
     head(List xs)
     {
@@ -148,24 +172,40 @@ namespace ListProcessing::Dynamic::Details
     }
     // clang-format on
 
+    /**
+     * @brief Return a list that is equivalent to the first input List
+     * reversed and the second input appended to it.
+     */
     friend List
     rappend(List xs, List ys)
     {
       return hasData(xs) ? rappend(tail(xs), cons(head(xs), ys)) : ys;
     }
 
+    /**
+     * @brief Return a list that is equivalent to the input list with the
+     * order of the input values reversed.
+     */
     friend List
     reverse(List xs)
     {
       return rappend(xs, nil);
     }
 
+    /**
+     * @brief Return a list that is equivalent to the second input List
+     * appended to the first input list.
+     */
     friend List
     append(List xs, List ys)
     {
       return rappend(reverse(xs), ys);
     }
 
+    /**
+     * @brief Apply the binary input function to the input list,
+     * folding from the left.
+     */
     template<typename F, typename U>
     friend U
     foldL(F f, U const& init, List xs)
@@ -173,6 +213,10 @@ namespace ListProcessing::Dynamic::Details
       return hasData(xs) ? foldL(f, f(init, head(xs)), tail(xs)) : init;
     }
 
+    /**
+     * @brief Apply the binary input function to the input list,
+     * folding from the right.
+     */
     template<typename F, typename U>
     friend U
     foldR(F f, List xs, U const& init)
@@ -196,6 +240,10 @@ namespace ListProcessing::Dynamic::Details
       return reverse(rfMapAux(f, xs, ys));
     }
 
+    /**
+     * @brief Return a list with element equivalent to the elements of
+     * the input list transformed by the input function.
+     */
     template<typename F, typename U = decay_t<result_of_t<F(T)>>>
     friend ListType<U>
     fMap(F f, List xs)
@@ -247,12 +295,21 @@ namespace ListProcessing::Dynamic::Details
                : reverse(accum);
     }
 
+    /**
+     * @brief Return an list containing the first n
+     * elements of the input list, if the input list has more
+     * than n element, or return the input list if it has fewer than
+     * n elements.
+     */
     friend List
     take(List xs, size_type n)
     {
       return takeAux(xs, n, nil);
     }
 
+    /**
+     * @brief Return the indicated element of the input list
+     */
     friend value_type
     listRef(List xs, index_type index)
     {
@@ -273,6 +330,9 @@ namespace ListProcessing::Dynamic::Details
       return !(xs == ys);
     }
 
+    /**
+     * @brief Call a function with each element of an input list
+     */
     template<typename F>
     friend F
     doList(List xs, F f)
@@ -546,6 +606,10 @@ namespace ListProcessing::Dynamic::Details
     }
 
 
+    /**
+     * @brief Applicative map of a list of functions over a list
+     * of values.
+     */
     template<typename F, size_type M>
     friend auto
     aMap(List<F,M> fs, List xs)
@@ -605,8 +669,6 @@ namespace ListProcessing::Dynamic::Details
   {
     return listOf<T>(forward<T1>(x1), forward<T2>(x2), forward<Ts>(xs)...);
   }
-
-
 
   template<typename F, typename T = decay_t<result_of_t<F(index_type)>>>
   List<T>

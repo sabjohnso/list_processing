@@ -37,21 +37,37 @@ namespace ListProcessing::Dynamic::Details
     data_type input;
     data_type output;
 
+    /**
+     * @brief Return true if the input queue is empty and
+     * false if it has data.
+     */
     friend bool
     isEmpty(Queue xs){
       return isNull(xs.output);
     }
 
+    /**
+     * @brief Return a list with the same elments as the queue.
+     */
     friend data_type
     toList(Queue xs){
       return append(xs.output, reverse(xs.input));
     }
 
+    /**
+     * @brief Return true if the input queues have the same number
+     * of values and all corresponding pair of elements are equal,
+     * otherwise return false.
+     */
     friend bool
     operator ==(Queue xs, Queue ys){
       return toList(xs) == toList(ys);
     }
 
+    /**
+     * @brief Return true if the input queues are not equal and
+     * return false if they are equal.
+     */
     friend bool
     operator !=(Queue xs, Queue ys){
       return !(xs == ys);
@@ -115,6 +131,9 @@ namespace ListProcessing::Dynamic::Details
   inline const Queue<T> empty_queue{};
 
 
+  /**
+   * @brief Insert the elements of a list into a queue.
+   */
   template<typename T>
   Queue<T>
   listIntoQueue(List<T> xs, Queue<T> ys){

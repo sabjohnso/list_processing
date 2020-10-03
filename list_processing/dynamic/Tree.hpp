@@ -57,7 +57,8 @@ namespace ListProcessing::Dynamic::Details
       Branch branch;
       bool tainted;
 
-    };
+    }; // end of struct ContextElement
+
     using Context = List<ContextElement>;
 
     Tree(Branch branch, Context context, bool tainted)
@@ -66,65 +67,115 @@ namespace ListProcessing::Dynamic::Details
       , tainted(tainted)
     {}
 
+    //
+    // ... class data
+    //
     Branch branch;
     Context context;
     bool tainted;
 
+    /**
+     * @brief Return true if the focus of the current branch is at it's final position
+     */
     friend bool
     isAtBack(Tree xs){
       return isAtBack(xs.branch.data);
     }
 
+    /**
+     * @brief Return true if the focus of the currrent node is at the initial position
+     */
     friend bool
     isAtFront(Tree xs){
       return isAtFront(xs.branch.data);
     }
 
+    /**
+     * @brief Return true if the current focus of the current node is an empty branch
+     * and false if it is a branch containing data.
+     *
+     * @details It is an error to call this function if the focus of the current node
+     * is not a branch
+     */
     friend bool
     isBranchEmpty(Tree xs)
     {
       return isEmpty(xs.branch.data);
     }
 
+    /**
+     * @brief isLeaf Return true if the focus of the current node is a leaf and
+     * false if it is a branch.
+     *
+     * @details It is an error to call this function if the current node is empty
+     */
     friend bool
     isLeaf(Tree xs)
     {
       return holds_alternative<value_type>(read(xs.branch.data));
     }
 
-
+    /**
+     * @brief Return true if the focus of the current node is a branch and
+     * false if it is a leaf.
+     *
+     * @details It is an error to call this function if the current node is empty.
+     */
     friend bool
     isBranch(Tree xs)
     {
       return holds_alternative<shared_ptr<Branch>>(read(xs.branch.data));
     }
 
+    /**
+     * @brief Return true if the tree does not have any data or structure beyond the current node
+     */
     friend bool
     isEmpty(Tree xs)
     {
       return isEmpty(xs.branch.data) && isNull(xs.context);
     }
 
-
-
+    /**
+     * @brief Insert a new value at the focus of the open node
+     */
     friend Tree
     insert(Tree xs, const_reference x)
     {
       return Tree(Branch(insert(xs.branch.data, x)), xs.context, true);
     }
 
+    /**
+     * @brief Remove the branch or value that is the focus of the current node
+     */
     friend Tree
     remove(Tree xs)
     {
       return Tree(Branch(remove(xs.branch.data)), xs.context, true);
     }
 
+    /**
+     * @brief Replace the value that is the focus of the current node with
+     * the input value
+     */
+    friend Tree
+    write(Tree xs, const_reference x)
+    {
+      return insert(remove(xs), x);
+    }
+
+    /**
+     * @brief Return the value that is the focus of the open node
+     */
     friend value_type
     read(Tree xs)
     {
       return get<value_type>(read(xs.branch.data));
     }
 
+    /**
+     * @brief Insert a new branch at the focus of the current node
+     */
     friend Tree
     insertBranch(Tree xs)
     {
@@ -132,6 +183,9 @@ namespace ListProcessing::Dynamic::Details
                   xs.context, true);
     }
 
+    /**
+     * @brief Insert a branch into the into the focus of the open node
+     */
     static Tree
     insertExistingBranch(Tree xs, Branch branch)
     {
@@ -139,6 +193,9 @@ namespace ListProcessing::Dynamic::Details
                   xs.context, true);
     }
 
+    /**
+     * @brief Open the branch that is the focus of the currently open node
+     */
     friend Tree
     open(Tree xs)
     {
@@ -148,6 +205,9 @@ namespace ListProcessing::Dynamic::Details
                   false);
     }
 
+    /**
+     * @brief Close the current node of the tree
+     */
     friend Tree
     close(Tree xs)
     {
@@ -161,8 +221,6 @@ namespace ListProcessing::Dynamic::Details
                tail(xs.context),
                head(xs.context).tainted);
     }
-
-
   }; // end of class Tree
 
 

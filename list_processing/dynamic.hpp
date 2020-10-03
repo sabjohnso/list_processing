@@ -9,6 +9,7 @@
 #include <list_processing/dynamic/Tape.hpp>
 #include <list_processing/dynamic/Queue.hpp>
 #include <list_processing/dynamic/Tree.hpp>
+#include <list_processing/dynamic/piping.hpp>
 
 namespace ListProcessing::Dynamic
 {

@@ -8,6 +8,9 @@
 
 namespace ListProcessing::Dynamic::Details
 {
+  /**
+   * @brief A bi-directional sequence of values
+   */
   template<typename T>
   class Tape
   {
@@ -32,12 +35,19 @@ namespace ListProcessing::Dynamic::Details
     data_type data;
     data_type context;
 
+    /**
+     * @brief Return true if the elements of the tapes are
+     * equal and the tapes are at the same position
+     */
     friend bool
     operator==(Tape xs, Tape ys)
     {
       return xs.data == ys.data && xs.context == ys.context;
     }
 
+    /**
+     * @brief Return true if the input tapes are not equal
+     */
     friend bool
     operator!=(Tape xs, Tape ys)
     {
@@ -209,6 +219,9 @@ namespace ListProcessing::Dynamic::Details
     return insert(tapeOf<T>(xs...), x);
   }
 
+  /**
+   * @brief Construct a tape from a single input value
+   */
   template<typename T>
   Tape<T>
   tape(T const& x)
@@ -216,6 +229,9 @@ namespace ListProcessing::Dynamic::Details
     return tapeOf<T>(x);
   }
 
+  /**
+   * @brief Construct a tape from the input values
+   */
   template<
     typename T1,
     typename T2,
