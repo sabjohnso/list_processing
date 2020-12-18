@@ -44,12 +44,11 @@ namespace ListProcessing::Testing
       read(write(insert(empty_tree<char>, 'a'), 'b')),
       'b');
 
-    ASSERT_EQ(
-      pipe(empty_tree<char>,
+    auto xs = pipe(empty_tree<char>,
            [](auto tree){ return insert(tree, 'a'); },
            [](auto tree){ return write(tree, 'b'); },
-           [](auto tree){ return read(tree); }),
-      'b');
+           [](auto tree){ return read(tree); });
+    ASSERT_EQ(xs, 'b');
   }
 
   TEST(Tree, EmptyTreeBranchIsEmpty)

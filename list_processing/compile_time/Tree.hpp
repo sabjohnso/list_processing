@@ -152,8 +152,10 @@ namespace ListProcessing::CompileTime::Details
 
     template<typename L, typename Accum>
     static constexpr auto
-    positionAux(L const& ctxs, Accum const& accum)
-    {}
+    positionAux(L const& xs, Accum const& accum)
+    {
+      return positionAux(tail(xs), cons(position(head(xs)), accum));
+    }
 
     friend constexpr auto
     position(Tree const& xs)
@@ -185,14 +187,14 @@ namespace ListProcessing::CompileTime::Details
 
     template<typename Stream>
     friend Stream&
-    operator<<(Stream& os, Tree const& xs)
+    operator<<(Stream& os, Tree const&)
     {
       os << "#<Tree>";
       return os;
     }
 
     friend ostream&
-    operator<<(ostream& os, Tree const& xs)
+    operator<<(ostream& os, Tree const&)
     {
       os << "#<Tree>";
       return os;

@@ -92,7 +92,7 @@ namespace ListProcessing::CompileTime::Details
       typename V,
       typename Check = enable_if_t<!ispair_type(type<V>), void>>
     friend constexpr bool
-    operator==(Cell const& xs, V const&)
+    operator==(Cell const&, V const&)
     {
       return false;
     }
@@ -101,7 +101,7 @@ namespace ListProcessing::CompileTime::Details
       typename V,
       typename Check = enable_if_t<!ispair_type(type<V>), void>>
     friend constexpr bool
-    operator==(V const&, Cell const& xs)
+    operator==(V const&, Cell const&)
     {
       return false;
     }
@@ -113,7 +113,7 @@ namespace ListProcessing::CompileTime::Details
     }
 
     friend constexpr bool
-    operator==(Nothing const&, Cell const& xs)
+    operator==(Nothing const&, Cell const&)
     {
       return false;
     }
@@ -201,6 +201,11 @@ namespace ListProcessing::CompileTime::Details
     drop(Nat<N>, Cell const& xs)
     {
       return drop(nat<N - 1>, tail(xs));
+    }
+
+    friend constexpr auto
+    butLast(Cell const& xs){
+      return reverse(tail(reverse(xs)));
     }
 
     template<typename F, typename V>
@@ -304,5 +309,9 @@ namespace ListProcessing::CompileTime::Details
   template<typename T, typename U>
   struct IsList<Cell<T, U>> : IsList<U>
   {};
+
+
+  template<typename ... Ts>
+  using ListType = decltype(list(std::declval<Ts>() ...));
 
 } // end of namespace ListProcessing::CompileTime::Details

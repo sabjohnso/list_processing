@@ -3,7 +3,7 @@ configure_file(config.hpp.in config.hpp)
 add_library(list_processing_header dynamic/Range.cpp)
 set_target_properties(list_processing_header
   PROPERTIES
-  CXX_STANDARD 17)
+  CXX_STANDARD 20)
 set_target_properties(list_processing_header PROPERTIES EXPORT_NAME header)
 target_include_directories(list_processing_header
   PUBLIC

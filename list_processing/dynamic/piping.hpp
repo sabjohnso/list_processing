@@ -7,7 +7,7 @@ namespace ListProcessing::Dynamic::Details
   constexpr auto
   pipe(T&& x)
   {
-    return x;
+    return std::forward<T>(x);
   }
 
   template<typename T, typename F, typename... Fs>

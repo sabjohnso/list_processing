@@ -18,135 +18,133 @@ namespace ListProcessing::Testing {
   TEST(Stack, NotEmpty) { ASSERT_FALSE(isempty(push(Stack<int>(), 0))); }
   TEST(Stack, Drop)
   {
-    ASSERT_EQ(
-      pipe(
-        Stack<int>{},
-        [](auto xs) { return push(xs, 0); },
-        [](auto xs) { return drop(xs); }),
-      Stack<int>{});
+    auto xs = pipe(
+      Stack<int>{},
+      [](auto xs) { return push(xs, 0); },
+      [](auto xs) { return drop(xs); });
+    ASSERT_EQ(xs, Stack<int>{});
   }
 
   TEST(Stack, Drop2)
   {
-    ASSERT_EQ(
-      pipe(
+    auto xs = pipe(
         empty_stack<int>,
         [](auto xs) { return push(xs, 0); },
         [](auto xs) { return push(xs, 1); },
-        [](auto xs) { return drop2(xs); }),
-      empty_stack<int>);
+        [](auto xs) { return drop2(xs); });
+    ASSERT_EQ(xs,empty_stack<int>);
   }
 
   TEST(Stack, Drop3)
   {
-    ASSERT_EQ(
-      pipe(
+    auto xs = pipe(
         empty_stack<int>,
         [](auto xs) { return push(xs, 0); },
         [](auto xs) { return push(xs, 1); },
         [](auto xs) { return push(xs, 2); },
-        [](auto xs) { return drop3(xs); }),
-      empty_stack<int>);
+        [](auto xs) { return drop3(xs); });
+    ASSERT_EQ(xs, empty_stack<int>);
   }
 
   TEST(Stack, Swap)
   {
-    ASSERT_EQ(
-      pipe(
+    auto xs = pipe(
         empty_stack<int>,
         [](auto xs) { return push(xs, 0); },
         [](auto xs) { return push(xs, 1); },
-        [](auto xs) { return swap(xs); }),
-      pipe(
+        [](auto xs) { return swap(xs); });
+    auto ys = pipe(
         empty_stack<int>,
         [](auto xs) { return push(xs, 1); },
-        [](auto xs) { return push(xs, 0); }));
+        [](auto xs) { return push(xs, 0); });
+    ASSERT_EQ( xs, ys);
   }
 
   TEST(Stack, Dup)
   {
-    ASSERT_EQ(
-      pipe(
+    auto xs = pipe(
         empty_stack<int>,
         [](auto xs) { return push(xs, 0); },
-        [](auto xs) { return dup(xs); }),
-      pipe(
+        [](auto xs) { return dup(xs); });
+    auto ys = pipe(
         empty_stack<int>,
         [](auto xs) { return push(xs, 0); },
-        [](auto xs) { return push(xs, 0); }));
+        [](auto xs) { return push(xs, 0); });
+  ASSERT_EQ(xs, ys);
+
   }
 
   TEST(Stack, Nip)
   {
-    ASSERT_EQ(
-      pipe(
+    auto xs = pipe(
         empty_stack<int>,
         [](auto xs) { return push(xs, 0); },
         [](auto xs) { return push(xs, 1); },
-        [](auto xs) { return nip(xs); }),
-      pipe(empty_stack<int>, [](auto xs) { return push(xs, 1); }));
+        [](auto xs) { return nip(xs); });
+    auto ys = pipe(empty_stack<int>, [](auto xs) { return push(xs, 1); });
+    ASSERT_EQ(xs, ys);
   }
 
   TEST(Stack, Tuck)
   {
-    ASSERT_EQ(
-      pipe(
+    auto xs = pipe(
         empty_stack<int>,
         [](auto xs) { return push(xs, 0); },
         [](auto xs) { return push(xs, 1); },
-        [](auto xs) { return tuck(xs); }),
-      pipe(
+        [](auto xs) { return tuck(xs); });
+    auto ys = pipe(
         empty_stack<int>,
         [](auto xs) { return push(xs, 1); },
         [](auto xs) { return push(xs, 0); },
-        [](auto xs) { return push(xs, 1); }));
+        [](auto xs) { return push(xs, 1); });
+  ASSERT_EQ(xs, ys);
   }
 
   TEST(Stack, Over)
   {
-    ASSERT_EQ(
-      pipe(
+    auto xs = pipe(
         empty_stack<int>,
         [](auto xs) { return push(xs, 0); },
         [](auto xs) { return push(xs, 1); },
-        [](auto xs) { return over(xs); }),
-      pipe(
+        [](auto xs) { return over(xs); });
+    auto ys = pipe(
         empty_stack<int>,
         [](auto xs) { return push(xs, 0); },
         [](auto xs) { return push(xs, 1); },
-        [](auto xs) { return push(xs, 0); }));
+        [](auto xs) { return push(xs, 0); });
+    ASSERT_EQ(xs, ys);
   }
 
   TEST(Stack, App1)
   {
-    ASSERT_EQ(
-      pipe(
+    auto xs = pipe(
         empty_stack<int>,
         [](auto xs) { return push(xs, 2); },
-        [](auto xs) { return app1(xs, [](auto x) { return x * x; }); }),
-      pipe(empty_stack<int>, [](auto xs) { return push(xs, 4); }));
+        [](auto xs) { return app1(xs, [](auto x) { return x * x; }); });
+    auto ys = pipe(empty_stack<int>, [](auto xs) { return push(xs, 4); });
+    ASSERT_EQ(xs, ys);
   }
 
   TEST(Stack, App2)
   {
-    ASSERT_EQ(
-      pipe(
+    auto xs = pipe(
         empty_stack<int>,
         [](auto xs) { return push(xs, 1); },
         [](auto xs) { return push(xs, 2); },
-        [](auto xs) { return app2(xs, [](auto x, auto y) { return x + y; }); }),
-      pipe(empty_stack<int>, [](auto xs) { return push(xs, 3); }));
+        [](auto xs) { return app2(xs, [](auto x, auto y) { return x + y; }); });
+    auto ys = pipe(empty_stack<int>, [](auto xs) { return push(xs, 3); });
+    ASSERT_EQ(xs, ys);
   }
 
   TEST(Stack, App2Subtract)
   {
-    ASSERT_EQ(
-      pipe(
+    auto xs = pipe(
         empty_stack<int>,
         [](auto xs) { return push(xs, 1); },
         [](auto xs) { return push(xs, 2); },
-        [](auto xs) { return app2(xs, [](auto x, auto y) { return x - y; }); }),
-      pipe(empty_stack<int>, [](auto xs) { return push(xs, 1); }));
+        [](auto xs) { return app2(xs, [](auto x, auto y) { return x - y; }); });
+    auto ys = pipe(empty_stack<int>, [](auto xs) { return push(xs, 1); });
+    ASSERT_EQ(xs, ys);
   }
 
 } // end of namespace ListProcessing::Testing

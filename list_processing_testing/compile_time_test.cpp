@@ -15,10 +15,12 @@
 
 namespace {
   using TypeUtility::nat;
+  using TypeUtility::type;
 
   using ListProcessing::CompileTime::cons;
   using ListProcessing::CompileTime::list;
   using ListProcessing::CompileTime::nothing;
+    using ListProcessing::CompileTime::length_;
 
 } // end of anonymous namespace
 
@@ -58,7 +60,10 @@ namespace ListProcessing::Testing {
     ASSERT_EQ(drop(nat<1>, nothing), nothing);
     ASSERT_EQ(drop(nat<2>, nothing), nothing);
 
-    ASSERT_EQ(app([]() { return 2; }, nothing), 2);
+    {
+      constexpr auto xs = app([](){ return 2; }, nothing);
+      ASSERT_EQ(xs, 2);
+    }
   }
 
   TEST(CompileTime, Pair)
@@ -184,6 +189,14 @@ namespace ListProcessing::Testing {
 
     static_assert(app([](int x, int y) -> int { return x + y; }, list(1, 2)) ==
                   3);
+  }
+
+  TEST(CompileTime, TypeLength){
+    static_assert(length_(type<decltype(list(1, 2))>) == 2);
+  }
+
+  TEST(CompileTime, ButLast){
+    static_assert(butLast(list(1, 2, 3))== list(1, 2));
   }
 
 } // end of namespace ListProcessing::Testing

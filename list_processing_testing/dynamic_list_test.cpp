@@ -22,6 +22,7 @@ using ListProcessing::Dynamic::list;
 using ListProcessing::Dynamic::nil;
 using ListProcessing::Dynamic::size_type;
 using ListProcessing::Dynamic::Details::List;
+using ListProcessing::Dynamic::Nil;
 
 namespace ListProcessing::Testing
 {
@@ -97,6 +98,7 @@ namespace ListProcessing::Testing
 
   TEST(DynamicList, ListLength2)
   {
+
     ASSERT_EQ(length(list(1, 2)), 2);
   }
 
@@ -223,41 +225,44 @@ namespace ListProcessing::Testing
 
   TEST(DynamicList, FoldL)
   {
-    ASSERT_EQ(foldL([](auto x, auto y) { return x + y; }, 0, list(1, 2, 3)), 6);
+    auto xs = foldL([](auto x, auto y) { return x + y; }, 0, list(1, 2, 3));
+    ASSERT_EQ(xs, 6);
   }
 
   TEST(DynamicList, FoldR)
   {
-    ASSERT_EQ(foldR([](auto x, auto y) { return y - x; }, list(1, 2, 3), 6), 0);
+    auto xs = foldR([](auto x, auto y) { return y - x; }, list(1, 2, 3), 6);
+    ASSERT_EQ(xs, 0);
   }
 
   TEST(DynamicList, FMapIntToDouble)
   {
-    ASSERT_EQ(fMap([](auto x) { return double(x); }, list(1, 2, 3)), list(1.0, 2.0, 3.0));
+    auto xs = map([](auto x) { return double(x); }, list(1, 2, 3));
+    ASSERT_EQ(xs, list(1.0, 2.0, 3.0));
   }
 
   TEST(DynamicList, FMapIntToString)
   {
-    ASSERT_EQ(
-      fMap([](auto x) { return std::to_string(x); }, list(1, 2, 3)), list("1"s, "2"s, "3"s));
+    auto xs = map([](auto x) { return std::to_string(x); }, list(1, 2, 3));
+      ASSERT_EQ(xs, list("1"s, "2"s, "3"s));
   }
 
   TEST(DynamicList, FoldString)
   {
+    auto xs = foldL([](auto x, auto y) { return x + y; }, ""s,
+                    map([](auto x) { return std::to_string(x); }, list(1, 2, 3)));
     ASSERT_EQ(
-      foldL(
-        [](auto x, auto y) { return x + y; },
-        ""s,
-        fMap([](auto x) { return std::to_string(x); }, list(1, 2, 3))),
+      xs,
       "123"s);
   }
 
   TEST(DynamicList, AMapDoubles)
   {
-    ASSERT_EQ(
-      aMap(list(function<double(double)>([](auto x){ return x+x; }),
+    auto xs = aMap(list(function<double(double)>([](auto x){ return x+x; }),
                 function<double(double)>([](auto x){ return x*x; })),
-           list(1.0, 2.0, 3.0)),
+                   list(1.0, 2.0, 3.0));
+    ASSERT_EQ(
+      xs,
       list(2.0, 4.0, 6.0, 1.0, 4.0, 9.0));
 
   }
@@ -265,10 +270,11 @@ namespace ListProcessing::Testing
   TEST(DynamicList, AMapStrings)
   {
     using function_type = function<std::string(std::string)>;
-    ASSERT_EQ(
-      aMap(list(function_type([](auto x){ return x+x; }),
+    auto xs = aMap(list(function_type([](auto x){ return x+x; }),
                 function_type([](auto x){ return "-"s + x; })),
-           list("a"s, "b"s, "c"s)),
+                   list("a"s, "b"s, "c"s));
+    ASSERT_EQ(
+      xs,
       list("aa"s, "bb"s, "cc"s, "-a"s, "-b"s, "-c"s));
   }
 
@@ -343,6 +349,12 @@ namespace ListProcessing::Testing
     for (size_type i = 0; i < n; ++i) {
       ASSERT_EQ(listRef(xs, i), i);
     }
+  }
+
+  TEST(DynamicList, GenericNil){
+    ASSERT_EQ(
+      cons(1, Nil{}),
+      list(1));
   }
 
 } // end of namespace ListProcessing::Testing

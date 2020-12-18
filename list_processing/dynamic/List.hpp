@@ -6,6 +6,7 @@
 #include <list_processing/dynamic/ListOperators.hpp>
 #include <list_processing/dynamic/ListTraits.hpp>
 #include <list_processing/dynamic/ShortList.hpp>
+#include <list_processing/dynamic/Nil.hpp>
 #include <list_processing/dynamic/import.hpp>
 
 namespace ListProcessing::Dynamic::Details
@@ -13,9 +14,8 @@ namespace ListProcessing::Dynamic::Details
   template<
     typename T1,
     typename T2,
-    typename... Ts,
-    typename T = common_type_t<decay_t<T1>, decay_t<T2>, decay_t<Ts>...>>
-  List<T>
+    typename... Ts>
+  auto
   list(T1&& x1, T2&& x2, Ts&&... xs);
 
 
@@ -54,9 +54,9 @@ namespace ListProcessing::Dynamic::Details
     friend ListOperators<List, T>;
 
   private:
-    List()
-      : ptr(nullptr)
-    {}
+    List() : ptr(nullptr) {}
+
+    List(Nil) : ptr(nullptr){}
 
     List(const_reference x, List const& xs)
       : ptr(make_shared<Kernel>(x, xs))
@@ -246,7 +246,7 @@ namespace ListProcessing::Dynamic::Details
      */
     template<typename F, typename U = decay_t<result_of_t<F(T)>>>
     friend ListType<U>
-    fMap(F f, List xs)
+    map(F f, List xs)
     {
       return fMapAux(f, xs, List<U>::nil);
     }
@@ -255,7 +255,7 @@ namespace ListProcessing::Dynamic::Details
     static ListType<U>
     aMapAux(List<F,M> fs, List xs){
       return hasData(fs)
-        ? append(fMap(head(fs), xs), aMapAux(tail(fs), xs))
+        ? append(map(head(fs), xs), aMapAux(tail(fs), xs))
         : List<U>::nil;
     }
 
@@ -372,6 +372,10 @@ namespace ListProcessing::Dynamic::Details
 
   public:
     List()
+      : data(Data::nil)
+    {}
+
+    List(Nil)
       : data(Data::nil)
     {}
 
@@ -585,7 +589,7 @@ namespace ListProcessing::Dynamic::Details
 
     template<typename F, typename U = decay_t<result_of_t<F(T)>>>
     friend List<U, N>
-    fMap(F f, List xs)
+    map(F f, List xs)
     {
       return fMapAux(f, xs.data, List<U, N>::Data::nil);
     }
@@ -595,13 +599,13 @@ namespace ListProcessing::Dynamic::Details
       typename F,
       size_type M,
       typename U = decay_t<result_of_t<F(T)>>,
-      typename R = decay_t<decltype(fMap(declval<F>(), declval<List>()))>
+      typename R = decay_t<decltype(map(declval<F>(), declval<List>()))>
       >
     static R
     aMapAux(List<F,M> fs, List xs)
     {
       return hasData(fs)
-        ? append(fMap(head(fs), xs), aMapAux( tail(fs), xs ))
+        ? append(map(head(fs), xs), aMapAux( tail(fs), xs ))
         : R::nil;
     }
 
@@ -662,11 +666,11 @@ namespace ListProcessing::Dynamic::Details
   template<
     typename T1,
     typename T2,
-    typename... Ts,
-    typename T = common_type_t<decay_t<T1>, decay_t<T2>, decay_t<Ts>...>>
-  List<T>
+    typename... Ts>
+  auto
   list(T1&& x1, T2&& x2, Ts&&... xs)
   {
+    using T = common_type_t<decay_t<T1>, decay_t<T2>, decay_t<Ts>...>;
     return listOf<T>(forward<T1>(x1), forward<T2>(x2), forward<Ts>(xs)...);
   }
 

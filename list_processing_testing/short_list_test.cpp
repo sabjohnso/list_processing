@@ -190,11 +190,11 @@ namespace ListProcessing::Testing
     constexpr size_type nm1 = n - 1;
     constexpr auto a = 0.0;
     constexpr auto b = 1.0;
-
+    auto xs = fMap(
+      [=, spacing = (b - a) / nm1](auto i) { return a + i * spacing; },
+      buildShortList<index_type, 32>([](auto i) { return i; }, 10));
     ASSERT_EQ(
-      fMap(
-        [=, spacing = (b - a) / nm1](auto i) { return a + i * spacing; },
-        buildShortList<index_type, 32>([](auto i) { return i; }, 10)),
+      xs,
       (short_list<double, 32>(0, 0.0625, 0.125, 0.1875, 0.25, 0.3125, 0.375, 0.4375, 0.5, 0.5625)));
   }
 
