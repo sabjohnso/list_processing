@@ -283,17 +283,8 @@ namespace ListProcessing::Dynamic::Details
      */
     template<typename F, typename U = decay_t<result_of_t<F(T)>>, typename Result = ListType<U>>
     friend Result
-    map(F f, List xs)
-    {
+    map(F f, List xs){
       return reverse(Result(rMap(f, xs, Result::nil)));
-    }
-
-    template<typename F, size_type M, typename U = decay_t<result_of_t<F(T)>>>
-    static ListType<U>
-    aMapAux(List<F,M> fs, List xs){
-      return hasData(fs)
-        ? append(map(head(fs), xs), aMapAux(tail(fs), xs))
-        : List<U>::nil;
     }
 
 
@@ -317,6 +308,21 @@ namespace ListProcessing::Dynamic::Details
     aMap(List<F,M> fs, List xs, Us ys, Vss ... zss)
     {
       return aMap(aMap(fs, xs), ys, zss ...);
+    }
+
+    template<typename F, typename Result = result_of_t<F(T)>>
+    friend Result
+    mMap(F f, List xs){
+      using tramp = Trampoline<Result>;
+      struct Aux{
+        tramp
+        run(F f, List xs, Result accum){
+          return hasData(xs)
+            ? tramp([=,this]{ return run(f, tail(xs), rappend(f(head(xs)), accum)); })
+            : tramp(reverse(accum));
+        }
+      } constexpr aux{};
+      return Result(aux.run(f, xs, Result::nil));
     }
 
     template<typename F>
@@ -358,13 +364,6 @@ namespace ListProcessing::Dynamic::Details
       return List(aux.run(xs, n));
     }
 
-    static List
-    takeAux(List xs, size_type n, List accum)
-    {
-      return (n > 0 && hasData(xs))
-               ? takeAux(tail(xs), n - 1, cons(head(xs), accum))
-               : reverse(accum);
-    }
 
     /**
      * @brief Return an list containing the first n
@@ -736,6 +735,22 @@ namespace ListProcessing::Dynamic::Details
     aMap(List<F,M> fs, List xs, Us ys, Vss ... zss)
     {
       return aMap(aMap(fs, xs), ys, zss ...);
+    }
+
+    template<typename F>
+    friend auto
+    mMap(F f, List xs){
+      using Result = result_of_t<F(T)>;
+      using tramp = Trampoline<Result>;
+      struct Aux{
+        tramp
+        run(F f, List xs, Result accum) const {
+          return hasData(xs)
+            ? tramp([=,this]{ return run(f, tail(xs), rappend(f(head(xs)), accum)); })
+            : tramp(reverse(accum));
+        }
+      } constexpr aux{};
+      return Result(aux.run(f, xs, Result::nil));
     }
 
     template<typename F>
