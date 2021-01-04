@@ -266,13 +266,19 @@ namespace ListProcessing::Dynamic::Details
 
 
     template<typename F, typename Result>
-    static Trampoline<Result>
+    static Result
     rMap(F f, List xs, Result accum)
     {
       using tramp = Trampoline<Result>;
-      return hasData(xs)
-        ? tramp([=]{ return rMap(f, tail(xs), cons(f(head(xs)), accum)); })
-        : tramp(accum);
+      struct Aux{
+        tramp
+        run(F f, List xs, Result accum) const {
+          return hasData(xs)
+            ? tramp([=,this]{ return run(f, tail(xs), cons(f(head(xs)), accum)); })
+            : tramp(accum);
+        }
+      } constexpr aux;
+      return Result(aux.run(f, xs, accum));
     }
 
 
@@ -284,7 +290,7 @@ namespace ListProcessing::Dynamic::Details
     template<typename F, typename U = decay_t<result_of_t<F(T)>>, typename Result = ListType<U>>
     friend Result
     map(F f, List xs){
-      return reverse(Result(rMap(f, xs, Result::nil)));
+      return reverse(rMap(f, xs, Result::nil));
     }
 
 
@@ -296,7 +302,7 @@ namespace ListProcessing::Dynamic::Details
         tramp
         run(List<F, M> fs, List xs, Result accum) const {
           return hasData(fs)
-            ? tramp([=,this]{ return run(tail(fs), xs, Result(rMap(head(fs), xs, accum))); })
+            ? tramp([=,this]{ return run(tail(fs), xs, rMap(head(fs), xs, accum)); })
             : tramp(reverse(accum));
         }
       } constexpr aux{};
@@ -694,19 +700,24 @@ namespace ListProcessing::Dynamic::Details
     }
 
     template<typename F, typename Result >
-    static Trampoline<Result>
-    rmap(F f, List xs, Result accum){
+    static Result
+    rMap(F f, List xs, Result accum){
       using tramp = Trampoline<Result>;
-      return hasData(xs)
-        ? tramp([=]{ return rmap(f, tail(xs), cons(f(head(xs)), accum)); })
-        : tramp(accum);
+      struct Aux{
+        tramp run(F f, List xs, Result accum) const {
+          return hasData(xs)
+            ? tramp([=,this]{ return run(f, tail(xs), cons(f(head(xs)), accum)); })
+            : tramp(accum);
+        }
+      } constexpr aux{};
+      return Result(aux.run(f, xs, accum));
     }
 
     template<typename F, typename U = decay_t<result_of_t<F(T)>>, typename Result = ListType<U>>
     friend Result
     map(F f, List xs)
     {
-      return reverse(Result(rmap(f, xs, Result::nil)));
+      return reverse(rMap(f, xs, Result::nil));
     }
 
 
@@ -723,7 +734,7 @@ namespace ListProcessing::Dynamic::Details
         tramp
         run(List<F,M> fs, List xs, Result accum) const {
           return hasData(fs)
-            ? tramp([=,this]{ return run(tail(fs), xs, Result(rmap(head(fs), xs, accum))); })
+            ? tramp([=,this]{ return run(tail(fs), xs, Result(rMap(head(fs), xs, accum))); })
             : tramp(reverse(accum));
         }
       } constexpr aux{};
