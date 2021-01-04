@@ -21,6 +21,7 @@
 // ... External header files
 //
 #include <type_utility/type_utility.hpp>
+#include <function_utility/function_utility.hpp>
 
 namespace ListProcessing::Dynamic::Details
 {
@@ -76,5 +77,7 @@ namespace ListProcessing::Dynamic::Details
 
   using TypeUtility::Nat;
   using TypeUtility::nat;
+
+  using FunctionUtility::Trampoline;
 
 } // end of namespace ListProcessing::Dynamic::Details

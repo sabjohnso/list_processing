@@ -351,10 +351,32 @@ namespace ListProcessing::Testing
     }
   }
 
+  TEST(DynamicListChunked, BuildBigList){
+    constexpr size_type n = 1'000'000;
+    auto xs = buildList([](auto i){ return i; }, n);
+    EXPECT_EQ(length(xs), n);
+    doList( xs, [i = size_type(0)](auto x) mutable {ASSERT_EQ(x, i++); });
+
+  }
+
+  TEST(DynamicListChunked, ReverseBigList){
+    constexpr size_type n = 1'000'000;
+    constexpr size_type nm1 = n-1;
+    auto xs = reverse(buildList([](auto i){ return i; }, n));
+    EXPECT_EQ(length(xs), n);
+    doList( xs, [i = size_type(0)](auto x) mutable {ASSERT_EQ(x, nm1 - i++); });
+  }
+
+  TEST(DynamicListChunked, MapBigList){
+    constexpr size_type n = 1'000'000;
+    auto xs = map([](auto x){ return x*x; }, buildList([](auto i){ return i; }, n));
+    EXPECT_EQ(length(xs), n);
+  }
+
+
   TEST(DynamicList, GenericNil){
     ASSERT_EQ(
       cons(1, Nil{}),
       list(1));
   }
-
 } // end of namespace ListProcessing::Testing

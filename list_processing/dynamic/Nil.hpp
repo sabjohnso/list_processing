@@ -67,7 +67,6 @@ namespace ListProcessing::Dynamic::Details
     cons(T&& x, Nil){
       return cons(forward<T>(x), nil<decay_t<T>>);
     }
-
   };
 
 

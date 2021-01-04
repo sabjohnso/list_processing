@@ -22,6 +22,7 @@ namespace ListProcessing::Dynamic
 
   using Details::buildList;
   using Details::list;
+  using Details::ListType;
   using Details::nil;
   using Details::Nil;
 
