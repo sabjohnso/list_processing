@@ -322,7 +322,7 @@ namespace ListProcessing::Dynamic::Details
       using tramp = Trampoline<Result>;
       struct Aux{
         tramp
-        run(F f, List xs, Result accum){
+        run(F f, List xs, Result accum) const {
           return hasData(xs)
             ? tramp([=,this]{ return run(f, tail(xs), rappend(f(head(xs)), accum)); })
             : tramp(reverse(accum));
