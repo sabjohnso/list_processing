@@ -10,14 +10,23 @@
 #include <gtest/gtest.h>
 
 //
+// ... External header files
+//
+#include <function_utility/function_utility.hpp>
+
+//
 // ... List Processing header files
 //
 #include <list_processing/dynamic.hpp>
 
 using namespace std::literals::string_literals;
 using std::function;
+using std::plus;
+
+using FunctionUtility::curry;
 
 using ListProcessing::Dynamic::buildList;
+using ListProcessing::Dynamic::ListType;
 using ListProcessing::Dynamic::list;
 using ListProcessing::Dynamic::nil;
 using ListProcessing::Dynamic::size_type;
@@ -26,6 +35,25 @@ using ListProcessing::Dynamic::Nil;
 
 namespace ListProcessing::Testing
 {
+  namespace // anonymous
+  {
+    template<typename T>
+    std::ostream&
+    operator <<(std::ostream& os, ListType<T> xs){
+      os << "(";
+      if(hasData(xs)){
+        os << head(xs);
+        doList(tail(xs), [&](auto x){
+          os << " " << x;
+
+        });
+      }
+      os << ")";
+      return os;
+    }
+
+  } // end of namespace // anonymous
+
   TEST(DynamicList, EqualityNilNil)
   {
     ASSERT_TRUE(nil<int> == nil<int>);
@@ -261,10 +289,14 @@ namespace ListProcessing::Testing
     auto xs = aMap(list(function<double(double)>([](auto x){ return x+x; }),
                 function<double(double)>([](auto x){ return x*x; })),
                    list(1.0, 2.0, 3.0));
-    ASSERT_EQ(
-      xs,
-      list(2.0, 4.0, 6.0, 1.0, 4.0, 9.0));
+    ASSERT_EQ(xs,list(2.0, 4.0, 6.0, 1.0, 4.0, 9.0));
 
+  }
+
+  TEST(DynamicList, AMapPlusInt){
+    EXPECT_EQ(
+      aMap(map(curry<2>(plus{}), list(1, 2)), list(3, 4)),
+      list(4, 5, 5, 6));
   }
 
   TEST(DynamicList, AMapStrings)
@@ -352,7 +384,7 @@ namespace ListProcessing::Testing
   }
 
   TEST(DynamicListChunked, BuildBigList){
-    constexpr size_type n = 1'000'000;
+    constexpr size_type n = 100'000;
     auto xs = buildList([](auto i){ return i; }, n);
     EXPECT_EQ(length(xs), n);
     doList( xs, [i = size_type(0)](auto x) mutable {ASSERT_EQ(x, i++); });
@@ -360,7 +392,7 @@ namespace ListProcessing::Testing
   }
 
   TEST(DynamicListChunked, ReverseBigList){
-    constexpr size_type n = 1'000'000;
+    constexpr size_type n = 100'000;
     constexpr size_type nm1 = n-1;
     auto xs = reverse(buildList([](auto i){ return i; }, n));
     EXPECT_EQ(length(xs), n);
@@ -368,7 +400,7 @@ namespace ListProcessing::Testing
   }
 
   TEST(DynamicListChunked, MapBigList){
-    constexpr size_type n = 1'000'000;
+    constexpr size_type n = 100'000;
     auto xs = map([](auto x){ return x*x; }, buildList([](auto i){ return i; }, n));
     EXPECT_EQ(length(xs), n);
   }

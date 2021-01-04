@@ -277,7 +277,7 @@ namespace ListProcessing::Dynamic::Details
             ? tramp([=,this]{ return run(f, tail(xs), cons(f(head(xs)), accum)); })
             : tramp(accum);
         }
-      } constexpr aux;
+      } constexpr aux{};
       return Result(aux.run(f, xs, accum));
     }
 
@@ -293,20 +293,21 @@ namespace ListProcessing::Dynamic::Details
       return reverse(rMap(f, xs, Result::nil));
     }
 
-
-    template<typename F, size_type M, typename U = result_of_t<F(T)>, typename Result = ListType<U> >
-    friend Result
-    aMap(List<F,M> fs, List xs){
+    template<typename F, typename Result>
+    static Trampoline<Result>
+    aMapAux(F fs, List xs, Result accum){
       using tramp = Trampoline<Result>;
-      struct Aux {
-        tramp
-        run(List<F, M> fs, List xs, Result accum) const {
-          return hasData(fs)
-            ? tramp([=,this]{ return run(tail(fs), xs, rMap(head(fs), xs, accum)); })
-            : tramp(reverse(accum));
-        }
-      } constexpr aux{};
-      return Result(aux.run(fs, xs, Result::nil));
+      return hasData(fs)
+        ? tramp([=]{ return aMapAux(tail(fs), xs, rappend(map(head(fs), xs), accum)); })
+        : tramp(reverse(accum));
+    }
+
+
+    template<typename F>
+    friend auto
+    aMap(F fs, List xs){
+      using Result = decltype(map(head(fs), xs));
+      return Result(aMapAux(fs, xs, Result::nil));
     }
 
     template<typename F, size_type M, typename Us, typename ... Vss>
