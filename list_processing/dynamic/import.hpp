@@ -16,6 +16,7 @@
 #include <type_traits>
 #include <utility>
 #include <concepts>
+#include <optional>
 
 //
 // ... External header files
@@ -75,9 +76,14 @@ namespace ListProcessing::Dynamic::Details
 
   using std::convertible_to;
 
+  using std::optional;
+  using std::nullopt;
+
   using TypeUtility::Nat;
   using TypeUtility::nat;
 
   using FunctionUtility::Trampoline;
+
+
 
 } // end of namespace ListProcessing::Dynamic::Details

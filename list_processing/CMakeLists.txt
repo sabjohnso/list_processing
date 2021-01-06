@@ -41,10 +41,12 @@ install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/config.hpp
   compile_time.hpp
   dynamic.hpp
+  operators.hpp
   DESTINATION ${list_processing_INSTALL_INCLUDEDIR}/list_processing)
 
 install(DIRECTORY
   ${CMAKE_CURRENT_SOURCE_DIR}/compile_time
   ${CMAKE_CURRENT_SOURCE_DIR}/dynamic
+  ${CMAKE_CURRENT_SOURCE_DIR}/operators
   DESTINATION ${list_processing_INSTALL_INCLUDEDIR}/list_processing
   FILES_MATCHING PATTERN "*.hpp")

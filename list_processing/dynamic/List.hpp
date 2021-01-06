@@ -92,14 +92,44 @@ namespace ListProcessing::Dynamic::Details
       return List(x, xs);
     }
 
+
+
+
+  public:
+
+    bool
+    hasData() const { return bool(ptr); }
+
     /**
      * @brief Return true if the input list has data and false otherwise.
      */
     friend bool
     hasData(List xs)
     {
-      return bool(xs.ptr);
+      return xs.hasData();
     }
+
+    /**
+     * @brief Return true if this list is empty and false otherwise
+     */
+    bool
+    isEmpty() const { return ! hasData(); }
+
+    /**
+     * @brief Return true if the input list is empty and false otherwise
+     */
+    friend bool
+    isEmpty(List xs)
+    {
+      return xs.isEmpty();
+    }
+
+
+    /**
+     * @brief Return true if this list is empty and false otherwise
+     */
+    bool
+    isNull() const { return ! hasData(); }
 
     /**
      * @brief Return true if the list is empty and false otherwise
@@ -107,10 +137,14 @@ namespace ListProcessing::Dynamic::Details
     friend bool
     isNull(List xs)
     {
-      return !hasData(xs);
+      return xs.isNull();
     }
 
-  public:
+
+
+
+
+
     // clang-format off
     List const&
     getTail() const
@@ -128,7 +162,7 @@ namespace ListProcessing::Dynamic::Details
     friend List
     tail(List xs)
     {
-      return hasData(xs) ? xs.ptr->tail : xs;
+      return xs.hasData() ? xs.ptr->tail : xs;
     }
 
     /**
@@ -140,7 +174,7 @@ namespace ListProcessing::Dynamic::Details
       struct Aux{
         tramp
         run(List xs, size_type accum) const {
-          return hasData(xs)
+          return xs.hasData()
             ? tramp([=,this]{ return run(tail(xs), accum+1); })
             : tramp(accum);
         }
@@ -167,7 +201,7 @@ namespace ListProcessing::Dynamic::Details
     friend value_type
     head(List xs)
     {
-      return hasData(xs)
+      return xs.hasData()
         ? xs.ptr->head
         : throw logic_error("Cannot access the head of an empty list");
     }
@@ -184,7 +218,7 @@ namespace ListProcessing::Dynamic::Details
       struct Aux{
         tramp
         run(List xs, List ys) const {
-          return hasData(xs)
+          return xs.hasData()
             ? tramp([=,this]{ return run(tail(xs), cons(head(xs), ys)); })
             : tramp(ys);
         }
@@ -225,7 +259,7 @@ namespace ListProcessing::Dynamic::Details
       struct Aux {
         tramp
         run(F f, U init, List xs) const {
-          return hasData(xs)
+          return xs.hasData()
             ? Trampoline<U>([=,this]{ return run(f, f(init, head(xs)), tail(xs)); })
             : Trampoline<U>(init);
         }
@@ -273,7 +307,7 @@ namespace ListProcessing::Dynamic::Details
       struct Aux{
         tramp
         run(F f, List xs, Result accum) const {
-          return hasData(xs)
+          return xs.hasData()
             ? tramp([=,this]{ return run(f, tail(xs), cons(f(head(xs)), accum)); })
             : tramp(accum);
         }
@@ -297,7 +331,7 @@ namespace ListProcessing::Dynamic::Details
     static Trampoline<Result>
     aMapAux(F fs, List xs, Result accum){
       using tramp = Trampoline<Result>;
-      return hasData(fs)
+      return fs.hasData()
         ? tramp([=]{ return aMapAux(tail(fs), xs, rappend(map(head(fs), xs), accum)); })
         : tramp(reverse(accum));
     }
@@ -409,11 +443,11 @@ namespace ListProcessing::Dynamic::Details
       struct Aux{
         tramp
         run(List xs, List ys) const {
-          return hasData(xs) && hasData(ys)
+          return xs.hasData() && ys.hasData()
             ? (head(xs) == head(ys)
                ? tramp([=,this]{ return run(tail(xs), tail(ys)); })
                : tramp(false))
-            : tramp(isNull(xs) && isNull(ys) ? true  : false);
+            : tramp(xs.isNull() && ys.isNull() ? true  : false);
         }
       } constexpr aux{};
       return bool(aux.run(xs, ys));
@@ -475,10 +509,9 @@ namespace ListProcessing::Dynamic::Details
     {}
 
     List(const_reference x, List const& xs)
-      : data(
-          (isNull(xs.data) || isFull(head(xs.data)))
-            ? cons(Datum(x), xs.data)
-            : cons(cons(x, head(xs.data)), tail(xs.data)))
+      : data(xs.data.isNull() || isFull(head(xs.data))
+             ? cons(Datum(x), xs.data)
+             : cons(cons(x, head(xs.data)), tail(xs.data)))
     {}
 
     List(Data input_data)
@@ -487,16 +520,22 @@ namespace ListProcessing::Dynamic::Details
 
     inline static const List nil = List();
 
+    bool
+    hasData() const { return data.hasData(); }
+
     friend bool
     hasData(List xs)
     {
-      return hasData(xs.data);
+      return xs.hasData();
     }
+
+    bool
+    isNull() const { return ! hasData(); }
 
     friend bool
     isNull(List xs)
     {
-      return !(hasData(xs));
+      return xs.isNull();
     }
 
     const value_type&
@@ -506,18 +545,18 @@ namespace ListProcessing::Dynamic::Details
     friend value_type
     head(List xs)
     {
-      return hasData(xs) ? head(head(xs.data))
-                         : throw logic_error(
-                             "Cannot access the head of an empty list");
+      return xs.hasData() ? head(head(xs.data))
+        : throw logic_error("Cannot access the head of an empty list");
     }
 
     friend List
     tail(List xs)
     {
-      return hasData(xs)
-               ? ((length(head(xs.data)) == 1)
-                    ? List(tail(xs.data))
-                    : List(cons(tail(head(xs.data)), tail(xs.data))))               : nil;
+      return xs.hasData()
+        ? ((length(head(xs.data)) == 1)
+           ? List(tail(xs.data))
+           : List(cons(tail(head(xs.data)), tail(xs.data))))
+        : nil;
     }
 
     friend size_type
@@ -564,7 +603,7 @@ namespace ListProcessing::Dynamic::Details
       struct Aux{
         tramp
         run(List xs, size_type n) const {
-          return hasData(xs) && n > 0
+          return xs.hasData() && n > 0
             ? tramp([=,this]{ return run(tail(xs), n-1); })
             : tramp(xs);
         }
@@ -578,7 +617,7 @@ namespace ListProcessing::Dynamic::Details
       struct Aux{
         tramp
         run(List xs, size_type n, List accum) const {
-          return hasData(xs) && n > 0
+          return xs.hasData() && n > 0
             ? tramp([=,this]{ return run(tail(xs), n-1, cons(head(xs), accum)); })
             : tramp(reverse(accum));
         }
@@ -599,11 +638,11 @@ namespace ListProcessing::Dynamic::Details
       struct Aux{
         tramp
         run(List xs, List ys) const {
-          return hasData(xs) && hasData(ys)
+          return xs.hasData() && ys.hasData()
             ? (head(xs) == head(ys)
                ? tramp([=,this]{ return run(tail(xs), tail(ys)); })
                : tramp(false))
-            : tramp(isNull(xs) && isNull(ys) ? true : false);
+            : tramp(xs.isNull() && ys.isNull() ? true : false);
 
         }
       }constexpr aux{};
@@ -647,7 +686,7 @@ namespace ListProcessing::Dynamic::Details
       struct Aux {
         Trampoline<List>
         run(List xs, List ys) const {
-          return hasData(xs)
+          return xs.hasData()
             ? Trampoline<List>([=,this]{ return run(tail(xs), cons(head(xs), ys));  })
             : Trampoline<List>(ys);
         }
@@ -676,7 +715,7 @@ namespace ListProcessing::Dynamic::Details
       struct Aux{
         tramp
         run(F f, U init, List xs) const {
-          return hasData(xs)
+          return xs.hasData()
             ? tramp([=, this]{ return run(f, f(init, head(xs)), tail(xs)); })
             : tramp(init);
         }
@@ -692,7 +731,7 @@ namespace ListProcessing::Dynamic::Details
       struct Aux{
         tramp
         run(F f, List xs, U init) const {
-          return hasData(xs)
+          return xs.hasData()
             ? tramp([=,this]{ return run(f, tail(xs), f(head(xs), init)); })
             : tramp(init);
         }
@@ -706,7 +745,7 @@ namespace ListProcessing::Dynamic::Details
       using tramp = Trampoline<Result>;
       struct Aux{
         tramp run(F f, List xs, Result accum) const {
-          return hasData(xs)
+          return xs.hasData()
             ? tramp([=,this]{ return run(f, tail(xs), cons(f(head(xs)), accum)); })
             : tramp(accum);
         }
@@ -734,7 +773,7 @@ namespace ListProcessing::Dynamic::Details
       struct Aux{
         tramp
         run(List<F,M> fs, List xs, Result accum) const {
-          return hasData(fs)
+          return fs.hasData()
             ? tramp([=,this]{ return run(tail(fs), xs, Result(rMap(head(fs), xs, accum))); })
             : tramp(reverse(accum));
         }
@@ -770,7 +809,7 @@ namespace ListProcessing::Dynamic::Details
     doList(List xs, F f)
     {
       unique_ptr<List> ptr(make_unique<List>(xs));
-      while(! isNull(*ptr))
+      while(! ptr->isNull())
       {
         f(head(*ptr));
         ptr = make_unique<List>(tail(*ptr));
