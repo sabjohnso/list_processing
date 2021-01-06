@@ -290,7 +290,7 @@ namespace ListProcessing::Dynamic::Details
   public:
 
     bool
-    isEmpty(){ return isNull(data); }
+    isEmpty() const { return isNull(data); }
 
     friend bool
     isEmpty(AList xs){ return isNull(xs.data); }

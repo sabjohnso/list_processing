@@ -116,18 +116,18 @@ namespace ListProcessing::Dynamic::Details
   basic_ostream<Char>&
   operator <<(basic_ostream<Char>& os, Shared<T> x){ return os << *x; }
 
-  template<typename T, typename ... Ts>
-  auto
-  sharedListOf(Ts && ... xs){
-    return listOf<Shared<T>>(Shared<T>(xs) ...);
-  }
+  // template<typename T, typename ... Ts>
+  // auto
+  // sharedListOf(Ts && ... xs){
+  //   return listOf<Shared<T>>(Shared<T>(xs) ...);
+  // }
 
 
   template<typename T1, typename ... Ts>
   auto
   sharedList(T1&& x, Ts&& ... xs){
     using U = common_type_t<T1, Ts ...>;
-    return sharedListOf<U>(Shared<U>(forward<T1>(x)), Shared<U>(forward<Ts>(xs)) ...);
+    return list(Shared<U>(forward<T1>(x)), Shared<U>(forward<Ts>(xs)) ...);
   }
 
 } // end of namespace ListProcessing::Dynamic::Details

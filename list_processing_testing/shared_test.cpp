@@ -17,7 +17,7 @@
 using std::stringstream;
 using ListProcessing::Dynamic::Shared;
 using ListProcessing::Dynamic::sharedList;
-using ListProcessing::Dynamic::sharedListOf;
+
 
 namespace ListProcessing::Testing
 {
@@ -137,10 +137,6 @@ namespace ListProcessing::Testing
     EXPECT_EQ(*head(xs), 1);
     EXPECT_EQ(*head(tail(xs)), 2);
     EXPECT_EQ(*head(tail(tail(xs))), 3);
-  }
-
-  TEST(Shared, EmptyListConstruction){
-    auto xs = sharedListOf<double>(1, 2, 3);
   }
 
 

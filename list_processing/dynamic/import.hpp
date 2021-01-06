@@ -79,10 +79,13 @@ namespace ListProcessing::Dynamic::Details
   using std::optional;
   using std::nullopt;
 
+  using TypeUtility::count_types;
   using TypeUtility::Nat;
   using TypeUtility::nat;
 
   using FunctionUtility::Trampoline;
+  using FunctionUtility::Static_curried;
+  using FunctionUtility::Static_callable;
 
 
 

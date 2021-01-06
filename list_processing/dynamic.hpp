@@ -23,6 +23,7 @@ namespace ListProcessing::Dynamic
   using Details::buildList;
   using Details::list;
   using Details::ListType;
+  using Details::List;
   using Details::nil;
   using Details::Nil;
 
@@ -42,7 +43,7 @@ namespace ListProcessing::Dynamic
 
   using Details::Shared;
   using Details::sharedList;
-  using Details::sharedListOf;
+
 
 
 

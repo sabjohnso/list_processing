@@ -7,7 +7,7 @@
 
 namespace ListProcessing::Operators::Details
 {
-  class IsEmpty : public Static_curried<HasData, Nat<1>>{
+  class IsEmpty : public Static_curried<IsEmpty, Nat<1>>{
   public:
     template<typename T>
     static constexpr auto
