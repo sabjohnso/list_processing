@@ -3,6 +3,8 @@
 //
 // ... ListProcessing header files
 //
+#include <list_processing/operators/Pipe.hpp>
+
 #include <list_processing/operators/HasData.hpp>
 #include <list_processing/operators/IsEmpty.hpp>
 #include <list_processing/operators/Set.hpp>
@@ -18,30 +20,32 @@
 namespace ListProcessing::Operators
 {
 
-  static constexpr auto hasData  = Details::hasData;
-  static constexpr auto isEmpty  = Details::isEmpty;
+  constexpr auto pipe     = Details::pipe;
 
-  static constexpr auto set      = Details::set;
-  static constexpr auto unset    = Details::unset;
-  static constexpr auto forceGet = Details::forceGet;
-  static constexpr auto maybeGet = Details::maybeGet;
-  static constexpr auto tryGet   = Details::tryGet;
-  static constexpr auto remove   = Details::remove;
-  static constexpr auto hasKey   = Details::hasKey;
+  constexpr auto hasData  = Details::hasData;
+  constexpr auto isEmpty  = Details::isEmpty;
 
-  static constexpr auto push     = Details::push;
-  static constexpr auto top      = Details::top;
-  static constexpr auto pop      = Details::pop;
-  static constexpr auto drop     = Details::drop;
-  static constexpr auto drop2    = Details::drop2;
-  static constexpr auto drop3    = Details::drop3;
-  static constexpr auto dup      = Details::dup;
-  static constexpr auto swap     = Details::swap;
-  static constexpr auto nip      = Details::nip;
-  static constexpr auto tuck     = Details::tuck;
-  static constexpr auto over     = Details::over;
-  static constexpr auto rot      = Details::rot;
-  static constexpr auto app1     = Details::app1;
-  static constexpr auto app2     = Details::app2;
+  constexpr auto set      = Details::set;
+  constexpr auto unset    = Details::unset;
+  constexpr auto forceGet = Details::forceGet;
+  constexpr auto maybeGet = Details::maybeGet;
+  constexpr auto tryGet   = Details::tryGet;
+  constexpr auto remove   = Details::remove;
+  constexpr auto hasKey   = Details::hasKey;
+
+  constexpr auto push     = Details::push;
+  constexpr auto top      = Details::top;
+  constexpr auto pop      = Details::pop;
+  constexpr auto drop     = Details::drop;
+  constexpr auto drop2    = Details::drop2;
+  constexpr auto drop3    = Details::drop3;
+  constexpr auto dup      = Details::dup;
+  constexpr auto swap     = Details::swap;
+  constexpr auto nip      = Details::nip;
+  constexpr auto tuck     = Details::tuck;
+  constexpr auto over     = Details::over;
+  constexpr auto rot      = Details::rot;
+  constexpr auto app1     = Details::app1;
+  constexpr auto app2     = Details::app2;
 
 } // end of namespace ListProcessing::Operators

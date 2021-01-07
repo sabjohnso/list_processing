@@ -16,7 +16,9 @@ namespace ListProcessing::Operators::Details
   using std::forward;
 
   using TypeUtility::Nat;
+  using FunctionUtility::Static_callable;
   using FunctionUtility::Static_curried;
+
 
 
 } // end of namespace ListProcessing::Operators::Details

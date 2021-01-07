@@ -28,7 +28,6 @@ namespace ListProcessing::Dynamic
   using Details::Nil;
 
   using Details::empty_stack;
-  using Details::pipe;
   using Details::Stack;
 
   using Details::empty_tape;

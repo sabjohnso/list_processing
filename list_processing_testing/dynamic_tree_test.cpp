@@ -7,11 +7,19 @@
 // ... List Processing header files
 //
 #include <list_processing/dynamic.hpp>
+#include <list_processing/operators.hpp>
 
 using ListProcessing::Dynamic::empty_tree;
 
+
+
 namespace ListProcessing::Testing
 {
+  namespace // anonymous
+  {
+    constexpr auto pipe = ListProcessing::Operators::pipe;
+  } // end of anonymous namespace
+
 
   TEST(Tree, EmptyTreeIsEmpty)
   {

@@ -116,21 +116,21 @@ namespace ListProcessing::Operators::Details
     }
   } constexpr rot{};
 
-  class App1 : public Static_curried<App1,Nat<1>>{
+  class App1 : public Static_curried<App1,Nat<2>>{
   public:
-    template<typename T>
+    template<typename F, typename T>
     static constexpr auto
-    call(T&& xs){
-      return xs.app1();
+    call(F&& f, T&& xs){
+      return xs.app1(forward<F>(f));
     }
   } constexpr app1{};
 
-  class App2 : public Static_curried<App2, Nat<1>>{
+  class App2 : public Static_curried<App2, Nat<2>>{
   public:
-    template<typename T>
+    template<typename F, typename T>
     static constexpr auto
-    call(T&& xs){
-      return xs.app2();
+    call(F&& f, T&& xs){
+      return xs.app2(forward<F>(f));
     }
   } constexpr app2{};
 

@@ -26,7 +26,11 @@ using std::nullopt;
 using FunctionUtility::rpart;
 
 using ListProcessing::Dynamic::empty_alist;
-using ListProcessing::Dynamic::pipe;
+
+namespace // anonymous
+{
+  constexpr auto pipe = ListProcessing::Operators::pipe;
+} // end of anonymous namespace
 
 
 namespace ListProcessing::Testing
@@ -129,6 +133,7 @@ namespace ListProcessing::Testing
   }
 
   TEST(AList, ForceGetReturnsValueByKey){
+    using ListProcessing::Operators::pipe;
     EXPECT_EQ(
       pipe(empty_alist<char,int>,
            [](auto alist){ return set('x', 3, alist); },
@@ -146,6 +151,7 @@ namespace ListProcessing::Testing
   }
 
   TEST(AList, ForceGetReturnsAlternateForMissingKey){
+    using ListProcessing::Operators::pipe;
     EXPECT_EQ(
       pipe(empty_alist<char,int>,
            [](auto alist){ return set('x', 3, alist); },
@@ -163,6 +169,7 @@ namespace ListProcessing::Testing
   }
 
   TEST(AList, MaybeGetReturnsOptionalValueByKey){
+    using ListProcessing::Operators::pipe;
     EXPECT_EQ(
       pipe(empty_alist<char,int>,
            [](auto alist){ return set('x', 3, alist); },
@@ -180,6 +187,7 @@ namespace ListProcessing::Testing
   }
 
   TEST(AList, MaybeGetReturnsNullOptForMissingKey){
+    using ListProcessing::Operators::pipe;
     EXPECT_EQ(
       pipe(empty_alist<char,int>,
            [](auto alist){ return set('x', 3, alist); },
@@ -197,6 +205,7 @@ namespace ListProcessing::Testing
   }
 
   TEST(AList, TryGetReturnsValueByKey){
+    using ListProcessing::Operators::pipe;
     EXPECT_EQ(
       pipe(empty_alist<char,int>,
            [](auto alist){ return set('x', 3, alist); },
@@ -214,6 +223,7 @@ namespace ListProcessing::Testing
   }
 
   TEST(AList, TryGetReturnsThrowsForMissingKey){
+    using ListProcessing::Operators::pipe;
     EXPECT_THROW(
       pipe(empty_alist<char,int>,
            [](auto alist){ return set('x', 3, alist); },

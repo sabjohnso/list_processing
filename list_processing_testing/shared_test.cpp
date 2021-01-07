@@ -138,9 +138,4 @@ namespace ListProcessing::Testing
     EXPECT_EQ(*head(tail(xs)), 2);
     EXPECT_EQ(*head(tail(tail(xs))), 3);
   }
-
-
-
-
-
 } // end of namespace ListProcessing::Testing

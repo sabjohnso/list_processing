@@ -380,7 +380,7 @@ namespace ListProcessing::Dynamic::Details
      */
     template<typename F>
     Stack
-    app1(F f){
+    app1(F f) const {
       return drop().push(f(top()));
     }
 
@@ -390,7 +390,7 @@ namespace ListProcessing::Dynamic::Details
      */
     template<typename F>
     friend Stack
-    app1(Stack xs, F f){
+    app1(F f, Stack xs){
       return xs.app1(f);
     }
 
@@ -407,7 +407,7 @@ namespace ListProcessing::Dynamic::Details
      */
     template<typename F>
     Stack
-    app2(F f){
+    app2(F f) const {
       return drop2().push(f(top(), drop().top()));
     }
 
@@ -418,7 +418,7 @@ namespace ListProcessing::Dynamic::Details
      */
     template<typename F>
     friend Stack
-    app2(Stack xs, F f)
+    app2(F f, Stack xs)
     {
       return xs.app2(f);
     }
