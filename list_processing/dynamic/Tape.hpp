@@ -168,6 +168,28 @@ namespace ListProcessing::Dynamic::Details
     }
 
 
+    //  ___ _ _ __ _ ___ ___
+    // / -_) '_/ _` (_-</ -_)
+    // \___|_| \__,_/__/\___|
+  public:
+    /**
+     * @brief Remove a value from this tape
+     */
+    Tape
+    erase() const
+    {
+      return Tape(tail(data), context);
+    }
+
+    /**
+     * @brief Remove a value from the tape
+     */
+    friend Tape
+    erase(Tape xs)
+    {
+      return xs.erase();
+    }
+
     //  _ _ ___ _ __  _____ _____
     // | '_/ -_) '  \/ _ \ V / -_)
     // |_| \___|_|_|_\___/\_/\___|
@@ -480,6 +502,7 @@ namespace ListProcessing::Dynamic::Details
      */
     friend List<T>
     toList(Tape xs){ return xs.toList(); }
+
 
   }; // end of class Tape
 
