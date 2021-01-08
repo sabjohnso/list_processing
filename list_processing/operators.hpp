@@ -17,6 +17,7 @@
 
 #include <list_processing/operators/stack_operators.hpp>
 #include <list_processing/operators/tape_operators.hpp>
+#include <list_processing/operators/queue_operators.hpp>
 
 
 namespace ListProcessing::Operators

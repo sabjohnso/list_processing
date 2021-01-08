@@ -37,13 +37,27 @@ namespace ListProcessing::Dynamic::Details
     data_type input;
     data_type output;
 
+    //  _    ___            _
+    // (_)__| __|_ __  _ __| |_ _  _
+    // | (_-< _|| '  \| '_ \  _| || |
+    // |_/__/___|_|_|_| .__/\__|\_, |
+    //                |_|       |__/
+  public:
+
+    /**
+     * @brief Return true if this queue is empty and
+     * false if it has data.
+     */
+    bool
+    isEmpty() const { return isNull(output); }
+
     /**
      * @brief Return true if the input queue is empty and
      * false if it has data.
      */
     friend bool
     isEmpty(Queue xs){
-      return isNull(xs.output);
+      return xs.isEmpty();
     }
 
     /**
@@ -124,7 +138,6 @@ namespace ListProcessing::Dynamic::Details
     // | .__/\_,_/__/_||_|
     // |_|
   public:
-
     /**
      * @brief Push a value onto the back of the queue
      */
@@ -139,7 +152,7 @@ namespace ListProcessing::Dynamic::Details
      * @brief Push a value onto the back of the queue
      */
     friend Queue
-    push(Queue xs, const_reference x){
+    push(const_reference x, Queue xs){
       return xs.push(x);
     }
 
@@ -179,7 +192,7 @@ namespace ListProcessing::Dynamic::Details
   Queue<T>
   listIntoQueue(List<T> xs, Queue<T> ys){
     return hasData(xs)
-      ? listIntoQueue(tail(xs), push(ys, head(xs)))
+      ? listIntoQueue(tail(xs), push(head(xs), ys))
       : ys;
   }
 
