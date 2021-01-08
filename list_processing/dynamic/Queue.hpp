@@ -73,12 +73,41 @@ namespace ListProcessing::Dynamic::Details
       return !(xs == ys);
     }
 
+    //   __             _
+    //  / _|_ _ ___ _ _| |_
+    // |  _| '_/ _ \ ' \  _|
+    // |_| |_| \___/_||_\__|
+  public:
+
+    /**
+     * @brief Return the value at the front of this queue
+     */
+    value_type
+    front() const {
+      return head(output);
+    }
+
     /**
      * @brief Return the value at the front of the queue
      */
     friend value_type
     front(Queue xs){
-      return head(xs.output);
+      return xs.front();
+    }
+
+    //  _ __  ___ _ __
+    // | '_ \/ _ \ '_ \.
+    // | .__/\___/ .__/
+    // |_|       |_|
+  public:
+    /**
+     * @brief Remove the value at the front of this queue
+     */
+    Queue
+    pop() const {
+      return length(output) > 1
+        ? Queue(input, tail(output))
+        : Queue(nil<value_type>, reverse(input));
     }
 
     /**
@@ -86,9 +115,24 @@ namespace ListProcessing::Dynamic::Details
      */
     friend Queue
     pop(Queue xs){
-      return length(xs.output) > 1
-        ? Queue(xs.input, tail(xs.output))
-        : Queue(nil<value_type>, reverse(xs.input));
+      return xs.pop();
+    }
+
+    //               _
+    //  _ __ _  _ __| |_
+    // | '_ \ || (_-< ' \.
+    // | .__/\_,_/__/_||_|
+    // |_|
+  public:
+
+    /**
+     * @brief Push a value onto the back of the queue
+     */
+    Queue
+    push(const_reference x) const {
+      return output.hasData()
+        ? Queue(cons(x, input), output)
+        : Queue(nil<value_type>, reverse(cons(x, input)));
     }
 
     /**
@@ -96,9 +140,7 @@ namespace ListProcessing::Dynamic::Details
      */
     friend Queue
     push(Queue xs, const_reference x){
-      return hasData(xs.output)
-        ? Queue(cons(x, xs.input), xs.output)
-        : Queue(nil<value_type>, reverse(cons(x, xs.input)));
+      return xs.push(x);
     }
 
     /**
@@ -130,7 +172,6 @@ namespace ListProcessing::Dynamic::Details
   template<typename T>
   inline const Queue<T> empty_queue{};
 
-
   /**
    * @brief Insert the elements of a list into a queue.
    */
@@ -142,7 +183,6 @@ namespace ListProcessing::Dynamic::Details
       : ys;
   }
 
-
   /**
    * @brief Return a queue containing the input arguments,
    * where the left-most argument is the first value.
@@ -150,12 +190,16 @@ namespace ListProcessing::Dynamic::Details
    * front(queue(1, 2, 3))
    *   => 1
    */
-  template<
-    typename T1, typename T2, typename ... Ts,
-    typename T = common_type_t<T1, T2, Ts ...>>
-  Queue<T>
-  queue(T1 const& x1, T2 const& x2, Ts const& ... xs){
-    return listIntoQueue(list(x1, x2, xs ...), empty_queue<T>);
-  }
+  class QueueConstructor : public Static_callable<QueueConstructor> {
+  public:
+    template<typename T, typename ... Ts>
+    static constexpr auto
+    call(T&& x, Ts&& ... xs){
+      using U = common_type_t<decay_t<T>, decay_t<Ts> ...>;
+      return listIntoQueue(list(forward<T>(x), forward<Ts>(xs) ...), empty_queue<U>);
+    }
+  } constexpr queue{};
+
+
 
 } // end of namespace ListProcessing::Dynamic::Details
