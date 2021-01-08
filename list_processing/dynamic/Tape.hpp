@@ -524,27 +524,21 @@ namespace ListProcessing::Dynamic::Details
   }
 
   /**
-   * @brief Construct a tape from a single input value
+   * @brief Construct a `Tape` from input values
    */
-  template<typename T>
-  Tape<T>
-  tape(T const& x)
-  {
-    return tapeOf<T>(x);
-  }
+  class TapeConstructor : public Static_callable<TapeConstructor>{
+  public:
+    template<typename T, typename ... Ts>
+    static constexpr auto
+    call(T&& x, Ts&& ... xs){
+      if constexpr (count_types<Ts ...>()){
+        using U = common_type_t<decay_t<T> , decay_t<Ts> ...>;
+        return tapeOf<U>(forward<T>(x), forward<Ts>(xs) ...);
+      } else {
+        return tapeOf<T>(forward<T>(x));
+      }
+    }
+  } constexpr tape{};
 
-  /**
-   * @brief Construct a tape from the input values
-   */
-  template<
-    typename T1,
-    typename T2,
-    typename... Ts,
-    typename T = common_type_t<T1, T2, Ts...>>
-  Tape<T>
-  tape(T1 const& x1, T2 const& x2, Ts const&... xs)
-  {
-    return tapeOf<T>(x1, x2, xs...);
-  }
 
 } // end of namespace ListProcessing::Dynamic::Details
