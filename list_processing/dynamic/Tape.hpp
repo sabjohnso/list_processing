@@ -503,6 +503,34 @@ namespace ListProcessing::Dynamic::Details
     friend List<T>
     toList(Tape xs){ return xs.toList(); }
 
+    template<typename OStream>
+    friend OStream&
+    printTape(OStream& os, Tape xs){
+      if(xs.isEmpty()){
+        os << "tape([])";
+      } else if(xs.isAtBack()){
+        os << "tape(...[])";
+
+      } else if(xs.isAtFront()){
+        os << "tape([" << xs.read() << "]...)";
+      }else {
+        os << "tape(...[" << xs.read() << "]...)";
+      }
+      return os;
+    }
+
+    template<typename OStream>
+    friend OStream&
+    operator <<(OStream& os, Tape xs){
+      printTape(os, xs);
+      return os;
+    }
+
+    friend ostream&
+    operator <<(ostream& os, Tape xs){
+      printTape(os, xs);
+      return os;
+    }
 
   }; // end of class Tape
 

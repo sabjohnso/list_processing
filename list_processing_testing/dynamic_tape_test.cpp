@@ -2,6 +2,7 @@
 // ... Standard header files
 //
 #include <iostream>
+#include <sstream>
 
 //
 // ... Testing header files
@@ -13,13 +14,12 @@
 //
 #include <list_processing/dynamic.hpp>
 
-using std::ostream;
 using ListProcessing::Dynamic::empty_tape;
 using ListProcessing::Dynamic::tape;
+using std::ostream;
 
 namespace ListProcessing::Testing
 {
-
 
   TEST(Tape, EmptyTapeIsEmpty)
   {
@@ -309,50 +309,78 @@ namespace ListProcessing::Testing
 
   TEST(DynamicTape, SpliceAppend)
   {
-    ASSERT_EQ(splice(tape(1, 2), tape(3, 4)),
-              tape(1, 2, 3, 4));
+    ASSERT_EQ(splice(tape(1, 2), tape(3, 4)), tape(1, 2, 3, 4));
   }
 
   TEST(DynamicTape, FObjSpliceAppend)
   {
     using namespace ListProcessing::Operators;
-    ASSERT_EQ(splice(tape(1, 2), tape(3, 4)),
-              tape(1, 2, 3, 4));
+    ASSERT_EQ(splice(tape(1, 2), tape(3, 4)), tape(1, 2, 3, 4));
   }
 
   TEST(DynamicTape, SplicePrepend)
   {
-    ASSERT_EQ(toFront(splice(fwd(tape(1, 2)), fwd(tape(3, 4)))),
-              tape(3, 1, 2, 4));
+    ASSERT_EQ(
+      toFront(splice(fwd(tape(1, 2)), fwd(tape(3, 4)))),
+      tape(3, 1, 2, 4));
   }
 
   TEST(DynamicTape, FObjSplicePrepend)
   {
     using namespace ListProcessing::Operators;
-    ASSERT_EQ(toFront(splice(fwd(tape(1, 2)), fwd(tape(3, 4)))),
-              tape(3, 1, 2, 4));
+    ASSERT_EQ(
+      toFront(splice(fwd(tape(1, 2)), fwd(tape(3, 4)))),
+      tape(3, 1, 2, 4));
   }
 
-  TEST(DynamicTape, Reverse){
-    ASSERT_EQ(toFront(reverse(tape(1, 2, 3, 4))),
-              tape(4, 3, 2, 1));
+  TEST(DynamicTape, Reverse)
+  {
+    ASSERT_EQ(toFront(reverse(tape(1, 2, 3, 4))), tape(4, 3, 2, 1));
   }
 
-  TEST(DynamicTape, FObjReverse){
+  TEST(DynamicTape, FObjReverse)
+  {
     using namespace ListProcessing::Operators;
-    ASSERT_EQ(toFront(reverse(tape(1, 2, 3, 4))),
-              tape(4, 3, 2, 1));
+    ASSERT_EQ(toFront(reverse(tape(1, 2, 3, 4))), tape(4, 3, 2, 1));
   }
 
-  TEST(DynamicTape, Erase){
-    EXPECT_EQ(erase(tape(1, 2, 3)),
-              tape(2, 3));
+  TEST(DynamicTape, Erase)
+  {
+    EXPECT_EQ(erase(tape(1, 2, 3)), tape(2, 3));
   }
 
-  TEST(DynamicTape, FObjErase){
+  TEST(DynamicTape, FObjErase)
+  {
     using namespace ListProcessing::Operators;
-    EXPECT_EQ(erase(tape(1, 2, 3)),
-              tape(2, 3));
+    EXPECT_EQ(erase(tape(1, 2, 3)), tape(2, 3));
+  }
+
+  TEST(DynamicTape, PrintEmtpy)
+  {
+    std::stringstream ss;
+    ss << empty_tape<int>;
+    EXPECT_EQ(ss.str(), "tape([])");
+  }
+
+  TEST(DynamicTape, PrintFront)
+  {
+    std::stringstream ss;
+    ss << tape(1, 2, 3);
+    EXPECT_EQ(ss.str(), "tape([1]...)");
+  }
+
+  TEST(DynamicTape, PrintBack)
+  {
+    std::stringstream ss;
+    ss << toBack(tape(1, 2, 3));
+    EXPECT_EQ(ss.str(), "tape(...[])");
+  }
+
+  TEST(DynamicTape, Print)
+  {
+    std::stringstream ss;
+    ss << fwd(tape(1, 2, 3));
+    EXPECT_EQ(ss.str(), "tape(...[2]...)");
   }
 
 } // end of namespace ListProcessing::Testing
