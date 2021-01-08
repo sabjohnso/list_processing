@@ -142,7 +142,7 @@ namespace ListProcessing::Dynamic::Details
     friend Tree
     insert(Tree xs, const_reference x)
     {
-      return Tree(Branch(insert(xs.branch.data, x)), xs.context, true);
+      return Tree(Branch(insert(x, xs.branch.data)), xs.context, true);
     }
 
     /**
@@ -179,7 +179,7 @@ namespace ListProcessing::Dynamic::Details
     friend Tree
     insertBranch(Tree xs)
     {
-      return Tree(Branch(insert(xs.branch.data, typename Branch::node_type(make_shared<Branch>()))),
+      return Tree(Branch(insert(typename Branch::node_type(make_shared<Branch>()), xs.branch.data)),
                   xs.context, true);
     }
 

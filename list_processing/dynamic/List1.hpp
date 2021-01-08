@@ -132,11 +132,8 @@ namespace ListProcessing::Dynamic::Details
       return xs.hasData() ? xs.ptr->tail : xs;
     }
 
-    /**
-     * @brief Return the number of elements in the input list
-     */
-    friend size_type
-    length(List xs){
+    size_type
+    length() const {
       using tramp = Trampoline<size_type>;
       struct Aux{
         tramp
@@ -146,14 +143,20 @@ namespace ListProcessing::Dynamic::Details
             : tramp(accum);
         }
       } constexpr aux{};
-      return size_type(aux.run(xs, 0));
+      return size_type(aux.run(*this, 0));
     }
+
+    /**
+     * @brief Return the number of elements in the input list
+     */
+    friend size_type
+    length(List xs){ return xs.length(); }
 
   public:
     const_reference
     getHead() const
     {
-      return hasData(*this)
+      return hasData()
         ? ptr->head
         : throw logic_error("Cannot access the head of an empty list");
     }

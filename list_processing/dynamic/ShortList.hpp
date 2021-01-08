@@ -221,17 +221,23 @@ namespace ListProcessing::Dynamic::Details
       , reversed(input_reversed)
     {}
 
+  public:
+    size_type
+    length() const {
+      assert(fillpoint > 0);
+      return fillpoint;
+    }
+
     friend size_type
     length(ShortList xs)
     {
-      assert(xs.fillpoint > 0);
-      return xs.fillpoint;
+      return xs.length();
     }
 
     friend bool
     isFull(ShortList xs)
     {
-      return length(xs) == extent;
+      return xs.length() == extent;
     }
 
     friend bool
@@ -283,22 +289,22 @@ namespace ListProcessing::Dynamic::Details
     {
       assert(n > 0);
       assert(n <= length(xs));
-      return reverse(drop(reverse(xs), length(xs) - n));
+      return reverse(drop(reverse(xs), xs.length() - n));
     }
 
     friend ShortList
     drop(ShortList xs, size_type n)
     {
       assert(length(xs) > n);
-      return isReversed(xs) ? drop(copy(xs), n) : ShortList(xs, length(xs) - n);
+      return isReversed(xs) ? drop(copy(xs), n) : ShortList(xs, xs.length() - n);
     }
 
     friend bool
     operator==(ShortList xs, ShortList ys)
     {
-      index_type n = length(xs);
+      index_type n = xs.length();
       index_type i = 0;
-      bool result = length(xs) == length(ys);
+      bool result = xs.length() == ys.length();
       while (result && i < n) {
         result = listRef(xs, i) == listRef(ys, i);
         ++i;
@@ -315,7 +321,7 @@ namespace ListProcessing::Dynamic::Details
     friend ostream&
     operator<<(ostream& os, ShortList xs)
     {
-      size_type n = length(xs);
+      size_type n = xs.length();
       os << "(" << listRef(xs, 0);
       for (index_type i = 1; i < n; ++i) {
         os << " " << listRef(xs, i);
@@ -329,7 +335,7 @@ namespace ListProcessing::Dynamic::Details
     fMap(F f, ShortList xs)
     {
       return ShortList<U, N>(
-        [=](auto index) { return f(listRef(xs, index)); }, length(xs), build_tag{});
+        [=](auto index) { return f(listRef(xs, index)); }, xs.length(), build_tag{});
     }
 
     template<typename F, typename U>

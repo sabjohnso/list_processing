@@ -16,6 +16,8 @@
 #include <list_processing/operators/HasKey.hpp>
 
 #include <list_processing/operators/stack_operators.hpp>
+#include <list_processing/operators/tape_operators.hpp>
+
 
 namespace ListProcessing::Operators
 {
@@ -47,5 +49,21 @@ namespace ListProcessing::Operators
   constexpr auto rot      = Details::rot;
   constexpr auto app1     = Details::app1;
   constexpr auto app2     = Details::app2;
+
+  constexpr auto isAtBack  = Details::isAtBack;
+  constexpr auto isAtFront = Details::isAtFront;
+  constexpr auto insert    = Details::insert;
+  constexpr auto erase     = Details::erase;
+  constexpr auto write     = Details::write;
+  constexpr auto read      = Details::read;
+  constexpr auto position  = Details::position;
+  constexpr auto remaining = Details::remaining;
+  constexpr auto fwd       = Details::fwd;
+  constexpr auto bwd       = Details::bwd;
+  constexpr auto moveBy    = Details::moveBy;
+  constexpr auto moveTo    = Details::moveTo;
+  constexpr auto toFront   = Details::toFront;
+  constexpr auto toBack    = Details::toBack;
+  constexpr auto splice    = Details::splice;
 
 } // end of namespace ListProcessing::Operators

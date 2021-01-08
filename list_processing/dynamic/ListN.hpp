@@ -89,19 +89,26 @@ namespace ListProcessing::Dynamic::Details
     tail(List xs)
     {
       return xs.hasData()
-        ? ((length(head(xs.data)) == 1)
+        ? (head(xs.data).length() == 1
            ? List(tail(xs.data))
            : List(cons(tail(head(xs.data)), tail(xs.data))))
         : nil;
     }
 
+
+    size_type
+    length() const {
+      return foldL(
+        [](auto accum, auto chunk) { return accum + chunk.length(); },
+        0,
+        data);
+    }
+
+
     friend size_type
     length(List xs)
     {
-      return foldL(
-        [](auto accum, auto chunk) { return accum + length(chunk); },
-        0,
-        xs.data);
+      return xs.length();
     }
 
     friend List
@@ -182,7 +189,7 @@ namespace ListProcessing::Dynamic::Details
 
         }
       }constexpr aux{};
-      return length(xs) == length(ys)
+      return xs.length() == ys.length()
         ? bool(aux.run(xs, ys))
         : false;
     }

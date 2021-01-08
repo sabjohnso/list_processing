@@ -1,4 +1,9 @@
 //
+// ... Standard header files
+//
+#include <iostream>
+
+//
 // ... Testing header files
 //
 #include <gtest/gtest.h>
@@ -8,11 +13,13 @@
 //
 #include <list_processing/dynamic.hpp>
 
+using std::ostream;
 using ListProcessing::Dynamic::empty_tape;
 using ListProcessing::Dynamic::tape;
 
 namespace ListProcessing::Testing
 {
+
 
   TEST(Tape, EmptyTapeIsEmpty)
   {
@@ -76,7 +83,7 @@ namespace ListProcessing::Testing
   }
   TEST(Tape, Remaining0Of2)
   {
-    ASSERT_EQ(remaining(moveBy(tape(1, 2), 2)), 0);
+    ASSERT_EQ(remaining(moveBy(2, tape(1, 2))), 0);
   }
   TEST(DynamicTape, FirstPosition)
   {
@@ -100,23 +107,38 @@ namespace ListProcessing::Testing
   }
   TEST(DynamicTape, MoveBy0)
   {
-    ASSERT_TRUE(isAtFront(moveBy(tape(1, 2), 0)));
+    ASSERT_TRUE(isAtFront(moveBy(0, tape(1, 2))));
   }
   TEST(DynamicTape, MoveBy1)
   {
-    ASSERT_EQ(position(moveBy(tape(1, 2), 1)), 1);
+    ASSERT_EQ(position(moveBy(1, tape(1, 2))), 1);
   }
   TEST(DynamicTape, MoveBy1AndM1)
   {
-    ASSERT_TRUE(isAtFront(moveBy(moveBy(tape(1, 2), 1), -1)));
+    ASSERT_TRUE(isAtFront(moveBy(-1, moveBy(1, tape(1, 2)))));
   }
   TEST(DynamicTape, MoveTo0)
   {
-    ASSERT_TRUE(isAtFront(moveTo(tape(1, 2), 0)));
+    ASSERT_TRUE(isAtFront(moveTo(0, tape(1, 2))));
   }
   TEST(DynamicTape, MoveTo2)
   {
-    ASSERT_TRUE(isAtBack(moveTo(tape(1, 2), 2)));
+    ASSERT_TRUE(isAtBack(moveTo(2, tape(1, 2))));
+  }
+  TEST(DynamicTape, SpliceAppend)
+  {
+    ASSERT_EQ(splice(tape(1, 2), tape(3, 4)),
+              tape(1, 2, 3, 4));
+  }
+  TEST(DynamicTape, SplicePrepend)
+  {
+    ASSERT_EQ(toFront(splice(fwd(tape(1, 2)), fwd(tape(3, 4)))),
+              tape(3, 1, 2, 4));
+  }
+
+  TEST(DynamicTape, Reverse){
+    ASSERT_EQ(toFront(reverse(tape(1, 2, 3, 4))),
+              tape(4, 3, 2, 1));
   }
 
 } // end of namespace ListProcessing::Testing
