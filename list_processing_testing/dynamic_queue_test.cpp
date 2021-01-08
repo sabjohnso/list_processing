@@ -3,7 +3,6 @@
 //
 #include <gtest/gtest.h>
 
-
 //
 // ... List Processing header files
 //
@@ -76,7 +75,7 @@ namespace ListProcessing::Testing
     ASSERT_EQ(front(xs), 'a');
     ASSERT_EQ(front(pop(xs)), 'b');
     ASSERT_EQ(front(pop(pop(xs))), 'c');
-    ASSERT_TRUE(isEmpty(pop(pop(pop( xs )))));
+    ASSERT_TRUE(isEmpty(pop(pop(pop(xs)))));
   }
 
   TEST(Queue, FObjOrder)
@@ -86,10 +85,7 @@ namespace ListProcessing::Testing
     ASSERT_EQ(front(xs), 'a');
     ASSERT_EQ(front(pop(xs)), 'b');
     ASSERT_EQ(front(pop(pop(xs))), 'c');
-    ASSERT_TRUE(isEmpty(pop(pop(pop( xs )))));
+    ASSERT_TRUE(isEmpty(pop(pop(pop(xs)))));
   }
-
-
-
 
 } // end of namespace ListProcessing::Testing
