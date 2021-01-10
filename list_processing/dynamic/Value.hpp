@@ -116,11 +116,6 @@ namespace ListProcessing::Dynamic::Details
   basic_ostream<Char>&
   operator <<(basic_ostream<Char>& os, Shared<T> x){ return os << *x; }
 
-  // template<typename T, typename ... Ts>
-  // auto
-  // sharedListOf(Ts && ... xs){
-  //   return listOf<Shared<T>>(Shared<T>(xs) ...);
-  // }
 
 
   template<typename T1, typename ... Ts>

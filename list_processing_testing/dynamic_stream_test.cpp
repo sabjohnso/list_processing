@@ -11,7 +11,7 @@
 //
 // ... List Processing header files
 //
-#include <list_processing/dynamic.hpp>
+#include <list_processing/dynamic_stream.hpp>
 #include <list_processing/operators.hpp>
 
 using ListProcessing::Dynamic::Stream;

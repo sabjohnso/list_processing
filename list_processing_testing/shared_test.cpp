@@ -12,7 +12,7 @@
 //
 // ... List Processing header files
 //
-#include <list_processing/dynamic.hpp>
+#include <list_processing/dynamic_shared_list.hpp>
 
 using std::stringstream;
 using ListProcessing::Dynamic::Shared;

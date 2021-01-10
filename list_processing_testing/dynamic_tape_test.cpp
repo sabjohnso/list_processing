@@ -12,7 +12,8 @@
 //
 // ... List Processing header files
 //
-#include <list_processing/dynamic.hpp>
+#include <list_processing/dynamic_tape.hpp>
+#include <list_processing/operators.hpp>
 
 using ListProcessing::Dynamic::empty_tape;
 using ListProcessing::Dynamic::tape;
