@@ -12,6 +12,7 @@
 #include <list_processing/dynamic/AList.hpp>
 #include <list_processing/dynamic/piping.hpp>
 #include <list_processing/dynamic/Value.hpp>
+#include <list_processing/dynamic/Stream.hpp>
 
 namespace ListProcessing::Dynamic
 {
@@ -43,7 +44,12 @@ namespace ListProcessing::Dynamic
   using Details::Shared;
   using Details::sharedList;
 
-
+  using Details::Stream;
+  using Details::empty_stream;
+  using Details::streamOf;
+  using Details::stream;
+  using Details::buildStream;
+  using Details::iterate;
 
 
 } // end of namespace ListProcessing::Dynamic

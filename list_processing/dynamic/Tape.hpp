@@ -535,7 +535,7 @@ namespace ListProcessing::Dynamic::Details
   }; // end of class Tape
 
   template<typename T>
-  const Tape<T> empty_tape{};
+  inline const Tape<T> empty_tape{};
 
   template<typename T>
   Tape<T>

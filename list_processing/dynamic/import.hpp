@@ -17,6 +17,8 @@
 #include <utility>
 #include <concepts>
 #include <optional>
+#include <functional>
+
 
 //
 // ... External header files
@@ -39,6 +41,7 @@ namespace ListProcessing::Dynamic::Details
   using std::pair;
   using std::make_pair;
 
+  using std::function;
 
   using std::logic_error;
 
@@ -61,6 +64,7 @@ namespace ListProcessing::Dynamic::Details
   using std::conditional_t;
   using std::decay_t;
   using std::result_of_t;
+  using std::is_same_v;
 
   using std::array;
 
