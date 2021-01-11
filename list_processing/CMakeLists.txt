@@ -41,6 +41,14 @@ install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/config.hpp
   compile_time.hpp
   dynamic.hpp
+  dynamic_alist.hpp
+  dynamic_list.hpp
+  dynamic_queue.hpp
+  dynamic_shared_list.hpp
+  dynamic_stack.hpp
+  dynamic_stream.hpp
+  dynamic_tape.hpp
+  dynamic_tree.hpp
   operators.hpp
   DESTINATION ${list_processing_INSTALL_INCLUDEDIR}/list_processing)
 

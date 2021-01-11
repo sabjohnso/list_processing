@@ -94,4 +94,9 @@ namespace ListProcessing::Dynamic::Testing
     EXPECT_EQ( length(take(10, iterate(0, [](auto x){ return x+1; }))), 10);
   }
 
+  TEST(DynamicStream, Fold){
+  }
+
+
+
 } // end of namespace ListProcessing::Dynamic::Testing

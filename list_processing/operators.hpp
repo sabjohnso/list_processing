@@ -4,6 +4,7 @@
 // ... ListProcessing header files
 //
 #include <list_processing/operators/Pipe.hpp>
+#include <list_processing/operators/Map.hpp>
 
 #include <list_processing/operators/HasData.hpp>
 #include <list_processing/operators/IsEmpty.hpp>
@@ -15,15 +16,19 @@
 #include <list_processing/operators/Remove.hpp>
 #include <list_processing/operators/HasKey.hpp>
 
+
+
 #include <list_processing/operators/stack_operators.hpp>
 #include <list_processing/operators/tape_operators.hpp>
 #include <list_processing/operators/queue_operators.hpp>
+
 
 
 namespace ListProcessing::Operators
 {
 
   constexpr auto pipe     = Details::pipe;
+  constexpr auto map      = Details::map;
 
   constexpr auto hasData  = Details::hasData;
   constexpr auto isEmpty  = Details::isEmpty;
