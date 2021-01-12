@@ -36,87 +36,159 @@ namespace ListProcessing::CompileTime::Details
     Data data;
     Context context;
 
+  public:
+
+    constexpr bool
+    isEmpty() const {
+      return isNull(data) && isNull(context);
+    }
+
     friend constexpr bool
     isEmpty(Tape const& xs)
     {
-      return isNull(xs.data) && isNull(xs.context);
+      return xs.isEmpty();
+    }
+
+    template<typename V>
+    constexpr auto
+    insert(V const& x) const {
+      return constructTape(cons(x, data), context);
     }
 
     template<typename V>
     friend constexpr auto
     insert(Tape const& xs, V const& x)
     {
-      return constructTape(cons(x, xs.data), xs.context);
+      return xs.insert(x);
     }
 
+    constexpr auto
+    erase() const { return constructTape(tail(data), context); }
+
     friend constexpr auto
-    remove(Tape const& xs)
+    erase(Tape const& xs)
     {
-      return constructTape(tail(xs.data), xs.context);
+      return xs.erase();
+    }
+
+    template<typename V>
+    constexpr auto
+    write(V const& x) const {
+      return erase().insert(x);
     }
 
     template<typename V>
     friend constexpr auto
     write(Tape const& xs, V const& x)
     {
-      return insert(xs, x);
+      return xs.write(x);
     }
+
+    constexpr auto
+    read() const { return head(data); }
 
     friend constexpr auto
     read(Tape const& xs)
     {
-      return head(xs.data);
+      return xs.read();
     }
+
+    constexpr index_type
+    position() const { return length_(type<C>); }
 
     friend constexpr index_type
-    position(Tape const&)
+    position(Tape const& xs)
     {
-      return length_(type<C>);
+      return xs.position();
     }
 
-    friend constexpr size_type
-    remaining(Tape const&)
-    {
-      return length_(type<D>);
-    }
+    constexpr size_type
+    remaining() const { return length_(type<D>); }
+
 
     friend constexpr size_type
-    length(Tape const&)
+    remaining(Tape const& xs)
+    {
+      return xs.remaining();
+    }
+
+    constexpr size_type
+    length(Tape const&) const
     {
       return length_(type<C>) + length_(type<D>);
     }
 
-    friend constexpr bool
-    isAtFront(Tape const&)
+    friend constexpr size_type
+    length(Tape const& xs)
+    {
+      return xs.length();
+    }
+
+    constexpr bool
+    isAtFront() const
     {
       return length_(type<C>) == 0;
     }
 
     friend constexpr bool
-    isAtBack(Tape const&)
+    isAtFront(Tape const& xs)
     {
+      return xs.isAtFront();
+    }
+
+    constexpr bool
+    isAtBack() const {
       return length_(type<D>) == 0;
+    }
+
+    friend constexpr bool
+    isAtBack(Tape const& xs)
+    {
+      return xs.isAtBack();
+    }
+
+    constexpr auto
+    fwd() const {
+      if constexpr (length_(type<D>) == 0) {
+        return *this;
+      } else {
+        return constructTape(
+          tail(data), cons(head(data), context));
+      }
     }
 
     friend constexpr auto
     fwd(Tape const& xs)
     {
-      if constexpr (length_(type<D>) == 0) {
-        return xs;
+      return xs.fwd();
+    }
+
+
+    constexpr auto
+    bwd() const {
+      if constexpr (length_(type<C>) == 0) {
+        return *this;
       } else {
         return constructTape(
-          tail(xs.data), cons(head(xs.data), xs.context));
+          cons(head(context), data), tail(context));
       }
     }
 
     friend constexpr auto
     bwd(Tape const& xs)
     {
-      if constexpr (length_(type<C>) == 0) {
-        return xs;
+      return xs.bwd();
+    }
+
+    template<offset_type N>
+    constexpr auto
+    moveBy(integral_constant<offset_type, N>) const {
+      if constexpr (N > 0){
+        return fwd().moveBy(integral_constant<offset_type, N - 1>{});
+      } else if constexpr (N < 0){
+        return bwd().moveBy(integral_constant<offset_type, N + 1>{});
       } else {
-        return constructTape(
-          cons(head(xs.context), xs.data), tail(xs.context));
+        return *this;
       }
     }
 
@@ -124,57 +196,47 @@ namespace ListProcessing::CompileTime::Details
     friend constexpr auto
     moveBy(Tape const& xs, integral_constant<offset_type, N>)
     {
-      if constexpr (N > 0) {
-        return moveBy(fwd(xs), integral_constant<offset_type, N - 1>{});
-      } else if constexpr (N < 0) {
-        return moveBy(bwd(xs), integral_constant<offset_type, N + 1>{});
-      } else {
-        return xs;
-      }
+      return xs.moveBy(integral_constant<offset_type, N>{});
     }
 
-    template<offset_type N>
-    friend constexpr auto
-    moveBy(Tape const& xs)
+    template<index_type N>
+    constexpr auto
+    moveTo(integral_constant<index_type, N>) const
     {
-      if constexpr (N > 0) {
-        return moveBy(fwd(xs), integral_constant<offset_type, N - 1>{});
-      } else if constexpr (N < 0) {
-        return moveBy(bwd(xs), integral_constant<offset_type, N + 1>{});
-      } else {
-        return xs;
-      }
+      return moveBy(integral_constant<offset_type, N - length_(type<C>)>{});
     }
 
     template<index_type N>
     friend constexpr auto
     moveTo(Tape const& xs, integral_constant<index_type, N>)
     {
-      return moveBy(
-        xs, integral_constant<offset_type, N - length_(type<C>)>{});
+      return xs.moveTo(integral_constant<index_type, N>{});
     }
 
-    template<index_type N>
-    friend constexpr auto
-    moveTo(Tape const& xs)
-    {
-      return moveTo(xs, integral_constant<index_type, N>{});
+    constexpr auto
+    toFront() const {
+      return moveTo(integral_constant<index_type, 0>{});
     }
+
 
     friend constexpr auto
     toFront(Tape const& xs)
     {
-      return moveTo(xs, integral_constant<index_type, 0>{});
+      return xs.toFront();
+    }
+
+    constexpr auto
+    toBack() const {
+      return moveTo(
+        integral_constant<
+        index_type,
+        length_(type<C>) + length_(type<D>)>{});
     }
 
     friend constexpr auto
     toBack(Tape const& xs)
     {
-      return moveTo(
-        xs,
-        integral_constant<
-          index_type,
-          length_(type<C>) + length_(type<D>)>{});
+      return xs.toBack();
     }
 
     template<typename Stream>
@@ -184,7 +246,7 @@ namespace ListProcessing::CompileTime::Details
       if constexpr (length_(type<D>) == 0 && length_(type<C>) == 0) {
         os << "#Tape()";
       } else if constexpr (length_(type<C>) == 0) {
-        os << "#Zippper(" << read(xs) << ", ...)";
+        os << "#Tape(" << read(xs) << ", ...)";
       } else if constexpr (length_(type<D>) == 0) {
         os << "#Tape(..., nil)";
       } else {
