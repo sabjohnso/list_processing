@@ -41,27 +41,54 @@ namespace ListProcessing::CompileTime::Details
     InputType input;
     OutputType output;
 
-    friend constexpr bool
-    isEmpty(Queue const&)
-    {
+  public:
+
+    constexpr bool
+    isEmpty() const {
       return length_(type<O>) == 0;
     }
+
+    friend constexpr bool
+    isEmpty(Queue const& xs)
+    {
+      return xs.isEmpty();
+    }
+
+    constexpr auto
+    front() const { return head(output); }
 
     friend constexpr auto
     front(Queue const& xs)
     {
-      return head(xs.output);
+      return xs.front();
+    }
+
+
+    constexpr auto
+    pop() const {
+      if constexpr (length_(type<O>) == 0) {
+        return constructQueue(nil, nil);
+      } else if constexpr (length_(type<O>) == 1) {
+        return constructQueue(nil, reverse(input));
+      } else {
+        return constructQueue(input, tail(output));
+      }
     }
 
     friend constexpr auto
     pop(Queue const& xs)
     {
+      return xs.pop();
+    }
+
+
+    template<typename T>
+    constexpr auto
+    push(T const& x) const {
       if constexpr (length_(type<O>) == 0) {
-        return constructQueue(nil, nil);
-      } else if constexpr (length_(type<O>) == 1) {
-        return constructQueue(nil, reverse(xs.input));
+        return constructQueue(nil, list(x));
       } else {
-        return constructQueue(xs.input, tail(xs.output));
+        return constructQueue(cons(x, input), output);
       }
     }
 
@@ -69,17 +96,18 @@ namespace ListProcessing::CompileTime::Details
     friend constexpr auto
     push(Queue const& xs, T const& x)
     {
-      if constexpr (length_(type<O>) == 0) {
-        return constructQueue(nil, list(x));
-      } else {
-        return constructQueue(cons(x, xs.input), xs.output);
-      }
+      return xs.push(x);
+    }
+
+    constexpr auto
+    rot() const {
+      return pop().push(front());
     }
 
     friend constexpr auto
     rot(Queue const& xs)
     {
-      return push(pop(xs), front(xs));
+      return xs.rot();
     }
 
     template<typename Stream>
