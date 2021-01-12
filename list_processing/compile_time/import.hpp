@@ -11,6 +11,8 @@
 // ... External header files
 //
 #include <type_utility/type_utility.hpp>
+#include <function_utility/function_utility.hpp>
+
 
 namespace ListProcessing::CompileTime::Details
 {
@@ -36,6 +38,9 @@ namespace ListProcessing::CompileTime::Details
   using TypeUtility::nat;
   using TypeUtility::Type;
   using TypeUtility::type;
+
+  using FunctionUtility::Static_callable;
+  using FunctionUtility::Static_curried;
 
   template<integer I>
   constexpr integral_constant<integer, I> idx{};

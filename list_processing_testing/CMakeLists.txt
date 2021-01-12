@@ -11,7 +11,7 @@ endmacro()
 list_processing_add_test(compile_time compile_time_test
   compile_time_test.cpp
   compile_time_stack_test.cpp
-  compile_time_zipper_test.cpp
+  compile_time_tape_test.cpp
   compile_time_queue_test.cpp
   compile_time_tree_test.cpp)
 

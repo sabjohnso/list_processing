@@ -7,28 +7,28 @@
 #include <list_processing/compile_time/Nothing.hpp>
 #include <list_processing/compile_time/import.hpp>
 
+// FIXME: Eliminate use of functions from Operators is this file
+
+#include <list_processing/operators.hpp>
+
 namespace ListProcessing::CompileTime::Details
 {
-
-  template<typename T>
-  constexpr auto
-  pipe(T const x)
-  {
-    return x;
-  }
-
-  template<typename T, typename F, typename... Fs>
-  constexpr auto
-  pipe(T const& x, F f, Fs... fs)
-  {
-    return pipe(f(x), fs...);
-  }
+  constexpr auto pipe = ListProcessing::Operators::pipe;
 
   template<typename T>
   class Stack;
 
   template<typename T, typename U>
   Stack(Cell<T, U> const& xs) -> Stack<Cell<T, U>>;
+
+  class ListToStack : public Static_curried<ListToStack, Nat<1>>{
+  public:
+    template<typename T>
+    static constexpr auto
+    call(T&& xs){
+      return Stack(forward<T>(xs));
+    }
+  } constexpr listToStack{};
 
   template<>
   class Stack<Nothing>
@@ -42,41 +42,62 @@ namespace ListProcessing::CompileTime::Details
   private:
     DataType data;
 
+  public:
     template<typename T>
-    friend constexpr Stack<Cell<T, Nothing>>
-    push(Stack const&, T const& x)
-    {
-      return Stack<Cell<T, Nothing>>(cons(x, nothing));
+    constexpr auto
+    push(T const& x) const {
+      return listToStack(cons( x, nothing));
     }
 
-    friend constexpr bool
-    isEmpty(Stack const&)
+
+    template<typename T>
+    friend constexpr Stack<Cell<T, Nothing>>
+    push(T const& x, Stack const& xs)
     {
-      return true;
+      return xs.push(x);
     }
+
+    constexpr bool
+    isEmpty() const { return true; }
+
+    friend constexpr bool
+    isEmpty(Stack const& xs)
+    {
+      return xs.isEmpty();
+    }
+
+    constexpr Stack
+    pop() const { return *this; }
+
 
     friend constexpr Stack
     pop(Stack const& xs)
     {
-      return xs;
+      return xs.pop();
+    }
+
+    constexpr auto
+    pop2() const
+    {
+      return *this;
     }
 
     friend constexpr auto
-    drop(Stack const& xs)
+    pop2(Stack const& xs)
     {
-      return xs;
+      return xs.pop2();
+    }
+
+    constexpr auto
+    pop3() const
+    {
+      return *this;
     }
 
     friend constexpr auto
-    drop2(Stack const& xs)
+    pop3(Stack const& xs)
     {
-      return xs;
-    }
-
-    friend constexpr auto
-    drop3(Stack const& xs)
-    {
-      return xs;
+      return xs.pop3();
     }
 
     friend constexpr bool
@@ -134,100 +155,150 @@ namespace ListProcessing::CompileTime::Details
   private:
     Data data;
 
+  public:
     template<typename V>
-    friend constexpr Stack<Cell<V, Data>>
-    push(Stack const& xs, V const& x)
-    {
-      return Stack<Cell<V, Data>>(cons(x, xs.data));
+    constexpr Stack<Cell<V,Data>>
+    push(V const& x) const {
+      return {cons(x, data)};
     }
 
-    friend constexpr bool
-    isEmpty(Stack const&)
+    template<typename V>
+    friend constexpr Stack<Cell<V, Data>>
+    push(V const& x, Stack const& xs)
     {
-      return false;
+      xs.push(x);
     }
+
+    constexpr bool
+    isEmpty() const { return false; }
+
+    friend constexpr bool
+    isEmpty(Stack const& xs)
+    {
+      return xs.isEmpty();
+    }
+
+    constexpr TopType
+    top() const { return head(data); }
 
     friend constexpr TopType
     top(Stack const& xs)
     {
-      return head(xs.data);
+      return xs.top();
+    }
+
+    constexpr Stack<PopType>
+    pop() const {
+      return {tail(data)};
     }
 
     friend constexpr Stack<PopType>
     pop(Stack const& xs)
     {
-      return Stack<PopType>(tail(xs.data));
+      return xs.pop();
     }
 
-    friend constexpr auto
-    drop(Stack const& xs)
-    {
-      return pop(xs);
-    }
+    constexpr auto
+    pop2() const { return pop().pop(); }
+
 
     friend constexpr auto
-    drop2(Stack const& xs)
+    pop2(Stack const& xs)
     {
-      return drop(drop(xs));
+      return xs.pop2();
     }
 
+    constexpr auto
+    pop3() const { return pop2().pop(); }
+
+
     friend constexpr auto
-    drop3(Stack const& xs)
+    pop3(Stack const& xs)
     {
-      return drop(drop2(xs));
+      return xs.pop();
     }
+
+    constexpr auto
+    dup() const {
+      return push(top());
+    }
+
 
     friend constexpr auto
     dup(Stack const& xs)
     {
-      return push(xs, top(xs));
+      return xs.dup();
+    }
+
+    constexpr auto
+    swap() const {
+      return pop2()
+        .push(top())
+        .push(pop().top());
     }
 
     friend constexpr auto
     swap(Stack const& xs)
     {
-      return pipe(
-        drop2(xs),
-        [=](auto ys) { return push(ys, top(xs)); },
-        [=](auto ys) { return push(ys, top(pop(xs))); });
+      return xs.swap();
+    }
+
+    constexpr auto
+    nip() const {
+      return pop2()
+        .push(top());
     }
 
     friend constexpr auto
     nip(Stack const& xs)
     {
-      return push(drop2(xs), top(xs));
+      return xs.nip();
+    }
+
+    constexpr auto
+    tuck() const {
+      return pop2()
+        . push(top())
+        . push(pop().top())
+        . push(top());
     }
 
     friend constexpr auto
     tuck(Stack const& xs)
     {
-      return pipe(
-        drop2(xs),
-        [=](auto ys) { return push(ys, top(xs)); },
-        [=](auto ys) { return push(ys, top(drop(xs))); },
-        [=](auto ys) { return push(ys, top(xs)); });
+      return xs.tuck();
+    }
+
+    constexpr auto
+    over() const {
+      return push(pop().top());
     }
 
     friend constexpr auto
     over(Stack const& xs)
     {
-      return push(xs, top(drop(xs)));
+      return xs.over();
+    }
+
+
+    constexpr auto
+    rot() const {
+      return pop3()
+        .push(pop().top())
+        .push(top())
+        .push(pop2().top());
     }
 
     friend constexpr auto
     rot(Stack xs)
     {
-      return pipe(
-        drop3(xs),
-        [=](auto ys) { return push(ys, top(drop(xs))); },
-        [=](auto ys) { return push(ys, top(xs)); },
-        [=](auto ys) { return push(ys, top(drop2(xs))); });
+      return xs.rot();
     }
 
     friend constexpr bool
     operator==(Stack const& xs, Stack const& ys)
     {
-      return top(xs) == top(ys) && pop(xs) == pop(ys);
+      return xs.top() == ys.top() && xs.pop() == ys.pop();
     }
 
     template<typename V>
@@ -267,7 +338,7 @@ namespace ListProcessing::CompileTime::Details
     friend Stream&
     operator<<(Stream& os, Stack const& xs)
     {
-      os << "#Stack(" << top(xs) << " ...)";
+      os << "#Stack(" << xs.top() << " ...)";
       return os;
     }
 
@@ -277,7 +348,7 @@ namespace ListProcessing::CompileTime::Details
     friend ostream&
     operator<<(ostream& os, Stack const& xs)
     {
-      os << "#Stack(" << top(xs) << " ...)";
+      os << "#Stack(" << xs.top() << " ...)";
       return os;
     }
   };

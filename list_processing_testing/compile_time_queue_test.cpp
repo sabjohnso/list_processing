@@ -7,13 +7,19 @@
 // ... ListProcessing header files
 //
 #include <list_processing/compile_time.hpp>
+#include <list_processing/operators.hpp>
 
 using ListProcessing::CompileTime::empty_queue;
 using ListProcessing::CompileTime::makeQueue;
-using ListProcessing::CompileTime::pipe;
+
 
 namespace ListProcessing::Testing
 {
+  namespace // anonymous
+  {
+    constexpr auto pipe = ListProcessing::Operators::pipe;
+  } // end of namespace // anonymous
+
   TEST(CompileTimeQueue, EmptyQueueIsEmpty)
   {
     ASSERT_TRUE(isEmpty(empty_queue));

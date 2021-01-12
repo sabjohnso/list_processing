@@ -2,74 +2,119 @@
 // ... Testing header files
 //
 #include <gtest/gtest.h>
+#include <list_processing_testing/static_checks.hpp>
 
 //
 // ... List Processing header files
 //
 #include <list_processing/compile_time.hpp>
+#include <list_processing/operators.hpp>
 
 using ListProcessing::CompileTime::empty_stack;
 using ListProcessing::CompileTime::make_stack;
-using ListProcessing::CompileTime::pipe;
 
 namespace ListProcessing::Testing
 {
+
+  using ListProcessing::Operators::pipe;
+
   TEST(CompileTimeStack, EmptyStackIsEmpty)
   {
-    ASSERT_TRUE(isEmpty(empty_stack));
-    static_assert(isEmpty(empty_stack));
+    STATIC_EXPECT_TRUE(isEmpty(empty_stack));
+  }
+
+  TEST(CompileTimeStack, FObjEmptyStackIsEmpty)
+  {
+    using namespace ListProcessing::Operators;
+    STATIC_EXPECT_TRUE(isEmpty(empty_stack));
   }
 
   TEST(CompileTimeStack, PushStackIsNotEmpty)
   {
-    ASSERT_FALSE(isEmpty(push(empty_stack, 'x')));
-    static_assert(!isEmpty(push(empty_stack, 'x')));
+    STATIC_EXPECT_FALSE(isEmpty(push('x', empty_stack)));
+  }
+
+  TEST(CompileTimeStack, FObjPushStackIsNotEmpty)
+  {
+    using namespace ListProcessing::Operators;
+    STATIC_EXPECT_FALSE(isEmpty(push('x', empty_stack)));
   }
 
   TEST(CompileTimeStack, TopOfPushIsPushedValue)
   {
-    ASSERT_EQ(top(push(empty_stack, 'x')), 'x');
-    static_assert(top(push(empty_stack, 'x')) == 'x');
+    STATIC_EXPECT_EQ(top(push('x', empty_stack)), 'x');
+  }
+
+  TEST(CompileTimeStack, FObjTopOfPushIsPushedValue)
+  {
+    using namespace ListProcessing::Operators;
+    STATIC_EXPECT_EQ(top(push('x', empty_stack)), 'x');
   }
 
   TEST(CompileTimeStack, Dup)
   {
-    ASSERT_EQ(dup(make_stack('x')), make_stack('x', 'x'));
-    static_assert(dup(make_stack('x')) == make_stack('x', 'x'));
+    STATIC_EXPECT_EQ(dup(make_stack('x')), make_stack('x', 'x'));
+  }
+
+  TEST(CompileTimeStack, FObjDup)
+  {
+    using namespace ListProcessing::Operators;
+    STATIC_EXPECT_EQ(dup(make_stack('x')), make_stack('x', 'x'));
   }
 
   TEST(CompileTimeStack, Swap)
   {
-    ASSERT_EQ(swap(make_stack('y', 'x')), make_stack('x', 'y'));
-    static_assert(swap(make_stack('x', 'y')) == make_stack('y', 'x'));
+    STATIC_EXPECT_EQ(swap(make_stack('y', 'x')), make_stack('x', 'y'));
+  }
+
+  TEST(CompileTimeStack, FObjSwap)
+  {
+    using namespace ListProcessing::Operators;
+    STATIC_EXPECT_EQ(swap(make_stack('y', 'x')), make_stack('x', 'y'));
   }
 
   TEST(CompileTimeStack, Nip)
   {
-    ASSERT_EQ(nip(make_stack('x', 'y')), make_stack('x'));
-    static_assert(nip(make_stack('x', 'y')) == make_stack('x'));
+    STATIC_EXPECT_EQ(nip(make_stack('x', 'y')), make_stack('x'));
+  }
+
+  TEST(CompileTimeStack, FObjNip)
+  {
+    using namespace ListProcessing::Operators;
+    STATIC_EXPECT_EQ(nip(make_stack('x', 'y')), make_stack('x'));
   }
 
   TEST(CompileTimeStack, Tuck)
   {
-    ASSERT_EQ(tuck(make_stack('x', 'y')), make_stack('x', 'y', 'x'));
-    static_assert(
-      tuck(make_stack('x', 'y')) == make_stack('x', 'y', 'x'));
+    STATIC_EXPECT_EQ(tuck(make_stack('x', 'y')), make_stack('x', 'y', 'x'));
+  }
+
+  TEST(CompileTimeStack, FObjTuck)
+  {
+    using namespace ListProcessing::Operators;
+    STATIC_EXPECT_EQ(tuck(make_stack('x', 'y')), make_stack('x', 'y', 'x'));
   }
 
   TEST(CompileTimeStack, Over)
   {
-    ASSERT_EQ(over(make_stack('x', 'y')), make_stack('y', 'x', 'y'));
-    static_assert(
-      over(make_stack('x', 'y')) == make_stack('y', 'x', 'y'));
+    STATIC_EXPECT_EQ(over(make_stack('x', 'y')), make_stack('y', 'x', 'y'));
+  }
+
+  TEST(CompileTimeStack, FObjOver)
+  {
+    using namespace ListProcessing::Operators;
+    STATIC_EXPECT_EQ(over(make_stack('x', 'y')), make_stack('y', 'x', 'y'));
   }
 
   TEST(CompileTimeStack, Rot)
   {
-    ASSERT_EQ(
-      rot(make_stack('x', 'y', 'z')), make_stack('z', 'x', 'y'));
-    static_assert(
-      rot(make_stack('x', 'y', 'z')) == make_stack('z', 'x', 'y'));
+    STATIC_EXPECT_EQ(rot(make_stack('x', 'y', 'z')), make_stack('z', 'x', 'y'));
+  }
+
+  TEST(CompileTimeStack, FObjRot)
+  {
+    using namespace ListProcessing::Operators;
+    STATIC_EXPECT_EQ(rot(make_stack('x', 'y', 'z')), make_stack('z', 'x', 'y'));
   }
 
 } // end of namespace ListProcessing::Testing

@@ -11,14 +11,14 @@ namespace ListProcessing::CompileTime::Details
 {
 
   template<typename D, typename C>
-  class Zipper;
+  class Tape;
 
   template<typename D, typename C>
-  Zipper<D, C>
-  constructZipper(D const& data, C const& context);
+  Tape<D, C>
+  constructTape(D const& data, C const& context);
 
   template<typename D, typename C>
-  class Zipper
+  class Tape
   {
   public:
     using Data = D;
@@ -27,7 +27,7 @@ namespace ListProcessing::CompileTime::Details
     static_assert(isListType(type<Data>));
     static_assert(isListType(type<Context>));
 
-    constexpr Zipper(Data const& d, Context const& c)
+    constexpr Tape(Data const& d, Context const& c)
       : data(d)
       , context(c)
     {}
@@ -37,92 +37,92 @@ namespace ListProcessing::CompileTime::Details
     Context context;
 
     friend constexpr bool
-    isEmpty(Zipper const& xs)
+    isEmpty(Tape const& xs)
     {
       return isNull(xs.data) && isNull(xs.context);
     }
 
     template<typename V>
     friend constexpr auto
-    insert(Zipper const& xs, V const& x)
+    insert(Tape const& xs, V const& x)
     {
-      return constructZipper(cons(x, xs.data), xs.context);
+      return constructTape(cons(x, xs.data), xs.context);
     }
 
     friend constexpr auto
-    remove(Zipper const& xs)
+    remove(Tape const& xs)
     {
-      return constructZipper(tail(xs.data), xs.context);
+      return constructTape(tail(xs.data), xs.context);
     }
 
     template<typename V>
     friend constexpr auto
-    write(Zipper const& xs, V const& x)
+    write(Tape const& xs, V const& x)
     {
       return insert(xs, x);
     }
 
     friend constexpr auto
-    read(Zipper const& xs)
+    read(Tape const& xs)
     {
       return head(xs.data);
     }
 
     friend constexpr index_type
-    position(Zipper const&)
+    position(Tape const&)
     {
       return length_(type<C>);
     }
 
     friend constexpr size_type
-    remaining(Zipper const&)
+    remaining(Tape const&)
     {
       return length_(type<D>);
     }
 
     friend constexpr size_type
-    length(Zipper const&)
+    length(Tape const&)
     {
       return length_(type<C>) + length_(type<D>);
     }
 
     friend constexpr bool
-    isAtFront(Zipper const&)
+    isAtFront(Tape const&)
     {
       return length_(type<C>) == 0;
     }
 
     friend constexpr bool
-    isAtBack(Zipper const&)
+    isAtBack(Tape const&)
     {
       return length_(type<D>) == 0;
     }
 
     friend constexpr auto
-    fwd(Zipper const& xs)
+    fwd(Tape const& xs)
     {
       if constexpr (length_(type<D>) == 0) {
         return xs;
       } else {
-        return constructZipper(
+        return constructTape(
           tail(xs.data), cons(head(xs.data), xs.context));
       }
     }
 
     friend constexpr auto
-    bwd(Zipper const& xs)
+    bwd(Tape const& xs)
     {
       if constexpr (length_(type<C>) == 0) {
         return xs;
       } else {
-        return constructZipper(
+        return constructTape(
           cons(head(xs.context), xs.data), tail(xs.context));
       }
     }
 
     template<offset_type N>
     friend constexpr auto
-    moveBy(Zipper const& xs, integral_constant<offset_type, N>)
+    moveBy(Tape const& xs, integral_constant<offset_type, N>)
     {
       if constexpr (N > 0) {
         return moveBy(fwd(xs), integral_constant<offset_type, N - 1>{});
@@ -135,7 +135,7 @@ namespace ListProcessing::CompileTime::Details
 
     template<offset_type N>
     friend constexpr auto
-    moveBy(Zipper const& xs)
+    moveBy(Tape const& xs)
     {
       if constexpr (N > 0) {
         return moveBy(fwd(xs), integral_constant<offset_type, N - 1>{});
@@ -148,7 +148,7 @@ namespace ListProcessing::CompileTime::Details
 
     template<index_type N>
     friend constexpr auto
-    moveTo(Zipper const& xs, integral_constant<index_type, N>)
+    moveTo(Tape const& xs, integral_constant<index_type, N>)
     {
       return moveBy(
         xs, integral_constant<offset_type, N - length_(type<C>)>{});
@@ -156,19 +156,19 @@ namespace ListProcessing::CompileTime::Details
 
     template<index_type N>
     friend constexpr auto
-    moveTo(Zipper const& xs)
+    moveTo(Tape const& xs)
     {
       return moveTo(xs, integral_constant<index_type, N>{});
     }
 
     friend constexpr auto
-    toFront(Zipper const& xs)
+    toFront(Tape const& xs)
     {
       return moveTo(xs, integral_constant<index_type, 0>{});
     }
 
     friend constexpr auto
-    toBack(Zipper const& xs)
+    toBack(Tape const& xs)
     {
       return moveTo(
         xs,
@@ -179,16 +179,16 @@ namespace ListProcessing::CompileTime::Details
 
     template<typename Stream>
     friend Stream&
-    operator<<(Stream& os, Zipper const& xs)
+    operator<<(Stream& os, Tape const& xs)
     {
       if constexpr (length_(type<D>) == 0 && length_(type<C>) == 0) {
-        os << "#Zipper()";
+        os << "#Tape()";
       } else if constexpr (length_(type<C>) == 0) {
         os << "#Zippper(" << read(xs) << ", ...)";
       } else if constexpr (length_(type<D>) == 0) {
-        os << "#Zipper(..., nil)";
+        os << "#Tape(..., nil)";
       } else {
-        os << "#Zipper(..., " << read(xs) << ", ...)";
+        os << "#Tape(..., " << read(xs) << ", ...)";
       }
       return os;
     }
@@ -197,50 +197,50 @@ namespace ListProcessing::CompileTime::Details
     // is to disambiguate the ostream operators when
     // using gtest.
     friend ostream&
-    operator<<(ostream& os, Zipper const& xs)
+    operator<<(ostream& os, Tape const& xs)
     {
       if constexpr (length_(type<D>) == 0 && length_(type<C>) == 0) {
-        os << "#Zipper()";
+        os << "#Tape()";
       } else if constexpr (length_(type<C>) == 0) {
         os << "#Zippper(" << read(xs) << ", ...)";
       } else if constexpr (length_(type<D>) == 0) {
-        os << "#Zipper(..., nil)";
+        os << "#Tape(..., nil)";
       } else {
-        os << "#Zipper(..., " << read(xs) << ", ...)";
+        os << "#Tape(..., " << read(xs) << ", ...)";
       }
       return os;
     }
   };
 
   template<typename T>
-  struct IsZipper
+  struct IsTape
     : conditional_t<
         is_same_v<T, decay_t<T>>,
         false_type,
-        IsZipper<decay_t<T>>>
+        IsTape<decay_t<T>>>
   {};
 
   template<typename D, typename C>
-  struct IsZipper<Zipper<D, C>> : true_type
+  struct IsTape<Tape<D, C>> : true_type
   {};
 
   template<typename D, typename C>
-  Zipper(D const& data, C const& context) -> Zipper<D, C>;
+  Tape(D const& data, C const& context) -> Tape<D, C>;
 
-  constexpr Zipper<Nothing, Nothing> empty_zipper{ nil, nil };
+  constexpr Tape<Nothing, Nothing> empty_tape{ nil, nil };
 
   template<typename D, typename C>
-  Zipper<D, C>
-  constructZipper(D const& data, C const& context)
+  Tape<D, C>
+  constructTape(D const& data, C const& context)
   {
-    return Zipper<D, C>(data, context);
+    return Tape<D, C>(data, context);
   }
 
   template<typename T, typename... Ts>
   constexpr auto
-  makeZipper(T const& x, Ts const&... xs)
+  makeTape(T const& x, Ts const&... xs)
   {
-    return Zipper(list(x, xs...), nil);
+    return Tape(list(x, xs...), nil);
   }
 
 } // end of namespace ListProcessing::CompileTime::Details
