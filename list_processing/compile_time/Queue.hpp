@@ -94,7 +94,7 @@ namespace ListProcessing::CompileTime::Details
 
     template<typename T>
     friend constexpr auto
-    push(Queue const& xs, T const& x)
+    push(T const& x, Queue const& xs)
     {
       return xs.push(x);
     }

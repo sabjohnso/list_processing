@@ -27,17 +27,17 @@ namespace ListProcessing::Testing
 
   TEST(CompileTimeQueue, PushNotEmpty)
   {
-    ASSERT_FALSE(isEmpty(push(empty_queue, 'a')));
+    ASSERT_FALSE(isEmpty(push('a', empty_queue)));
   }
 
   TEST(CompileTimeQueue, FrontPushIsValue)
   {
-    ASSERT_EQ(front(push(empty_queue, 'a')), 'a');
+    ASSERT_EQ(front(push('a', empty_queue)), 'a');
   }
 
   TEST(CompileTimeQueue, PushPopIsEmpty)
   {
-    ASSERT_TRUE(isEmpty(pop(push(empty_queue, 'a'))));
+    ASSERT_TRUE(isEmpty(pop(push('a', empty_queue))));
   }
 
   TEST(CompileTimeQueue, Order)
