@@ -14,7 +14,7 @@ namespace ListProcessing::CompileTime::Details
   class Tape;
 
   template<typename D, typename C>
-  Tape<D, C>
+  constexpr Tape<D, C>
   constructTape(D const& data, C const& context);
 
   template<typename D, typename C>
@@ -292,7 +292,7 @@ namespace ListProcessing::CompileTime::Details
   constexpr Tape<Nothing, Nothing> empty_tape{ nil, nil };
 
   template<typename D, typename C>
-  Tape<D, C>
+  constexpr Tape<D, C>
   constructTape(D const& data, C const& context)
   {
     return Tape<D, C>(data, context);

@@ -15,24 +15,6 @@
 //
 #include <list_processing/compile_time.hpp>
 
-#define STATIC_EXPECT_EQ(x, y)                    \
-  do{                                             \
-    static_assert((x) == (y));                    \
-    ASSERT_EQ((x),(y));                           \
-  } while(false)
-
-#define STATIC_EXPECT_TRUE(...)                 \
-  do{                                           \
-    static_assert(__VA_ARGS__);                 \
-    ASSERT_TRUE(__VA_ARGS__);                   \
-  } while(false)
-
-#define STATIC_EXPECT_FALSE(...)                 \
-  do{                                            \
-    static_assert(!(__VA_ARGS__));               \
-    ASSERT_FALSE(__VA_ARGS__);                   \
-  } while(false)
-
 namespace {
 
   using TypeUtility::nat;
@@ -87,29 +69,17 @@ namespace ListProcessing::Testing {
     STATIC_EXPECT_EQ(xs, zs);
 
 
-    ASSERT_FALSE(xs != xs);
-    ASSERT_FALSE(xs != ys);
-    ASSERT_FALSE(xs != zs);
+    STATIC_EXPECT_FALSE(xs != xs);
+    STATIC_EXPECT_FALSE(xs != ys);
+    STATIC_EXPECT_FALSE(xs != zs);
 
-    static_assert(!(xs != xs));
-    static_assert(!(xs != ys));
-    static_assert(!(xs != zs));
+    STATIC_EXPECT_FALSE(xs == nothing);
+    STATIC_EXPECT_FALSE(xs == as);
+    STATIC_EXPECT_FALSE(xs == bs);
 
-    ASSERT_FALSE(xs == nothing);
-    ASSERT_FALSE(xs == as);
-    ASSERT_FALSE(xs == bs);
-
-    static_assert(!(xs == nothing));
-    static_assert(!(xs == as));
-    static_assert(!(xs == bs));
-
-    ASSERT_TRUE(xs != nothing);
-    ASSERT_TRUE(xs != as);
-    ASSERT_TRUE(xs != bs);
-
-    static_assert(!islist(xs));
-    static_assert(ispair(xs));
-    static_assert(!isnothing(xs));
+    STATIC_EXPECT_TRUE(xs != nothing);
+    STATIC_EXPECT_TRUE(xs != as);
+    STATIC_EXPECT_TRUE(xs != bs);
   }
 
   TEST(CompileTime, List)
@@ -121,65 +91,45 @@ namespace ListProcessing::Testing {
     constexpr auto as = list(2, 3, 4, 5);
     constexpr auto bs = list(2.0, 3, 4, 5);
 
-    ASSERT_TRUE(islist(xs));
-    ASSERT_EQ(xs, ys);
-    ASSERT_EQ(xs, zs);
+    STATIC_EXPECT_TRUE(islist(xs));
+    STATIC_EXPECT_EQ(xs, ys);
+    STATIC_EXPECT_EQ(xs, zs);
 
-    ASSERT_FALSE(xs == nothing);
-    ASSERT_FALSE(xs == as);
-    ASSERT_FALSE(xs == bs);
+    STATIC_EXPECT_FALSE(xs == nothing);
+    STATIC_EXPECT_FALSE(xs == as);
+    STATIC_EXPECT_FALSE(xs == bs);
 
-    ASSERT_EQ(length(xs), 4);
+    STATIC_EXPECT_EQ(length(xs), 4);
 
-    static_assert(length(xs) == 4);
 
-    ASSERT_EQ(head(xs), 1);
-    ASSERT_EQ(tail(xs), list(2, 3, 4));
 
-    static_assert(head(xs) == 1);
-    static_assert(tail(xs) == list(2, 3, 4));
+    STATIC_EXPECT_EQ(head(xs), 1);
+    STATIC_EXPECT_EQ(tail(xs), list(2, 3, 4));
 
-    ASSERT_EQ(reverse(xs), list(4, 3, 2, 1));
-    static_assert(reverse(xs) == list(4, 3, 2, 1));
+    STATIC_EXPECT_EQ(reverse(xs), list(4, 3, 2, 1));
 
-    ASSERT_EQ(take(nat<0>, xs), nothing);
-    ASSERT_EQ(take(nat<1>, xs), list(1));
-    ASSERT_EQ(take(nat<2>, xs), list(1, 2));
-    ASSERT_EQ(take(nat<3>, xs), list(1, 2, 3));
-    ASSERT_EQ(take(nat<4>, xs), list(1, 2, 3, 4));
-    ASSERT_EQ(take(nat<5>, xs), list(1, 2, 3, 4));
 
-    static_assert(take(nat<0>, xs) == nothing);
-    static_assert(take(nat<1>, xs) == list(1));
-    static_assert(take(nat<2>, xs) == list(1, 2));
-    static_assert(take(nat<3>, xs) == list(1, 2, 3));
-    static_assert(take(nat<4>, xs) == list(1, 2, 3, 4));
-    static_assert(take(nat<5>, xs) == list(1, 2, 3, 4));
+    STATIC_EXPECT_EQ(take(nat<0>, xs), nothing);
+    STATIC_EXPECT_EQ(take(nat<1>, xs), list(1));
+    STATIC_EXPECT_EQ(take(nat<2>, xs), list(1, 2));
+    STATIC_EXPECT_EQ(take(nat<3>, xs), list(1, 2, 3));
+    STATIC_EXPECT_EQ(take(nat<4>, xs), list(1, 2, 3, 4));
+    STATIC_EXPECT_EQ(take(nat<5>, xs), list(1, 2, 3, 4));
 
-    ASSERT_EQ(drop(nat<0>, xs), xs);
-    ASSERT_EQ(drop(nat<1>, xs), list(2, 3, 4));
-    ASSERT_EQ(drop(nat<2>, xs), list(3, 4));
-    ASSERT_EQ(drop(nat<3>, xs), list(4));
-    ASSERT_EQ(drop(nat<4>, xs), nothing);
-    ASSERT_EQ(drop(nat<5>, xs), nothing);
+    STATIC_EXPECT_EQ(drop(nat<0>, xs), xs);
+    STATIC_EXPECT_EQ(drop(nat<1>, xs), list(2, 3, 4));
+    STATIC_EXPECT_EQ(drop(nat<2>, xs), list(3, 4));
+    STATIC_EXPECT_EQ(drop(nat<3>, xs), list(4));
+    STATIC_EXPECT_EQ(drop(nat<4>, xs), nothing);
+    STATIC_EXPECT_EQ(drop(nat<5>, xs), nothing);
 
-    static_assert(drop(nat<0>, xs) == xs);
-    static_assert(drop(nat<1>, xs) == list(2, 3, 4));
-    static_assert(drop(nat<2>, xs) == list(3, 4));
-    static_assert(drop(nat<3>, xs) == list(4));
-    static_assert(drop(nat<4>, xs) == nothing);
-    static_assert(drop(nat<5>, xs) == nothing);
+    STATIC_EXPECT_EQ(append(xs, nothing), xs);
+    STATIC_EXPECT_EQ(append(nothing, xs), xs);
+    STATIC_EXPECT_EQ(append(list(1, 2), list(3, 4)), xs);
 
-    ASSERT_EQ(append(xs, nothing), xs);
-    ASSERT_EQ(append(nothing, xs), xs);
-    ASSERT_EQ(append(list(1, 2), list(3, 4)), xs);
 
-    static_assert(append(xs, nothing) == xs);
-    static_assert(append(nothing, xs) == xs);
-    static_assert(append(list(1, 2), list(3, 4)) == xs);
-
-    static_assert(foldl([](auto x, auto y) { return x + y; }, 0, xs) == 10);
-    static_assert(foldr([](auto x, auto y) { return std::min(x, y); }, 10, xs) == 1);
+    STATIC_EXPECT_EQ(foldl([](auto x, auto y) { return x + y; }, 0, xs), 10);
+    STATIC_EXPECT_EQ(foldr([](auto x, auto y) { return std::min(x, y); }, 10, xs), 1);
   }
 
   TEST(CompileTime, TypeLength){
