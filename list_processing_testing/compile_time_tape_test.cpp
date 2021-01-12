@@ -70,28 +70,28 @@ namespace ListProcessing::Testing
 
   TEST(CompileTimeTape, MoveBy)
   {
-    ASSERT_EQ(position(moveBy(makeTape('a', 'b', 'c'), idx<0>)), 0);
-    ASSERT_EQ(position(moveBy(makeTape('a', 'b', 'c'), idx<1>)), 1);
-    ASSERT_EQ(position(moveBy(makeTape('a', 'b', 'c'), idx<2>)), 2);
+    ASSERT_EQ(position(moveBy(idx<0>, makeTape('a', 'b', 'c'))), 0);
+    ASSERT_EQ(position(moveBy(idx<1>, makeTape('a', 'b', 'c'))), 1);
+    ASSERT_EQ(position(moveBy(idx<2>, makeTape('a', 'b', 'c'))), 2);
   }
 
   TEST(CompileTimeTape, MoveByNegative)
   {
     ASSERT_EQ(
-      position(moveBy(toBack(makeTape('a', 'b', 'c')), idx<0>)), 3);
+      position(moveBy(idx<0>, toBack(makeTape('a', 'b', 'c')))), 3);
     ASSERT_EQ(
-      position(moveBy(toBack(makeTape('a', 'b', 'c')), idx<-1>)), 2);
+      position(moveBy(idx<-1>, toBack(makeTape('a', 'b', 'c')))), 2);
     ASSERT_EQ(
-      position(moveBy(toBack(makeTape('a', 'b', 'c')), idx<-2>)), 1);
+      position(moveBy(idx<-2>, toBack(makeTape('a', 'b', 'c')))), 1);
     ASSERT_EQ(
-      position(moveBy(toBack(makeTape('a', 'b', 'c')), idx<-3>)), 0);
+      position(moveBy(idx<-3>, toBack(makeTape('a', 'b', 'c')))), 0);
   }
 
   TEST(CompileTimeTape, MoveTo)
   {
-    ASSERT_EQ(position(moveTo(makeTape('a', 'b', 'c'), idx<0>)), 0);
-    ASSERT_EQ(position(moveTo(makeTape('a', 'b', 'c'), idx<1>)), 1);
-    ASSERT_EQ(position(moveTo(makeTape('a', 'b', 'c'), idx<2>)), 2);
+    ASSERT_EQ(position(moveTo(idx<0>, makeTape('a', 'b', 'c'))), 0);
+    ASSERT_EQ(position(moveTo(idx<1>, makeTape('a', 'b', 'c'))), 1);
+    ASSERT_EQ(position(moveTo(idx<2>, makeTape('a', 'b', 'c'))), 2);
   }
 
 } // end of namespace ListProcessing::Testing

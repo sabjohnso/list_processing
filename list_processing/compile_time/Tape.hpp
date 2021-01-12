@@ -57,7 +57,7 @@ namespace ListProcessing::CompileTime::Details
 
     template<typename V>
     friend constexpr auto
-    insert(Tape const& xs, V const& x)
+    insert(V const& x, Tape const& xs)
     {
       return xs.insert(x);
     }
@@ -79,7 +79,7 @@ namespace ListProcessing::CompileTime::Details
 
     template<typename V>
     friend constexpr auto
-    write(Tape const& xs, V const& x)
+    write(V const& x, Tape const& xs)
     {
       return xs.write(x);
     }
@@ -113,7 +113,7 @@ namespace ListProcessing::CompileTime::Details
     }
 
     constexpr size_type
-    length(Tape const&) const
+    length() const
     {
       return length_(type<C>) + length_(type<D>);
     }
@@ -194,7 +194,7 @@ namespace ListProcessing::CompileTime::Details
 
     template<offset_type N>
     friend constexpr auto
-    moveBy(Tape const& xs, integral_constant<offset_type, N>)
+    moveBy(integral_constant<offset_type, N>, Tape const& xs)
     {
       return xs.moveBy(integral_constant<offset_type, N>{});
     }
@@ -208,7 +208,7 @@ namespace ListProcessing::CompileTime::Details
 
     template<index_type N>
     friend constexpr auto
-    moveTo(Tape const& xs, integral_constant<index_type, N>)
+    moveTo(integral_constant<index_type, N>, Tape const& xs)
     {
       return xs.moveTo(integral_constant<index_type, N>{});
     }
@@ -264,7 +264,7 @@ namespace ListProcessing::CompileTime::Details
       if constexpr (length_(type<D>) == 0 && length_(type<C>) == 0) {
         os << "#Tape()";
       } else if constexpr (length_(type<C>) == 0) {
-        os << "#Zippper(" << read(xs) << ", ...)";
+        os << "#Tape()(" << read(xs) << ", ...)";
       } else if constexpr (length_(type<D>) == 0) {
         os << "#Tape(..., nil)";
       } else {
