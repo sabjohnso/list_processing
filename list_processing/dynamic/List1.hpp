@@ -20,7 +20,6 @@ namespace ListProcessing::Dynamic::Details
 
     friend ListOperators<List, T>;
 
-  private:
     List() : ptr(nullptr) {}
 
     List(Nil) : ptr(nullptr){}
@@ -107,19 +106,24 @@ namespace ListProcessing::Dynamic::Details
       return xs.isNull();
     }
 
-
-
-
-
-
     // clang-format off
-    List const&
+    List
     getTail() const
     {
       return hasData(*this)
         ? ptr->tail
         : *this;
     }
+
+    List
+    tail() const
+    {
+      return hasData()
+        ? ptr->tail
+        : *this;
+    }
+
+
   private:
 
     /**
@@ -129,7 +133,7 @@ namespace ListProcessing::Dynamic::Details
     friend List
     tail(List xs)
     {
-      return xs.hasData() ? xs.ptr->tail : xs;
+      return xs.tail();
     }
 
     size_type
@@ -139,7 +143,7 @@ namespace ListProcessing::Dynamic::Details
         tramp
         run(List xs, size_type accum) const {
           return xs.hasData()
-            ? tramp([=,this]{ return run(tail(xs), accum+1); })
+            ? tramp([=,this]{ return run(xs.tail(), accum+1); })
             : tramp(accum);
         }
       } constexpr aux{};
@@ -160,6 +164,14 @@ namespace ListProcessing::Dynamic::Details
         ? ptr->head
         : throw logic_error("Cannot access the head of an empty list");
     }
+
+    const_reference
+    head() const
+    {
+      return hasData()
+        ? ptr->head
+        : throw logic_error("Cannot access the head of an empty list");
+    }
   private:
 
     /**
@@ -171,9 +183,7 @@ namespace ListProcessing::Dynamic::Details
     friend value_type
     head(List xs)
     {
-      return xs.hasData()
-        ? xs.ptr->head
-        : throw logic_error("Cannot access the head of an empty list");
+      return xs.head();
     }
     // clang-format on
 
@@ -189,7 +199,7 @@ namespace ListProcessing::Dynamic::Details
         tramp
         run(List xs, List ys) const {
           return xs.hasData()
-            ? tramp([=,this]{ return run(tail(xs), cons(head(xs), ys)); })
+            ? tramp([=,this]{ return run(xs.tail(), cons(xs.head(), ys)); })
             : tramp(ys);
         }
       } constexpr aux{};
@@ -227,7 +237,7 @@ namespace ListProcessing::Dynamic::Details
         tramp
         run(F f, U init, List xs) const {
           return xs.hasData()
-            ? Trampoline<U>([=,this]{ return run(f, f(init, head(xs)), tail(xs)); })
+            ? Trampoline<U>([=,this]{ return run(f, f(init, xs.head()), xs.tail()); })
             : Trampoline<U>(init);
         }
       } constexpr aux{};
@@ -271,7 +281,7 @@ namespace ListProcessing::Dynamic::Details
         tramp
         run(F f, List xs, Result accum) const {
           return xs.hasData()
-            ? tramp([=,this]{ return run(f, tail(xs), cons(f(head(xs)), accum)); })
+            ? tramp([=,this]{ return run(f, xs.tail(), cons(f(xs.head()), accum)); })
             : tramp(accum);
         }
       } constexpr aux{};
@@ -295,7 +305,7 @@ namespace ListProcessing::Dynamic::Details
     aMapAux(F fs, List xs, Result accum){
       using tramp = Trampoline<Result>;
       return fs.hasData()
-        ? tramp([=]{ return aMapAux(tail(fs), xs, rappend(map(head(fs), xs), accum)); })
+        ? tramp([=]{ return aMapAux(fs.tail(), xs, rappend(map(fs.head(), xs), accum)); })
         : tramp(reverse(accum));
     }
 
@@ -307,7 +317,7 @@ namespace ListProcessing::Dynamic::Details
     template<typename F>
     friend auto
     aMap(F fs, List xs){
-      using Result = decltype(map(head(fs), xs));
+      using Result = decltype(map(fs.head(), xs));
       return Result(aMapAux(fs, xs, Result::nil));
     }
 
@@ -378,8 +388,8 @@ namespace ListProcessing::Dynamic::Details
       struct Aux{
         tramp
         run(List xs, size_type n) const {
-          return hasData(xs) && n > 0
-            ? tramp([=,this]{ return run(tail(xs), n-1); })
+          return xs.hasData() && n > 0
+            ? tramp([=,this]{ return run(xs.tail(), n-1); })
             : tramp(xs);
         }
       } constexpr aux{};
@@ -437,8 +447,8 @@ namespace ListProcessing::Dynamic::Details
         tramp
         run(List xs, List ys) const {
           return xs.hasData() && ys.hasData()
-            ? (head(xs) == head(ys)
-               ? tramp([=,this]{ return run(tail(xs), tail(ys)); })
+            ? (xs.head() == ys.head()
+               ? tramp([=,this]{ return run(xs.tail(), ys.tail()); })
                : tramp(false))
             : tramp(xs.isNull() && ys.isNull() ? true  : false);
         }

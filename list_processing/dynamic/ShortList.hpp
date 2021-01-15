@@ -79,12 +79,8 @@ namespace ListProcessing::Dynamic::Details
       , reversed(false)
     {}
 
-    const_reference
-    getHead() const {
-      return isReversed(*this)
-        ? (*data)[0]
-        : (*data)[fillpoint - 1];
-    }
+
+
 
   private:
     /**
@@ -137,6 +133,10 @@ namespace ListProcessing::Dynamic::Details
       {}
 
     public:
+
+
+
+
       static shared_ptr<Kernel>
       copy(shared_ptr<const Kernel> xs, size_type n)
       {
@@ -206,7 +206,7 @@ namespace ListProcessing::Dynamic::Details
       , fillpoint(new_fillpoint)
       , reversed(false)
     {
-      assert(!isReversed(xs));
+      assert(!xs.isReversed());
     }
 
     ShortList(ShortList xs, bool reverse)
@@ -222,6 +222,29 @@ namespace ListProcessing::Dynamic::Details
     {}
 
   public:
+
+
+
+    const_reference
+    getHead() const {
+      return isReversed()
+        ? (*data)[0]
+        : (*data)[fillpoint - 1];
+    }
+
+    const_reference
+    head() const {
+      return isReversed()
+        ? (*data)[0]
+        : (*data)[fillpoint - 1];
+    }
+
+
+    friend value_type
+    head(ShortList xs){
+      return xs.head();
+    }
+
     size_type
     length() const {
       assert(fillpoint > 0);
@@ -234,42 +257,61 @@ namespace ListProcessing::Dynamic::Details
       return xs.length();
     }
 
+    bool
+    isFull() const { return length() == extent; }
+
     friend bool
     isFull(ShortList xs)
     {
-      return xs.length() == extent;
+      return xs.isFull();
+    }
+
+    bool
+    isReversed() const {
+      return reversed;
     }
 
     friend bool
     isReversed(ShortList xs)
     {
-      return xs.reversed;
+      return xs.isReversed();
+    }
+
+    ShortList
+    copy() const {
+      return isReversed()
+        ? ShortList(Kernel::reverseCopy(data, fillpoint), fillpoint, false)
+        : ShortList(Kernel::copy(data, fillpoint), fillpoint, false);
     }
 
     friend ShortList
     copy(ShortList xs)
     {
-      return isReversed(xs)
-               ? ShortList(Kernel::reverseCopy(xs.data, xs.fillpoint), xs.fillpoint, false)
-               : ShortList(Kernel::copy(xs.data, xs.fillpoint), xs.fillpoint, false);
+      return xs.copy();
+    }
+
+    ShortList
+    cons(const_reference x) const {
+      return isReversed() ? copy().cons(x) : ShortList(x, *this);
     }
 
     friend ShortList
     cons(const_reference x, ShortList xs)
     {
-      return isReversed(xs) ? cons(x, copy(xs)) : ShortList(x, xs);
+      return xs.cons(x);
     }
 
-    friend value_type
-    head(ShortList xs)
-    {
-      return isReversed(xs) ? (*xs.data)[0] : (*xs.data)[xs.fillpoint - 1];
+
+    const_reference
+    listRef(index_type index) const {
+      return isReversed() ? (*data)[index] : (*data)[fillpoint - index - 1];
     }
+
 
     friend value_type
     listRef(ShortList xs, index_type index)
     {
-      return isReversed(xs) ? (*xs.data)[index] : (*xs.data)[xs.fillpoint - index - 1];
+      return xs.listRef(index);
     }
 
     friend ShortList
@@ -278,25 +320,42 @@ namespace ListProcessing::Dynamic::Details
       return ShortList(xs, true);
     }
 
+
+    ShortList
+    tail() const
+    {
+      return isReversed() ? copy().tail() : ShortList(*this, fillpoint - 1);
+    }
+
     friend ShortList
     tail(ShortList xs)
     {
-      return isReversed(xs) ? tail(copy(xs)) : ShortList(xs, xs.fillpoint - 1);
+      return xs.tail();
+    }
+
+    ShortList
+    take(size_type n) const {
+      assert(n > 0);
+      assert(n <= length());
+      return reverse(reverse(*this).drop( length() - n));
     }
 
     friend ShortList
     take(ShortList xs, size_type n)
     {
-      assert(n > 0);
-      assert(n <= length(xs));
-      return reverse(drop(reverse(xs), xs.length() - n));
+      return xs.take(n);
+    }
+
+    ShortList
+    drop(size_type n) const {
+      assert(length() > n);
+      return isReversed() ? copy().drop(n) : ShortList(*this, length() - n);
     }
 
     friend ShortList
     drop(ShortList xs, size_type n)
     {
-      assert(length(xs) > n);
-      return isReversed(xs) ? drop(copy(xs), n) : ShortList(xs, xs.length() - n);
+      return xs.drop(n);
     }
 
     friend bool
@@ -306,7 +365,7 @@ namespace ListProcessing::Dynamic::Details
       index_type i = 0;
       bool result = xs.length() == ys.length();
       while (result && i < n) {
-        result = listRef(xs, i) == listRef(ys, i);
+        result = xs.listRef(i) == ys.listRef(i);
         ++i;
       }
       return result;
@@ -322,9 +381,9 @@ namespace ListProcessing::Dynamic::Details
     operator<<(ostream& os, ShortList xs)
     {
       size_type n = xs.length();
-      os << "(" << listRef(xs, 0);
+      os << "(" << xs.listRef(0);
       for (index_type i = 1; i < n; ++i) {
-        os << " " << listRef(xs, i);
+        os << " " << xs.listRef(i);
       }
       os << ")";
       return os;
@@ -335,7 +394,7 @@ namespace ListProcessing::Dynamic::Details
     fMap(F f, ShortList xs)
     {
       return ShortList<U, N>(
-        [=](auto index) { return f(listRef(xs, index)); }, xs.length(), build_tag{});
+        [=](auto index) { return f(xs.listRef(index)); }, xs.length(), build_tag{});
     }
 
     template<typename F, typename U>

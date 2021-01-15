@@ -15,8 +15,6 @@
 namespace ListProcessing::Dynamic::Details
 {
 
-
-
   /**
    * @brief Construct a list from the input values
    */
@@ -31,9 +29,9 @@ namespace ListProcessing::Dynamic::Details
 
       } else {
         return Nil{};
+
       }
     }
-
 
     template<typename T>
     static List<T>

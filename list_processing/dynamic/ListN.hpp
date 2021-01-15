@@ -39,9 +39,9 @@ namespace ListProcessing::Dynamic::Details
     {}
 
     List(const_reference x, List const& xs)
-      : data(xs.data.isNull() || isFull(head(xs.data))
+      : data(xs.data.isNull() || isFull(xs.data.head())
              ? cons(Datum(x), xs.data)
-             : cons(cons(x, head(xs.data)), tail(xs.data)))
+             : cons(cons(x, xs.data.head()), xs.data.tail()))
     {}
 
     List(Data input_data)
@@ -74,24 +74,35 @@ namespace ListProcessing::Dynamic::Details
       return xs.isNull();
     }
 
+
     const value_type&
     getHead() const { return data.getHead().getHead(); }
 
+    const value_type&
+    head() const { return data.head().head(); }
 
     friend value_type
     head(List xs)
     {
-      return xs.hasData() ? head(head(xs.data))
-        : throw logic_error("Cannot access the head of an empty list");
+      return xs.head();
+    }
+
+    List
+    tail() const {
+      return hasData()
+        ? (data.head().length() == 1
+           ? List(data.tail())
+           : List(cons(data.head().tail(), data.tail())))
+        : nil;
     }
 
     friend List
     tail(List xs)
     {
       return xs.hasData()
-        ? (head(xs.data).length() == 1
-           ? List(tail(xs.data))
-           : List(cons(tail(head(xs.data)), tail(xs.data))))
+        ? (xs.data.head().length() == 1
+           ? List(xs.data.tail())
+           : List(cons(xs.data.head().tail(), xs.data.tail())))
         : nil;
     }
 
@@ -147,7 +158,7 @@ namespace ListProcessing::Dynamic::Details
         tramp
         run(List xs, size_type n) const {
           return xs.hasData() && n > 0
-            ? tramp([=,this]{ return run(tail(xs), n-1); })
+            ? tramp([=,this]{ return run(xs.tail(), n-1); })
             : tramp(xs);
         }
       } constexpr aux{};
@@ -161,7 +172,7 @@ namespace ListProcessing::Dynamic::Details
         tramp
         run(List xs, size_type n, List accum) const {
           return xs.hasData() && n > 0
-            ? tramp([=,this]{ return run(tail(xs), n-1, cons(head(xs), accum)); })
+            ? tramp([=,this]{ return run(xs.tail(), n-1, cons(xs.head(), accum)); })
             : tramp(reverse(accum));
         }
       } constexpr aux{};
@@ -171,7 +182,7 @@ namespace ListProcessing::Dynamic::Details
     friend value_type
     listRef(List xs, index_type index)
     {
-      return head(drop(xs, index));
+      return drop(xs, index).head();
     }
 
     friend bool
@@ -182,8 +193,8 @@ namespace ListProcessing::Dynamic::Details
         tramp
         run(List xs, List ys) const {
           return xs.hasData() && ys.hasData()
-            ? (head(xs) == head(ys)
-               ? tramp([=,this]{ return run(tail(xs), tail(ys)); })
+            ? (xs.head() == ys.head()
+               ? tramp([=,this]{ return run(xs.tail(), ys.tail()); })
                : tramp(false))
             : tramp(xs.isNull() && ys.isNull() ? true : false);
 
@@ -230,7 +241,7 @@ namespace ListProcessing::Dynamic::Details
         Trampoline<List>
         run(List xs, List ys) const {
           return xs.hasData()
-            ? Trampoline<List>([=,this]{ return run(tail(xs), cons(head(xs), ys));  })
+            ? Trampoline<List>([=,this]{ return run(xs.tail(), cons(xs.head(), ys));  })
             : Trampoline<List>(ys);
         }
       } constexpr aux{};
@@ -259,7 +270,7 @@ namespace ListProcessing::Dynamic::Details
         tramp
         run(F f, U init, List xs) const {
           return xs.hasData()
-            ? tramp([=, this]{ return run(f, f(init, head(xs)), tail(xs)); })
+            ? tramp([=, this]{ return run(f, f(init, xs.head()), xs.tail()); })
             : tramp(init);
         }
       } constexpr aux{};
@@ -275,7 +286,7 @@ namespace ListProcessing::Dynamic::Details
         tramp
         run(F f, List xs, U init) const {
           return xs.hasData()
-            ? tramp([=,this]{ return run(f, tail(xs), f(head(xs), init)); })
+            ? tramp([=,this]{ return run(f, xs.tail(), f(xs.head(), init)); })
             : tramp(init);
         }
       } constexpr aux{};
@@ -289,7 +300,7 @@ namespace ListProcessing::Dynamic::Details
       struct Aux{
         tramp run(F f, List xs, Result accum) const {
           return xs.hasData()
-            ? tramp([=,this]{ return run(f, tail(xs), cons(f(head(xs)), accum)); })
+            ? tramp([=,this]{ return run(f, xs.tail(), cons(f(xs.head()), accum)); })
             : tramp(accum);
         }
       } constexpr aux{};
@@ -317,7 +328,7 @@ namespace ListProcessing::Dynamic::Details
         tramp
         run(List<F,M> fs, List xs, Result accum) const {
           return fs.hasData()
-            ? tramp([=,this]{ return run(tail(fs), xs, Result(rMap(head(fs), xs, accum))); })
+            ? tramp([=,this]{ return run(fs.tail(), xs, Result(rMap(fs.head(), xs, accum))); })
             : tramp(reverse(accum));
         }
       } constexpr aux{};
@@ -339,8 +350,8 @@ namespace ListProcessing::Dynamic::Details
       struct Aux{
         tramp
         run(F f, List xs, Result accum) const {
-          return hasData(xs)
-            ? tramp([=,this]{ return run(f, tail(xs), rappend(f(head(xs)), accum)); })
+          return xs.hasData()
+            ? tramp([=,this]{ return run(f, xs.tail(), rappend(f(xs.head()), accum)); })
             : tramp(reverse(accum));
         }
       } constexpr aux{};
@@ -354,8 +365,8 @@ namespace ListProcessing::Dynamic::Details
       unique_ptr<List> ptr(make_unique<List>(xs));
       while(! ptr->isNull())
       {
-        f(head(*ptr));
-        ptr = make_unique<List>(tail(*ptr));
+        f(ptr->head());
+        ptr = make_unique<List>(ptr->tail());
       }
       return f;
     }
