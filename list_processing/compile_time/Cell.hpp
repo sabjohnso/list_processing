@@ -3,29 +3,24 @@
 //
 // ... List Processing header files
 //
-#include <list_processing/compile_time/import.hpp>
 #include <list_processing/compile_time/CellFwd.hpp>
 #include <list_processing/compile_time/Nothing.hpp>
-
+#include <list_processing/compile_time/import.hpp>
 
 namespace ListProcessing::CompileTime::Details
 {
 
-
   template<typename T>
-  constexpr bool
-  ispair_type(Type<T>)
+  constexpr bool ispair_type(Type<T>)
   {
     return false;
   }
 
   template<typename T, typename U>
-  constexpr bool
-  ispair_type(Type<Cell<T, U>>)
+  constexpr bool ispair_type(Type<Cell<T, U>>)
   {
     return true;
   }
-
 
   template<typename T, typename U>
   constexpr size_type length_(Type<Cell<T, U>>)
@@ -49,7 +44,6 @@ namespace ListProcessing::CompileTime::Details
     using base = pair<T, U>;
 
   private:
-
     //  _                _
     // | |_  ___ __ _ __| |
     // | ' \/ -_) _` / _` |
@@ -172,8 +166,6 @@ namespace ListProcessing::CompileTime::Details
       return xs.ispair();
     }
 
-
-
     //  ___ ___
     // |___|___|
     // |___|___|
@@ -225,8 +217,6 @@ namespace ListProcessing::CompileTime::Details
     // | |___
     // |_|___|
     // (_)___|
-
-
 
     friend constexpr bool
     operator!=(Cell const& xs, Nothing const& y)
@@ -291,13 +281,15 @@ namespace ListProcessing::CompileTime::Details
       return ys.rappend(xs);
     }
 
-
     //  _ _ _____ _____ _ _ ___ ___
     // | '_/ -_) V / -_) '_(_-</ -_)
     // |_| \___|\_/\___|_| /__/\___|
 
     constexpr auto
-    reverse() const { return nothing.rappend(*this); }
+    reverse() const
+    {
+      return nothing.rappend(*this);
+    }
 
     friend constexpr auto
     reverse(Cell const& xs)
@@ -310,7 +302,6 @@ namespace ListProcessing::CompileTime::Details
     // / _` | '_ \ '_ \/ -_) ' \/ _` |
     // \__,_| .__/ .__/\___|_||_\__,_|
     //      |_|  |_|
-
 
     constexpr auto
     append(Nothing const&) const
@@ -332,13 +323,16 @@ namespace ListProcessing::CompileTime::Details
       return ys.append(xs);
     }
 
-
-    constexpr auto
-    listRef(Nat<0>) const { return head(); }
+    constexpr auto listRef(Nat<0>) const
+    {
+      return head();
+    }
 
     template<size_t N>
-    constexpr auto
-    listRef(Nat<N>) const { return tail().listRef(nat<N-1>); }
+    constexpr auto listRef(Nat<N>) const
+    {
+      return tail().listRef(nat<N - 1>);
+    }
 
     template<size_t N>
     friend constexpr auto
@@ -348,14 +342,16 @@ namespace ListProcessing::CompileTime::Details
       return xs.listRef(nat<N>);
     }
 
-
-    constexpr auto
-    take(Nat<0>) const { return nothing; }
+    constexpr auto take(Nat<0>) const
+    {
+      return nothing;
+    }
 
     template<size_t N>
-    constexpr auto
-    take(Nat<N>) const { return cons(head(), tail().take(nat<N-1>)); }
-
+    constexpr auto take(Nat<N>) const
+    {
+      return cons(head(), tail().take(nat<N - 1>));
+    }
 
     template<size_t N>
     friend constexpr auto
@@ -364,12 +360,16 @@ namespace ListProcessing::CompileTime::Details
       return xs.take(nat<N>);
     }
 
-    constexpr auto
-    drop(Nat<0>) const { return *this; }
+    constexpr auto drop(Nat<0>) const
+    {
+      return *this;
+    }
 
     template<size_t N>
-    constexpr auto
-    drop(Nat<N>) const { return tail().drop(nat<N-1>); }
+    constexpr auto drop(Nat<N>) const
+    {
+      return tail().drop(nat<N - 1>);
+    }
 
     template<size_t N>
     friend constexpr auto
@@ -379,7 +379,8 @@ namespace ListProcessing::CompileTime::Details
     }
 
     constexpr auto
-    butLast() const {
+    butLast() const
+    {
       return reverse().tail().reverse();
     }
 
@@ -391,7 +392,8 @@ namespace ListProcessing::CompileTime::Details
 
     template<typename F, typename V>
     constexpr auto
-    foldl(F f, V const& init) const {
+    foldl(F f, V const& init) const
+    {
       return tail().foldl(f, f(init, head()));
     }
 
@@ -419,62 +421,75 @@ namespace ListProcessing::CompileTime::Details
 
     template<typename F>
     constexpr auto
-    mapList(F f) const { return cons(f(head()), tail().mapList(f)); }
+    mapList(F f) const
+    {
+      return cons(f(head()), tail().mapList(f));
+    }
 
     template<typename F>
     friend constexpr auto
-    mapList(F f, Cell const& xs){
+    mapList(F f, Cell const& xs)
+    {
       return xs.mapList(f);
     }
 
     constexpr auto
-    fApplyList(Nothing const&) const {
+    fApplyList(Nothing const&) const
+    {
       return nothing;
     }
 
     template<typename Fs>
     constexpr auto
-    fApplyList(Fs const& fs) const {
+    fApplyList(Fs const& fs) const
+    {
       return fApplyList(fs.tail()).append(mapList(fs.head()));
     }
 
     template<typename Fs>
     friend constexpr auto
-    fApplyList(Fs const& fs, Cell const& xs){
+    fApplyList(Fs const& fs, Cell const& xs)
+    {
       return xs.fApplyList(fs);
     }
 
-    template<typename Fs, typename ... Ts>
+    template<typename Fs, typename... Ts>
     constexpr auto
-    applyList(Fs const& fs, Ts const& ... xs) const {
-      return tail().applyList(fs, xs ..., head());
+    applyList(Fs const& fs, Ts const&... xs) const
+    {
+      return tail().applyList(fs, xs..., head());
     }
 
     template<typename Fs>
     friend constexpr auto
-    applyList(Fs const& fs, Cell const& xs){
+    applyList(Fs const& fs, Cell const& xs)
+    {
       return xs.applyList(fs);
     }
 
     constexpr auto
-    flattenList() const {
+    flattenList() const
+    {
       return tail().flattenList().append(head());
     }
 
     friend constexpr auto
-    flattenList(Cell const& xs){
+    flattenList(Cell const& xs)
+    {
       return xs.flattenList();
     }
 
     template<typename F>
     constexpr auto
-    flatMapList(F const& f) const {
+    flatMapList(F const& f) const
+    {
       return mapList(f).flattenList();
     }
 
     template<typename F>
     friend constexpr auto
-    flatMapList(F const& f, Cell const& xs){
+    flatMapList(F const& f, Cell const& xs)
+    {
       return xs.flatMapList(f);
     }
 
@@ -491,21 +506,21 @@ namespace ListProcessing::CompileTime::Details
     printElements(Stream& os) const
     {
       os << head();
-      if constexpr (ispair_type(type<U>)){
+      if constexpr (ispair_type(type<U>)) {
         os << ' ';
         tail().printElements(os);
-      } else if constexpr (! is_same_v<U,Nothing>){
+      } else if constexpr (!is_same_v<U, Nothing>) {
         os << " . ";
         os << tail();
       }
       return os;
     }
 
-
     template<typename Stream>
     Stream&
-    printList(Stream& os) const {
-      os << '(' << head();
+    printList(Stream& os) const
+    {
+      os << '(';
       printElements(os);
       os << ')';
       return os;
@@ -513,7 +528,8 @@ namespace ListProcessing::CompileTime::Details
 
     template<typename Stream>
     friend Stream&
-    printList(Stream& os, Cell const& xs){
+    printList(Stream& os, Cell const& xs)
+    {
       xs.printList(os);
       return os;
     }
@@ -535,16 +551,19 @@ namespace ListProcessing::CompileTime::Details
     }
   }; // end of class Cell
 
-
-
-  class List : public Static_callable<List>{
+  class List : public Static_callable<List>
+  {
   public:
     static constexpr auto
-    call(){ return nothing; }
+    call()
+    {
+      return nothing;
+    }
 
-    template<typename T, typename ... Ts>
+    template<typename T, typename... Ts>
     static constexpr auto
-    call(T&& x, Ts&& ... xs){
+    call(T&& x, Ts&&... xs)
+    {
       return cons(forward<T>(x), call(forward<Ts>(xs)...));
     }
   } constexpr list{};
@@ -553,31 +572,31 @@ namespace ListProcessing::CompileTime::Details
   struct IsList<Cell<T, U>> : IsList<U>
   {};
 
-
-  class BuildList : public Static_curried<BuildList, Nat<2>> {
+  class BuildList : public Static_curried<BuildList, Nat<2>>
+  {
   public:
     template<size_t N, typename F>
     static constexpr auto
-    call(Nat<N>, F const& f){
+    call(Nat<N>, F const& f)
+    {
       return aux(nat<N>, f, nat<0>, nothing);
     }
+
   private:
     template<size_t N, typename F, size_t M, typename T>
     static constexpr auto
-    aux(Nat<N>, F const& f, Nat<M>, T const accum){
-      if constexpr (N == M){
+    aux(Nat<N>, F const& f, Nat<M>, T const accum)
+    {
+      if constexpr (N == M) {
         return reverse(accum);
       } else {
-        return aux(nat<N>, f, nat<M+1>, cons(f(index_type{M}), accum));
+        return aux(
+          nat<N>, f, nat<M + 1>, cons(f(index_type{ M }), accum));
       }
     }
   } constexpr buildList{};
 
-
-
-
   template<typename... Ts>
   using ListType = decltype(list(std::declval<Ts>()...));
-
 
 } // end of namespace ListProcessing::CompileTime::Details

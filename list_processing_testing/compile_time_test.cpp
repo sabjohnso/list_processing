@@ -14,6 +14,7 @@
 // ... List Processing header files
 //
 #include <list_processing/compile_time.hpp>
+#include <list_processing/operators.hpp>
 
 namespace {
 
@@ -68,7 +69,6 @@ namespace ListProcessing::Testing {
     STATIC_EXPECT_EQ(xs, ys);
     STATIC_EXPECT_EQ(xs, zs);
 
-
     STATIC_EXPECT_FALSE(xs != xs);
     STATIC_EXPECT_FALSE(xs != ys);
     STATIC_EXPECT_FALSE(xs != zs);
@@ -101,13 +101,10 @@ namespace ListProcessing::Testing {
 
     STATIC_EXPECT_EQ(length(xs), 4);
 
-
-
     STATIC_EXPECT_EQ(head(xs), 1);
     STATIC_EXPECT_EQ(tail(xs), list(2, 3, 4));
 
     STATIC_EXPECT_EQ(reverse(xs), list(4, 3, 2, 1));
-
 
     STATIC_EXPECT_EQ(take(nat<0>, xs), nothing);
     STATIC_EXPECT_EQ(take(nat<1>, xs), list(1));
@@ -126,7 +123,6 @@ namespace ListProcessing::Testing {
     STATIC_EXPECT_EQ(append(xs, nothing), xs);
     STATIC_EXPECT_EQ(append(nothing, xs), xs);
     STATIC_EXPECT_EQ(append(list(1, 2), list(3, 4)), xs);
-
 
     STATIC_EXPECT_EQ(foldl([](auto x, auto y) { return x + y; }, 0, xs), 10);
     STATIC_EXPECT_EQ(foldr([](auto x, auto y) { return std::min(x, y); }, 10, xs), 1);
@@ -156,7 +152,21 @@ namespace ListProcessing::Testing {
       list(4, 5, 5, 6));
   }
 
+  TEST(CompileTime, FObjFApplyList){
+    using namespace ListProcessing::Operators;
+    STATIC_EXPECT_EQ(
+      fApplyList(mapList(curry<2>([](auto x, auto y){ return x+y; }), list(1, 2)), list(3, 4)),
+      list(4, 5, 5, 6));
+  }
+
   TEST(CompileTime, FlattenList){
+    STATIC_EXPECT_EQ(
+      flattenList(list(list(1, 2), nothing, list(3, 4))),
+      list(1, 2, 3, 4));
+  }
+
+  TEST(CompileTime, FObjFlattenList){
+    using namespace ListProcessing::Operators;
     STATIC_EXPECT_EQ(
       flattenList(list(list(1, 2), nothing, list(3, 4))),
       list(1, 2, 3, 4));
@@ -181,6 +191,12 @@ namespace ListProcessing::Testing {
       list(0, 0, 1, 0, 1, 2));
   }
 
-
+  TEST(CompileTime, FobjFlatMapList){
+    using namespace ListProcessing::Operators;
+    constexpr auto flip = curry<3>([](auto f, auto x, auto y){ return f(y, x); });
+    STATIC_EXPECT_EQ(
+      flatMapList(flip(buildList, identity), list(nat<1>, nat<2>, nat<3>)),
+      list(0, 0, 1, 0, 1, 2));
+  }
 
 } // end of namespace ListProcessing::Testing

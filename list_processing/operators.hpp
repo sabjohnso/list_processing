@@ -17,7 +17,7 @@
 #include <list_processing/operators/HasKey.hpp>
 
 
-
+#include <list_processing/operators/list_operators.hpp>
 #include <list_processing/operators/stack_operators.hpp>
 #include <list_processing/operators/tape_operators.hpp>
 #include <list_processing/operators/queue_operators.hpp>
@@ -71,5 +71,10 @@ namespace ListProcessing::Operators
   constexpr auto toFront   = Details::toFront;
   constexpr auto toBack    = Details::toBack;
   constexpr auto splice    = Details::splice;
+
+  constexpr auto mapList    = Details::mapList;
+  constexpr auto fApplyList  = Details::fApplyList;
+  constexpr auto flatMapList = Details::flatMapList;
+  constexpr auto flattenList = Details::flattenList;
 
 } // end of namespace ListProcessing::Operators
