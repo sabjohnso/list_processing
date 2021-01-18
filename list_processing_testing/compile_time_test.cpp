@@ -120,12 +120,24 @@ namespace ListProcessing::Testing {
     STATIC_EXPECT_EQ(drop(nat<4>, xs), nothing);
     STATIC_EXPECT_EQ(drop(nat<5>, xs), nothing);
 
-    STATIC_EXPECT_EQ(append(xs, nothing), xs);
-    STATIC_EXPECT_EQ(append(nothing, xs), xs);
-    STATIC_EXPECT_EQ(append(list(1, 2), list(3, 4)), xs);
 
     STATIC_EXPECT_EQ(foldl([](auto x, auto y) { return x + y; }, 0, xs), 10);
     STATIC_EXPECT_EQ(foldr([](auto x, auto y) { return std::min(x, y); }, 10, xs), 1);
+  }
+
+  TEST(CompileTime, Append){
+    constexpr auto xs = list(1, 2, 3, 4);
+    STATIC_EXPECT_EQ(append(xs, nothing), xs);
+    STATIC_EXPECT_EQ(append(nothing, xs), xs);
+    STATIC_EXPECT_EQ(append(list(1, 2), list(3, 4)), xs);
+  }
+
+  TEST(CompileTime, FObjAppend){
+    using namespace ListProcessing::Operators;
+    constexpr auto xs = list(1, 2, 3, 4);
+    STATIC_EXPECT_EQ(append(xs, nothing), xs);
+    STATIC_EXPECT_EQ(append(nothing, xs), xs);
+    STATIC_EXPECT_EQ(append(list(1, 2), list(3, 4)), xs);
   }
 
   TEST(CompileTime, TypeLength){

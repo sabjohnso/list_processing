@@ -9,6 +9,18 @@ namespace ListProcessing::Operators::Details
 {
 
   /**
+   * @brief Append lists
+   */
+  class Append : public Static_curried<Append, Nat<2>>{
+  public:
+    template<typename T, typename U>
+    static constexpr auto
+    call(T&& xs, U&& ys){
+      return forward<U>(ys).append(forward<T>(xs));
+    }
+  } constexpr append{};
+
+  /**
    * @brief Functorial mapping operator for lists
    */
   class MapList : public Static_curried<MapList, Nat<2>>{

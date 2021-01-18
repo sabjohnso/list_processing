@@ -72,9 +72,11 @@ namespace ListProcessing::Operators
   constexpr auto toBack    = Details::toBack;
   constexpr auto splice    = Details::splice;
 
-  constexpr auto mapList    = Details::mapList;
+  constexpr auto append      = Details::append;
+  constexpr auto mapList     = Details::mapList;
   constexpr auto fApplyList  = Details::fApplyList;
   constexpr auto flatMapList = Details::flatMapList;
   constexpr auto flattenList = Details::flattenList;
+
 
 } // end of namespace ListProcessing::Operators

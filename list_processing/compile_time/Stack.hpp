@@ -7,13 +7,10 @@
 #include <list_processing/compile_time/Nothing.hpp>
 #include <list_processing/compile_time/import.hpp>
 
-// FIXME: Eliminate use of functions from Operators is this file
-
-#include <list_processing/operators.hpp>
 
 namespace ListProcessing::CompileTime::Details
 {
-  constexpr auto pipe = ListProcessing::Operators::pipe;
+
 
   template<typename T>
   class Stack;
