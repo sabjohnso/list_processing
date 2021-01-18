@@ -10,6 +10,8 @@
 #include <list_processing/compile_time/Tree.hpp>
 #include <list_processing/compile_time/Tape.hpp>
 
+#include <list_processing/compile_time_alist.hpp>
+
 namespace ListProcessing::CompileTime
 {
   using Details::idx;
