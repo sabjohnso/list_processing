@@ -151,73 +151,54 @@ namespace ListProcessing::Dynamic::Details
      * of empty stacks, an empty stack is returned
      */
     friend Stack
-    pop(Stack xs){ return xs.stack(); }
+    pop(Stack xs){ return xs.pop(); }
 
-    //     _
-    //  __| |_ _ ___ _ __
-    // / _` | '_/ _ \ '_ \.
-    // \__,_|_| \___/ .__/
-    //              |_|
-  public:
-    /**
-     * @brief Same as pop
-     */
-    Stack
-    drop() const { return pop(); }
+    //                 ___
+    //  _ __  ___ _ __|_  )
+    // | '_ \/ _ \ '_ \/ /
+    // | .__/\___/ .__/___|
+    // |_|       |_|
 
-    /**
-     * @brief Same as pop
-     */
-    friend Stack
-    drop(Stack xs){ return xs.pop(); }
-
-
-
-    //     _              ___
-    //  __| |_ _ ___ _ __|_  )
-    // / _` | '_/ _ \ '_ \/ /
-    // \__,_|_| \___/ .__/___|
-    //              |_|
   public:
     /**
      * @brief Return a stack that is equivalent to the input stack
      * with its top two values removed
      */
     Stack
-    drop2() const { return drop().drop(); }
+    pop2() const { return pop().pop(); }
 
     /**
      * @brief Return a stack that is equivalent to the input stack
      * with its top two values removed
      */
     friend Stack
-    drop2(Stack xs)
+    pop2(Stack xs)
     {
-      return xs.drop2();
+      return xs.pop2();
     }
 
+    //                 ____
+    //  _ __  ___ _ __|__ /
+    // | '_ \/ _ \ '_ \|_ \.
+    // | .__/\___/ .__/___/
+    // |_|       |_|
 
-    //     _              ____
-    //  __| |_ _ ___ _ __|__ /
-    // / _` | '_/ _ \ '_ \|_ \.
-    // \__,_|_| \___/ .__/___/
-    //              |_|
   public:
     /**
      * @brief Return a stack that is equivalent to this stack
      * with its top three values removed
      */
     Stack
-    drop3() const { return drop2().drop(); }
+    pop3() const { return pop2().pop(); }
 
     /**
      * @brief Return a stack that is equivalent to the input stack
      * with its top three values removed
      */
     friend Stack
-    drop3(Stack xs)
+    pop3(Stack xs)
     {
-      return xs.drop3();
+      return xs.pop3();
     }
 
     //     _
@@ -256,9 +237,9 @@ namespace ListProcessing::Dynamic::Details
      */
     Stack
     swap() const {
-      return drop2()
+      return pop2()
         .push(top())
-        .push(drop().top());
+        .push(pop().top());
     }
 
     /**
@@ -281,7 +262,7 @@ namespace ListProcessing::Dynamic::Details
      */
     Stack
     nip() const {
-      return drop2().push(top());
+      return pop2().push(top());
     }
 
     /**
@@ -302,9 +283,9 @@ namespace ListProcessing::Dynamic::Details
      */
     Stack
     tuck() const {
-      return drop2()
+      return pop2()
         .push(top())
-        .push(drop().top())
+        .push(pop().top())
         .push(top());
     }
 
@@ -329,7 +310,7 @@ namespace ListProcessing::Dynamic::Details
      */
     Stack
     over() const {
-      return push(drop().top());
+      return push(pop().top());
     }
 
     /**
@@ -352,10 +333,10 @@ namespace ListProcessing::Dynamic::Details
     Stack
     rot(Stack xs)
     {
-      return drop3()
-        .push(drop().top())
+      return pop3()
+        .push(pop().top())
         .push(top())
-        .push(drop2().top());
+        .push(pop2().top());
     }
 
     /**
@@ -381,7 +362,7 @@ namespace ListProcessing::Dynamic::Details
     template<typename F>
     Stack
     app1(F f) const {
-      return drop().push(f(top()));
+      return pop().push(f(top()));
     }
 
     /**
@@ -408,7 +389,7 @@ namespace ListProcessing::Dynamic::Details
     template<typename F>
     Stack
     app2(F f) const {
-      return drop2().push(f(top(), drop().top()));
+      return pop2().push(f(top(), pop().top()));
     }
 
     /**
@@ -437,7 +418,7 @@ namespace ListProcessing::Dynamic::Details
       return (xs.isEmpty() && ys.isEmpty())
         ? true
         : (((! xs.isEmpty()) && (! ys.isEmpty()))
-           ? (xs.top() == ys.top()) && (xs.drop() == ys.drop())
+           ? (xs.top() == ys.top()) && (xs.pop() == ys.pop())
            : false);
     }
 

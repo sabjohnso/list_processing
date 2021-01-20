@@ -53,47 +53,32 @@ namespace ListProcessing::Operators::Details
 
 
   template<typename T>
-  concept HasDrop = requires(T&& xs){
-    {forward<T>(xs).drop()};
+  concept HasPop2 = requires(T&& xs){
+    {forward<T>(xs).pop2()};
   };
 
-  class Drop : public Static_curried<Drop,Nat<1>>{
+  class Pop2 : public Static_curried<Pop2, Nat<1>>{
   public:
-    template<HasDrop T>
+    template<HasPop2 T>
     static constexpr auto
     call(T&& xs){
-      return forward<T>(xs).drop();
+      return forward<T>(xs).pop2();
     }
-  } constexpr drop{};
-
+  } constexpr pop2{};
 
   template<typename T>
-  concept HasDrop2 = requires(T&& xs){
-    {forward<T>(xs).drop2()};
+  concept HasPop3 = requires(T&& xs){
+    {forward<T>(xs).pop3()};
   };
 
-  class Drop2 : public Static_curried<Drop2, Nat<1>>{
+  class Pop3 : public Static_curried<Pop3,Nat<1>>{
   public:
-    template<HasDrop2 T>
+    template<HasPop3 T>
     static constexpr auto
     call(T&& xs){
-      return forward<T>(xs).drop2();
+      return forward<T>(xs).pop3();
     }
-  } constexpr drop2{};
-
-  template<typename T>
-  concept HasDrop3 = requires(T&& xs){
-    {forward<T>(xs).drop3()};
-  };
-
-  class Drop3 : public Static_curried<Drop3,Nat<1>>{
-  public:
-    template<HasDrop3 T>
-    static constexpr auto
-    call(T&& xs){
-      return forward<T>(xs).drop3();
-    }
-  } constexpr drop3{};
+  } constexpr pop3{};
 
   template<typename T>
   concept HasDup = requires(T&& xs){

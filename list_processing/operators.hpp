@@ -16,7 +16,7 @@
 #include <list_processing/operators/Remove.hpp>
 #include <list_processing/operators/HasKey.hpp>
 
-
+#include <list_processing/operators/collection_operators.hpp>
 #include <list_processing/operators/list_operators.hpp>
 #include <list_processing/operators/stack_operators.hpp>
 #include <list_processing/operators/tape_operators.hpp>
@@ -44,9 +44,8 @@ namespace ListProcessing::Operators
   constexpr auto push     = Details::push;
   constexpr auto top      = Details::top;
   constexpr auto pop      = Details::pop;
-  constexpr auto drop     = Details::drop;
-  constexpr auto drop2    = Details::drop2;
-  constexpr auto drop3    = Details::drop3;
+  constexpr auto pop2     = Details::pop2;
+  constexpr auto pop3     = Details::pop3;
   constexpr auto dup      = Details::dup;
   constexpr auto swap     = Details::swap;
   constexpr auto nip      = Details::nip;
