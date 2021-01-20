@@ -331,7 +331,7 @@ namespace ListProcessing::Dynamic::Details
      * with the top three values rotated.
      */
     Stack
-    rot(Stack xs)
+    rot() const
     {
       return pop3()
         .push(pop().top())

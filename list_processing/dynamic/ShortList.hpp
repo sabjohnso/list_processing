@@ -401,9 +401,9 @@ namespace ListProcessing::Dynamic::Details
     friend U
     foldL(F f, U init, ShortList xs)
     {
-      size_type n = length(xs);
+      size_type n = xs.length();
       for (index_type i = 0; i < n; ++i) {
-        init = f(init, listRef(xs, i));
+        init = f(init, xs.listRef(i));
       }
       return init;
     }
@@ -412,9 +412,9 @@ namespace ListProcessing::Dynamic::Details
     friend U
     foldR(F f, ShortList xs, U init)
     {
-      size_type n = length(xs);
+      size_type n = xs.length();
       for (index_type i = 0; i < n; ++i) {
-        init = f(listRef(xs, n - i - 1), init);
+        init = f(xs.listRef(n - i - 1), init);
       }
       return init;
     }

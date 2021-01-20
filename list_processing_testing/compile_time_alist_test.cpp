@@ -21,7 +21,7 @@ using ListProcessing::CompileTime::hasKeyByType;
 using TypeUtility::type;
 
 
-#define KEY(str) type<decltype(::CTString::hoist([]{ return ::CTString::static_string(str); }))>
+#define KEY(str) CTString::hoist([]{ return ::CTString::static_string(str); })
 
 namespace ListProcessing::Testing
 {
@@ -184,17 +184,20 @@ namespace ListProcessing::Testing
 
 
   TEST(AList, HasKeyByTypeAffirmative){
+    constexpr auto x = KEY("x");
     EXPECT_TRUE(
       (hasKeyByType<
-       decltype(KEY("x")),
-       decltype(set(KEY("x"), 3, empty_alist))>));
+       decltype(x),
+       decltype(set(x, 3, empty_alist))>));
   }
 
   TEST(AList, HasKeyByTypeNegative){
+    constexpr auto x = KEY("x");
+    constexpr auto y = KEY("y");
     EXPECT_FALSE(
       (hasKeyByType<
-       decltype(KEY("y")),
-       decltype(set(KEY("x"), 3, empty_alist))>));
+       decltype(y),
+       decltype(set(x, 3, empty_alist))>));
   }
 
 } // end of namespace ListProcessing::Testing

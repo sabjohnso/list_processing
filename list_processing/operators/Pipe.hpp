@@ -19,12 +19,12 @@ namespace ListProcessing::Operators::Details
 
     template<typename T>
     static constexpr auto
-    call(T&& x){ return x; }
+    call(T&& x){ return forward<T>(x); }
 
     template<typename T, HasCall<T> F, typename ... Gs>
     static constexpr auto
     call(T&& x, F&& f, Gs&& ... gs){
-      return call(forward<F>(f)(forward<T>(x)), forward<Gs>(gs) ...);
+      return Pipe::call(forward<F>(f)(forward<T>(x)), forward<Gs>(gs) ...);
     }
   } constexpr pipe{};
 

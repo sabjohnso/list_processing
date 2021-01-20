@@ -27,11 +27,6 @@ using FunctionUtility::rpart;
 
 using ListProcessing::Dynamic::empty_alist;
 
-namespace // anonymous
-{
-  constexpr auto pipe = ListProcessing::Operators::pipe;
-} // end of anonymous namespace
-
 
 namespace ListProcessing::Testing
 {

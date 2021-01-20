@@ -15,10 +15,7 @@ using ListProcessing::CompileTime::makeQueue;
 
 namespace ListProcessing::Testing
 {
-  namespace // anonymous
-  {
-    constexpr auto pipe = ListProcessing::Operators::pipe;
-  } // end of namespace // anonymous
+
 
   TEST(CompileTimeQueue, EmptyQueueIsEmpty)
   {

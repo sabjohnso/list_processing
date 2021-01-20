@@ -559,7 +559,7 @@ namespace ListProcessing::Dynamic::Details
     template<typename T, typename ... Ts>
     static constexpr auto
     call(T&& x, Ts&& ... xs){
-      if constexpr (count_types<Ts ...>()){
+      if constexpr (bool(count_types<Ts ...>())){
         using U = common_type_t<decay_t<T> , decay_t<Ts> ...>;
         return tapeOf<U>(forward<T>(x), forward<Ts>(xs) ...);
       } else {

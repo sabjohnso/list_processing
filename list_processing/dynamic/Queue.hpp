@@ -173,8 +173,9 @@ namespace ListProcessing::Dynamic::Details
     friend Stream&
     operator<<(Stream& os, Queue const& xs)
     {
-      return isEmpty(xs) ? os << "#Queue()"
-                         : os << "#Queue(" << front(xs) << ", ...)";
+      return xs.isEmpty()
+        ? os << "#Queue()"
+        : os << "#Queue(" << xs.front() << ", ...)";
     }
 
     /**
@@ -184,8 +185,9 @@ namespace ListProcessing::Dynamic::Details
     friend ostream&
     operator<<(ostream& os, Queue const& xs)
     {
-      return isEmpty(xs) ? os << "#Queue()"
-                         : os << "#Queue(" << front(xs) << ", ...)";
+      return xs.isEmpty()
+        ? os << "#Queue()"
+        : os << "#Queue(" << xs.front() << ", ...)";
     }
 
   }; // end of class Queue

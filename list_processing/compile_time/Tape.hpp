@@ -246,11 +246,11 @@ namespace ListProcessing::CompileTime::Details
       if constexpr (length_(type<D>) == 0 && length_(type<C>) == 0) {
         os << "#Tape()";
       } else if constexpr (length_(type<C>) == 0) {
-        os << "#Tape(" << read(xs) << ", ...)";
+        os << "#Tape(" << xs.read() << ", ...)";
       } else if constexpr (length_(type<D>) == 0) {
         os << "#Tape(..., nil)";
       } else {
-        os << "#Tape(..., " << read(xs) << ", ...)";
+        os << "#Tape(..., " << xs.read() << ", ...)";
       }
       return os;
     }
@@ -264,11 +264,11 @@ namespace ListProcessing::CompileTime::Details
       if constexpr (length_(type<D>) == 0 && length_(type<C>) == 0) {
         os << "#Tape()";
       } else if constexpr (length_(type<C>) == 0) {
-        os << "#Tape()(" << read(xs) << ", ...)";
+        os << "#Tape()(" << xs.read() << ", ...)";
       } else if constexpr (length_(type<D>) == 0) {
         os << "#Tape(..., nil)";
       } else {
-        os << "#Tape(..., " << read(xs) << ", ...)";
+        os << "#Tape(..., " << xs.read() << ", ...)";
       }
       return os;
     }

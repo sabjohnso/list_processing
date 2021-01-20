@@ -32,7 +32,7 @@ namespace ListProcessing::CompileTime::Details
     // /__/\___|\__|
     template<typename K2, typename V2>
     constexpr auto
-    set(K2 const& key, V2 const& value) const {
+    set(K2 const& key, V2 const& value) const & {
       using NewDataType = decltype(cons(pair(key, value), data));
       return AList<NewDataType>(cons(pair(key, value), data));
     }
@@ -95,17 +95,18 @@ namespace ListProcessing::CompileTime::Details
     // |_||_\__,_/__/_|\_\___|\_, |
     //                        |__/
 
-    bool
+    constexpr bool
     hasKey(K const&) const { return true; }
 
+
     template<typename T>
-    bool
+    constexpr bool
     hasKey(T const& key) const {
       return AList<Tail>(tail(data)).hasKey(key); }
 
     template<typename T>
     friend bool
-    hasKey(Type<T> const& key, AList const& xs){ return xs.hasKey(key); }
+    hasKey(T const& key, AList const& xs){ return xs.hasKey(key); }
 
 
 
@@ -218,7 +219,7 @@ namespace ListProcessing::CompileTime::Details
 
     template<typename K, typename V>
     friend constexpr auto
-    set(Type<K> const& key, V const& value, AList const& xs) {
+    set(K const& key, V const& value, AList const& xs) {
       return xs.set(key, value);
     }
 
@@ -228,11 +229,11 @@ namespace ListProcessing::CompileTime::Details
     //  \_,_|_||_/__/\___|\__|
     template<typename K>
     constexpr AList
-    unset(Type<K> const&) const { return *this; }
+    unset(K const&) const { return *this; }
 
     template<typename K>
     friend constexpr AList
-    unset(Type<K> const& key, AList const& xs){ return xs.unset(key); }
+    unset(K const& key, AList const& xs){ return xs.unset(key); }
 
 
     //  _ _ ___ _ __  _____ _____
@@ -240,11 +241,11 @@ namespace ListProcessing::CompileTime::Details
     // |_| \___|_|_|_\___/\_/\___|
     template<typename K>
     constexpr AList
-    remove(Type<K> const&) const { return *this; }
+    remove(K const&) const { return *this; }
 
     template<typename K>
     friend constexpr AList
-    remove(Type<K> const& key, AList const& xs){ return xs.remove(key); }
+    remove(K const& key, AList const& xs){ return xs.remove(key); }
 
 
     //  _            _  __
@@ -254,11 +255,11 @@ namespace ListProcessing::CompileTime::Details
     //                        |__/
     template<typename K>
     constexpr bool
-    hasKey(Type<K> const&) const { return false; }
+    hasKey(K const&) const { return false; }
 
     template<typename K>
     friend constexpr bool
-    hasKey(Type<K> const& key, AList const& xs){ return xs.hasKey(key); }
+    hasKey(K const& key, AList const& xs){ return xs.hasKey(key); }
 
 
     //   __                 ___     _

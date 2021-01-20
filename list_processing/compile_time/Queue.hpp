@@ -117,7 +117,7 @@ namespace ListProcessing::CompileTime::Details
       if constexpr (length_(type<O>) == 0) {
         os << "#Queue()";
       } else {
-        os << "#Queue(" << front(xs) << ", ...)";
+        os << "#Queue(" << xs.front() << ", ...)";
       }
       return os;
     }
@@ -131,7 +131,7 @@ namespace ListProcessing::CompileTime::Details
       if constexpr (length_(type<O>) == 0) {
         os << "#Queue()";
       } else {
-        os << "#Queue(" << front(xs) << ", ...)";
+        os << "#Queue(" << xs.front() << ", ...)";
       }
       return os;
     }

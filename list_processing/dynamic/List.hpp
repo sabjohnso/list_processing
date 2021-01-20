@@ -23,7 +23,7 @@ namespace ListProcessing::Dynamic::Details
     template<typename ... Ts>
     static constexpr auto
     call(Ts&& ... xs){
-      if constexpr (count_types<Ts...>()){
+      if constexpr (bool(count_types<Ts...>())){
         using T = common_type_t<decay_t<Ts> ...>;
         return listOf<T>(forward<Ts>(xs) ...);
 

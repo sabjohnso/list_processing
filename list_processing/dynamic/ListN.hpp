@@ -221,14 +221,14 @@ namespace ListProcessing::Dynamic::Details
       struct Aux{
         tramp
         run(List xs, List<T, M> ys) const {
-          return hasData(xs) && hasData(ys)
-            ? (head(xs) == head(ys)
-               ? tramp([=,this]{ return run(tail(xs), tail(ys)); })
+          return xs.hasData() && ys.hasData()
+            ? (xs.head() == ys.head()
+               ? tramp([=,this]{ return run(xs.tail(), ys.tail()); })
                : tramp(false))
-            : tramp((isNull(xs) && isNull(ys) ? true : false));
+            : tramp((xs.isNull() && ys.isNull() ? true : false));
         }
       } constexpr aux{};
-      return length(xs) == length(ys)
+      return xs.length() == ys.length()
         ? bool(aux.run(xs, ys))
         : false;
     }

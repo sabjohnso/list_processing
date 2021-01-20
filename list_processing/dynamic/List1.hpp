@@ -259,8 +259,8 @@ namespace ListProcessing::Dynamic::Details
       struct Aux {
         tramp
         run(F f, List xs, U init) const {
-          return hasData(xs)
-            ? tramp([=,this]{ return run(f, tail(xs), f(head(xs), init)); })
+          return xs.hasData()
+            ? tramp([=,this]{ return run(f, xs.tail(), f(xs.head(), init)); })
             : tramp(init);
         }
       } constexpr aux{};
@@ -345,9 +345,9 @@ namespace ListProcessing::Dynamic::Details
       struct Aux{
         tramp
         run(F f, List xs, Result accum) const {
-          return hasData(xs)
-            ? tramp([=,this]{ return run(f, tail(xs), rappend(f(head(xs)), accum)); })
-            : tramp(reverse(accum));
+          return xs.hasData()
+            ? tramp([=,this]{ return run(f, xs.tail(), rappend(f(xs.head()), accum)); })
+            : tramp(accum.reverse());
         }
       } constexpr aux{};
       return Result(aux.run(f, xs, Result::nil));
@@ -412,9 +412,9 @@ namespace ListProcessing::Dynamic::Details
       struct Aux {
         tramp
         run(List xs, size_type n, List accum){
-          return hasData(xs) && n > 0
-            ? tramp([=,this]{ return run(tail(xs), n-1, cons(head(xs), accum)); })
-            : tramp(reverse(accum));
+          return xs.hasData() && n > 0
+            ? tramp([=,this]{ return run(xs.tail(), n-1, cons(xs.head(), accum)); })
+            : tramp(accum.reverse());
         }
       } constexpr aux{};
       return List(aux.run(xs, n, nil));
@@ -431,7 +431,7 @@ namespace ListProcessing::Dynamic::Details
     friend value_type
     listRef(List xs, index_type index)
     {
-      return head(drop(xs, index));
+      return xs.drop(index).head();
     }
 
     /**
@@ -477,10 +477,10 @@ namespace ListProcessing::Dynamic::Details
     doList(List xs, F f)
     {
       unique_ptr<List> ptr(make_unique<List>(xs));
-      while(! isNull(*ptr))
+      while(! ptr->isNull())
       {
-        f(head(*ptr));
-        ptr = make_unique<List>(tail(*ptr));
+        f(ptr->head());
+        ptr = make_unique<List>(ptr->tail());
       }
       return f;
     }
