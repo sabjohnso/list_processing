@@ -9,6 +9,43 @@ namespace ListProcessing::Operators::Details
 {
 
   /**
+   * @brief Return the head of a list
+   */
+  class Head : public Static_curried<Head, Nat<1>>{
+  public:
+    template<typename T>
+    static constexpr auto
+    call(T&& xs){
+      return forward<T>(xs).head();
+    }
+  } constexpr head{};
+
+  /**
+   * @brief Return the tail of a list
+   */
+  class Tail : public Static_curried<Tail, Nat<1>>{
+  public:
+    template<typename T>
+    static constexpr auto
+    call(T&& xs){
+      return forward<T>(xs).tail();
+    }
+  } constexpr tail{};
+
+
+  /**
+   * @brief Append lists
+   */
+  class ListRef : public Static_curried<ListRef, Nat<2>>{
+  public:
+    template<typename I, typename T>
+    static constexpr auto
+    call(I&& index, T&& xs){
+      return forward<T>(xs).listRef(forward<I>(index));
+    }
+  } constexpr listRef{};
+
+  /**
    * @brief Append lists
    */
   class Append : public Static_curried<Append, Nat<2>>{

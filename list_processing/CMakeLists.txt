@@ -40,6 +40,7 @@ install(TARGETS list_processing_header list_processing_config
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/config.hpp
   compile_time.hpp
+  compile_time_alist.hpp
   dynamic.hpp
   dynamic_alist.hpp
   dynamic_list.hpp

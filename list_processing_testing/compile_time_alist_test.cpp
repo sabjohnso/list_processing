@@ -17,6 +17,7 @@
 #include <list_processing/operators.hpp>
 
 using ListProcessing::CompileTime::empty_alist;
+using ListProcessing::CompileTime::hasKeyByType;
 using TypeUtility::type;
 
 
@@ -179,6 +180,21 @@ namespace ListProcessing::Testing
     // pipe(empty_alist,
     //      [](auto alist){ return set(KEY("x"), 3, alist); },
     //      [](auto alist){ return tryGet(KEY("y"), alist); });
+  }
+
+
+  TEST(AList, HasKeyByTypeAffirmative){
+    EXPECT_TRUE(
+      (hasKeyByType<
+       decltype(KEY("x")),
+       decltype(set(KEY("x"), 3, empty_alist))>));
+  }
+
+  TEST(AList, HasKeyByTypeNegative){
+    EXPECT_FALSE(
+      (hasKeyByType<
+       decltype(KEY("y")),
+       decltype(set(KEY("x"), 3, empty_alist))>));
   }
 
 } // end of namespace ListProcessing::Testing

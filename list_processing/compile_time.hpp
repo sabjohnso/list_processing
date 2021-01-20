@@ -18,6 +18,7 @@ namespace ListProcessing::CompileTime
 
   using Details::cons;
   using Details::list;
+  using Details::Nothing;
   using Details::nothing;
   using Details::length_;
   using Details::ListType;

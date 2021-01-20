@@ -172,6 +172,23 @@ namespace ListProcessing::CompileTime::Details
     friend constexpr bool
     isEmpty(AList const& xs){ return xs.isEmpty(); }
 
+
+    ////////////////////////////////////////////////////////////////////////
+
+    friend ostream&
+    operator <<(ostream& os, AList const& xs){
+      auto printpair = [&](auto const& x){ os << "(" << x.first << " . " << x.second << ")"; };
+      os << "AList(";
+      printpair(head(xs.data));
+      doList(tail(xs.data),[&](auto const& x){
+        os << " ";
+        printpair(x);
+      });
+
+      os << ")";
+      return os;
+    }
+
   }; // end of class AList<Cell<pair<K,V>, Tail>>
 
 
@@ -284,7 +301,45 @@ namespace ListProcessing::CompileTime::Details
     friend constexpr bool
     isEmpty(AList const& xs){ return xs.isEmpty(); }
 
+    ////////////////////////////////////////////////////////////////////////
+
+    friend ostream&
+    operator <<(ostream& os, AList const&){
+      return os << "empty_alist";
+    }
+
   }; // end of class AList<Nothing>
+
+  template<typename T>
+  concept EmbelishedType = ! is_same_v<T,decay_t<T>>;
+
+  template<typename K, typename Table>
+  struct HasKeyByType;
+
+  template<EmbelishedType K, EmbelishedType Table>
+  struct HasKeyByType<K,Table> : HasKeyByType<decay_t<K>,decay_t<Table>>{};
+
+  template<EmbelishedType K, typename Table>
+  struct HasKeyByType<K,Table> : HasKeyByType<decay_t<K>,Table>{};
+
+  template<typename K, EmbelishedType Table>
+  struct HasKeyByType<K,Table> : HasKeyByType<K,decay_t<Table>>{};
+
+
+  template<typename U>
+  struct HasKeyByType<U, AList<Nothing>> : false_type{};
+
+  template<typename K, typename V, typename Tail>
+  struct HasKeyByType<K, AList<Cell<pair<K,V>,Tail>>> : true_type {};
+
+
+  template<typename U, typename K, typename V, typename Tail>
+  struct HasKeyByType<U, AList<Cell<pair<K,V>,Tail>>> : HasKeyByType<U, AList<Tail>>{};
+
+
+
+  template<typename K, typename Table>
+  constexpr bool hasKeyByType = HasKeyByType<decay_t<K>,decay_t<Table>>::value;
 
 
   constexpr AList<Nothing> empty_alist{};
