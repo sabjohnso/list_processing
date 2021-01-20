@@ -7,12 +7,22 @@
 
 namespace ListProcessing::Operators::Details
 {
+
+  template<typename T, typename K, typename V>
+  concept HasForceGet = requires(K&& key, V&& alternate, T&& xs){
+    {forward<T>(xs).forceGet(
+        forward<K>(key),
+        forward<V>(alternate))};
+  };
+
   class ForceGet : public Static_curried<ForceGet, Nat<3>> {
   public:
-    template<typename K, typename V, typename T>
+    template<typename K, typename V, HasForceGet<K,V> T>
     static constexpr auto
     call(K&& key, V&& alternate, T&& xs){
-      return xs.forceGet(forward<K>(key), forward<V>(alternate));
+      return forward<T>(xs).forceGet(
+        forward<K>(key),
+        forward<V>(alternate));
     }
   } constexpr forceGet{};
 

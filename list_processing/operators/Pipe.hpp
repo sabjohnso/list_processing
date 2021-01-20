@@ -7,6 +7,12 @@
 
 namespace ListProcessing::Operators::Details
 {
+
+  template<typename F, typename T>
+  concept HasCall = requires(T&& x, F&& f){
+    {forward<F>(f)(forward<T>(x))};
+  };
+
   class Pipe : public Static_callable<Pipe>
   {
   public:
@@ -15,7 +21,7 @@ namespace ListProcessing::Operators::Details
     static constexpr auto
     call(T&& x){ return x; }
 
-    template<typename T, typename F, typename ... Gs>
+    template<typename T, HasCall<T> F, typename ... Gs>
     static constexpr auto
     call(T&& x, F&& f, Gs&& ... gs){
       return call(forward<F>(f)(forward<T>(x)), forward<Gs>(gs) ...);

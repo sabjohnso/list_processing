@@ -6,7 +6,7 @@
 #include <list_processing/dynamic/import.hpp>
 #include <list_processing/dynamic/List.hpp>
 
-#include <list_processing/operators.hpp>
+
 
 
 namespace ListProcessing::Dynamic::Details
@@ -167,7 +167,7 @@ namespace ListProcessing::Dynamic::Details
      * with the input key.
      */
     T
-    forceGet(K key, T alternate) const {
+    forceGet(K const& key, T const& alternate) const & {
       return T(forceGetAux(key, alternate, data));
     }
 
@@ -177,14 +177,14 @@ namespace ListProcessing::Dynamic::Details
      * the input key.
      */
     friend T
-    forceGet(K key, T alternate, AList xs){
-      return T(forceGetAux(key, alternate, xs.data));
+    forceGet(K const& key, T const& alternate, AList const& xs){
+      return xs.forceGet(key, alternate);
     }
 
   private:
 
     static Trampoline<T>
-    forceGetAux(K key, T alternate, data_type xs){
+    forceGetAux(K const& key, T const& alternate, data_type const& xs){
       using tramp = Trampoline<T>;
       return xs.hasData()
         ? (head(xs).first == key
@@ -277,7 +277,7 @@ namespace ListProcessing::Dynamic::Details
   public:
 
     bool
-    hasData() const { return Operators::hasData(data); }
+    hasData() const { return data.hasData(); }
 
     friend bool
     hasData(AList xs){ return xs.hasData(); }
