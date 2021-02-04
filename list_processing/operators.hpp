@@ -71,6 +71,9 @@ namespace ListProcessing::Operators
   constexpr auto toBack    = Details::toBack;
   constexpr auto splice    = Details::splice;
 
+  using Details::HasHead;
+  using Details::HasTail;
+
   constexpr auto head        = Details::head;
   constexpr auto tail        = Details::tail;
   constexpr auto listRef     = Details::listRef;
