@@ -12,8 +12,9 @@ target_include_directories(list_processing_header
   $<INSTALL_INTERFACE:${list_processing_INSTALL_INCLUDEDIR}>)
 
 target_link_libraries(list_processing_header
-  INTERFACE
-  type_utility::type_utility)
+  PUBLIC
+  type_utility::type_utility
+  function_utility::function_utility)
 
 add_library(list_processing::header ALIAS list_processing_header)
 

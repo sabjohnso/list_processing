@@ -9,3 +9,5 @@ find_package(CMakeUtilities)
 
 
 find_package(type_utility REQUIRED)
+find_package(function_utility REQUIRED)
+find_package(ctstring REQUIRED)
