@@ -5,19 +5,18 @@
 //
 #include <list_processing/operators/import.hpp>
 
-namespace ListProcessing::Operators::Details
-{
+namespace ListProcessing::Operators::Details {
 
   template<typename T, typename K>
-  concept HasMaybeGet = requires(K&& key, T&& xs){
-    {forward<T>(xs).maybeGet(forward<K>(key))};
+  concept HasMaybeGet = requires(K&& key, T&& xs) {
+    { forward<T>(xs).maybeGet(forward<K>(key)) };
   };
 
-  class MaybeGet : public Static_curried<MaybeGet, Nat<2>>{
+  class MaybeGet : public Static_curried<MaybeGet, Nat<2>> {
   public:
     template<typename K, HasMaybeGet<K> T>
     static constexpr auto
-    call(K&& key, T&& xs){
+    call(K&& key, T&& xs) {
       return forward<T>(xs).maybeGet(forward<K>(key));
     }
   } constexpr maybeGet{};

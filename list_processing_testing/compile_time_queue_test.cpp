@@ -12,33 +12,25 @@
 using ListProcessing::CompileTime::empty_queue;
 using ListProcessing::CompileTime::makeQueue;
 
+namespace ListProcessing::Testing {
 
-namespace ListProcessing::Testing
-{
-
-
-  TEST(CompileTimeQueue, EmptyQueueIsEmpty)
-  {
+  TEST(CompileTimeQueue, EmptyQueueIsEmpty) {
     ASSERT_TRUE(isEmpty(empty_queue));
   }
 
-  TEST(CompileTimeQueue, PushNotEmpty)
-  {
+  TEST(CompileTimeQueue, PushNotEmpty) {
     ASSERT_FALSE(isEmpty(push('a', empty_queue)));
   }
 
-  TEST(CompileTimeQueue, FrontPushIsValue)
-  {
+  TEST(CompileTimeQueue, FrontPushIsValue) {
     ASSERT_EQ(front(push('a', empty_queue)), 'a');
   }
 
-  TEST(CompileTimeQueue, PushPopIsEmpty)
-  {
+  TEST(CompileTimeQueue, PushPopIsEmpty) {
     ASSERT_TRUE(isEmpty(pop(push('a', empty_queue))));
   }
 
-  TEST(CompileTimeQueue, Order)
-  {
+  TEST(CompileTimeQueue, Order) {
     constexpr auto xs = makeQueue('a', 'b', 'c');
     ASSERT_EQ(front(xs), 'a');
     ASSERT_EQ(front(pop(xs)), 'b');

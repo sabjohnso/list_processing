@@ -6,31 +6,27 @@
 #include <list_processing/dynamic/List.hpp>
 #include <list_processing/dynamic/piping.hpp>
 
-namespace ListProcessing::Dynamic::Details
-{
+namespace ListProcessing::Dynamic::Details {
 
   /**
    * @brief A stack
    */
   template<typename T>
-  class Stack
-  {
+  class Stack {
 
   public:
-    using value_type = T;
-    using reference = value_type&;
+    using value_type      = T;
+    using reference       = value_type&;
     using const_reference = value_type const&;
 
     Stack()
-      : data(nil<value_type>)
-    {}
+      : data(nil<value_type>) {}
 
   private:
     using data_type = List<value_type>;
 
     Stack(data_type xs)
-      : data(xs)
-    {}
+      : data(xs) {}
 
     data_type data;
 
@@ -54,11 +50,9 @@ namespace ListProcessing::Dynamic::Details
      * with the input value pushed onto it.
      */
     friend Stack
-    push(const_reference x, Stack xs)
-    {
+    push(const_reference x, Stack xs) {
       return Stack(cons(x, xs.data));
     }
-
 
     //  _            ___       _
     // | |_  __ _ __|   \ __ _| |_ __ _
@@ -70,14 +64,18 @@ namespace ListProcessing::Dynamic::Details
      * false if it is emtpy.
      */
     bool
-    hasData() const { return data.hasData(); }
+    hasData() const {
+      return data.hasData();
+    }
 
     /**
      * @brief Return true if the input `Stack` has data and
      * false if it is emtpy.
      */
     friend bool
-    hasData(Stack xs){ return xs.hasData(); }
+    hasData(Stack xs) {
+      return xs.hasData();
+    }
 
     //  _    ___            _
     // (_)__| __|_ __  _ __| |_ _  _
@@ -90,14 +88,18 @@ namespace ListProcessing::Dynamic::Details
      * false if it has data.
      */
     bool
-    isEmpty() const { return ! hasData(); }
+    isEmpty() const {
+      return !hasData();
+    }
 
     /**
      * @brief Return true if the input stack is empty and
      * false if it has data.
      */
     friend bool
-    isEmpty(Stack xs){ return xs.isEmpty(); }
+    isEmpty(Stack xs) {
+      return xs.isEmpty();
+    }
 
     //  _
     // | |_ ___ _ __
@@ -113,9 +115,8 @@ namespace ListProcessing::Dynamic::Details
      */
     value_type
     top() const {
-      return (! isEmpty())
-        ? head(data)
-        : throw logic_error("Cannot read top of empty stack");
+      return (!isEmpty()) ? head(data)
+                          : throw logic_error("Cannot read top of empty stack");
     }
 
     /**
@@ -125,8 +126,9 @@ namespace ListProcessing::Dynamic::Details
      * empty stack and an exception will be thrown in that situation.
      */
     friend value_type
-    top(Stack xs){ return xs.top(); }
-
+    top(Stack xs) {
+      return xs.top();
+    }
 
     //  _ __  ___ _ __
     // | '_ \/ _ \ '_ \.
@@ -137,21 +139,25 @@ namespace ListProcessing::Dynamic::Details
      * @brief Return a stack that is equivalent to this stack with the top
      * value removed.
      *
-     * @brief This function accepts empty stacks as well as stack with data.  In the case
-     * of empty stacks, an empty stack is returned
+     * @brief This function accepts empty stacks as well as stack with data.  In
+     * the case of empty stacks, an empty stack is returned
      */
     Stack
-    pop() const { return Stack(tail(data)); }
+    pop() const {
+      return Stack(tail(data));
+    }
 
     /**
      * @brief Return a stack that is equivalent to the input stack with the top
      * value removed.
      *
-     * @brief This function accepts empty stacks as well as stack with data.  In the case
-     * of empty stacks, an empty stack is returned
+     * @brief This function accepts empty stacks as well as stack with data.  In
+     * the case of empty stacks, an empty stack is returned
      */
     friend Stack
-    pop(Stack xs){ return xs.pop(); }
+    pop(Stack xs) {
+      return xs.pop();
+    }
 
     //                 ___
     //  _ __  ___ _ __|_  )
@@ -165,15 +171,16 @@ namespace ListProcessing::Dynamic::Details
      * with its top two values removed
      */
     Stack
-    pop2() const { return pop().pop(); }
+    pop2() const {
+      return pop().pop();
+    }
 
     /**
      * @brief Return a stack that is equivalent to the input stack
      * with its top two values removed
      */
     friend Stack
-    pop2(Stack xs)
-    {
+    pop2(Stack xs) {
       return xs.pop2();
     }
 
@@ -189,15 +196,16 @@ namespace ListProcessing::Dynamic::Details
      * with its top three values removed
      */
     Stack
-    pop3() const { return pop2().pop(); }
+    pop3() const {
+      return pop2().pop();
+    }
 
     /**
      * @brief Return a stack that is equivalent to the input stack
      * with its top three values removed
      */
     friend Stack
-    pop3(Stack xs)
-    {
+    pop3(Stack xs) {
       return xs.pop3();
     }
 
@@ -212,19 +220,18 @@ namespace ListProcessing::Dynamic::Details
      * its top value duplicated
      */
     Stack
-    dup() const { return push(top()); }
+    dup() const {
+      return push(top());
+    }
 
     /**
      * @brief Return a stack that is equivalent to the input stack with
      * its top value duplicated
      */
     friend Stack
-    dup(Stack xs)
-    {
+    dup(Stack xs) {
       return xs.dup();
     }
-
-
 
     //  ____ __ ____ _ _ __
     // (_-< V  V / _` | '_ \.
@@ -237,9 +244,7 @@ namespace ListProcessing::Dynamic::Details
      */
     Stack
     swap() const {
-      return pop2()
-        .push(top())
-        .push(pop().top());
+      return pop2().push(top()).push(pop().top());
     }
 
     /**
@@ -247,8 +252,9 @@ namespace ListProcessing::Dynamic::Details
      * the position of its top two elements swap
      */
     friend Stack
-    swap(Stack xs){ return xs.swap(); }
-
+    swap(Stack xs) {
+      return xs.swap();
+    }
 
     //       _
     //  _ _ (_)_ __
@@ -270,7 +276,9 @@ namespace ListProcessing::Dynamic::Details
      * with its second value removed
      */
     friend Stack
-    nip(Stack xs){ return xs.nip(); }
+    nip(Stack xs) {
+      return xs.nip();
+    }
 
     //  _           _
     // | |_ _  _ __| |__
@@ -283,10 +291,7 @@ namespace ListProcessing::Dynamic::Details
      */
     Stack
     tuck() const {
-      return pop2()
-        .push(top())
-        .push(pop().top())
-        .push(top());
+      return pop2().push(top()).push(pop().top()).push(top());
     }
 
     /**
@@ -294,11 +299,9 @@ namespace ListProcessing::Dynamic::Details
      * a copy of the top value inserted between the second and third values.
      */
     friend Stack
-    tuck(Stack xs)
-    {
+    tuck(Stack xs) {
       return xs.tuck();
     }
-
 
     //  _____ _____ _ _
     // / _ \ V / -_) '_|
@@ -318,8 +321,9 @@ namespace ListProcessing::Dynamic::Details
      * a copy of the second value pused onto the top.
      */
     friend Stack
-    over(Stack xs){ return xs.over(); }
-
+    over(Stack xs) {
+      return xs.over();
+    }
 
     //          _
     //  _ _ ___| |_
@@ -331,12 +335,8 @@ namespace ListProcessing::Dynamic::Details
      * with the top three values rotated.
      */
     Stack
-    rot() const
-    {
-      return pop3()
-        .push(pop().top())
-        .push(top())
-        .push(pop2().top());
+    rot() const {
+      return pop3().push(pop().top()).push(top()).push(pop2().top());
     }
 
     /**
@@ -344,8 +344,7 @@ namespace ListProcessing::Dynamic::Details
      * with the top three values rotated.
      */
     friend Stack
-    rot(Stack xs)
-    {
+    rot(Stack xs) {
       return xs.rot();
     }
 
@@ -371,7 +370,7 @@ namespace ListProcessing::Dynamic::Details
      */
     template<typename F>
     friend Stack
-    app1(F f, Stack xs){
+    app1(F f, Stack xs) {
       return xs.app1(f);
     }
 
@@ -399,35 +398,30 @@ namespace ListProcessing::Dynamic::Details
      */
     template<typename F>
     friend Stack
-    app2(F f, Stack xs)
-    {
+    app2(F f, Stack xs) {
       return xs.app2(f);
     }
 
-
     ////////////////////////////////////////////////////////////////////////
-
 
     /**
      * @brief Return true if all corresponding pairs of values
      * are equal.
      */
     friend bool
-    operator==(Stack xs, Stack ys)
-    {
+    operator==(Stack xs, Stack ys) {
       return (xs.isEmpty() && ys.isEmpty())
-        ? true
-        : (((! xs.isEmpty()) && (! ys.isEmpty()))
-           ? (xs.top() == ys.top()) && (xs.pop() == ys.pop())
-           : false);
+               ? true
+               : (((!xs.isEmpty()) && (!ys.isEmpty()))
+                    ? (xs.top() == ys.top()) && (xs.pop() == ys.pop())
+                    : false);
     }
 
     /**
      * @brief Return true if the input stacks do not compare equal
      */
     friend bool
-    operator!=(Stack xs, Stack ys)
-    {
+    operator!=(Stack xs, Stack ys) {
       return !(xs == ys);
     }
 

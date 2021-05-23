@@ -16,8 +16,7 @@
  * information.
  */
 int
-main(int argc, char** argv)
-{
+main(int argc, char** argv) {
   using ListProcessing::Config::Driver;
   using ListProcessing::Config::ExceptionHandler;
   try {

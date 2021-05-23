@@ -5,8 +5,7 @@
 //
 #include <list_processing/dynamic/ListTraits.hpp>
 
-namespace ListProcessing::Dynamic::Details
-{
+namespace ListProcessing::Dynamic::Details {
 
   /**
    * @brief A class template describing homogeneous dynamic lists.
@@ -30,6 +29,5 @@ namespace ListProcessing::Dynamic::Details
 
   template<typename T>
   using ListType = List<T, ListTraits<T>::chunk_size>;
-
 
 } // end of namespace ListProcessing::Dynamic::Details

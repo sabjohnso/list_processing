@@ -7,22 +7,21 @@
 #include <list_processing/compile_time/Nothing.hpp>
 #include <list_processing/compile_time/Queue.hpp>
 #include <list_processing/compile_time/Stack.hpp>
-#include <list_processing/compile_time/Tree.hpp>
 #include <list_processing/compile_time/Tape.hpp>
+#include <list_processing/compile_time/Tree.hpp>
 
 #include <list_processing/compile_time_alist.hpp>
 
-namespace ListProcessing::CompileTime
-{
+namespace ListProcessing::CompileTime {
   using Details::idx;
 
+  using Details::buildList;
   using Details::cons;
+  using Details::length_;
   using Details::list;
+  using Details::ListType;
   using Details::Nothing;
   using Details::nothing;
-  using Details::length_;
-  using Details::ListType;
-  using Details::buildList;
 
   using Details::empty_stack;
   using Details::make_stack;

@@ -7,8 +7,7 @@
 
 namespace ListProcessing::Dynamic::Details {
 
-  struct RangeData
-  {
+  struct RangeData {
     index_type start;
     index_type stop;
     index_type step;
@@ -16,8 +15,7 @@ namespace ListProcessing::Dynamic::Details {
 
   class Range;
 
-  class RangeIterator
-  {
+  class RangeIterator {
   public:
     operator index_type() const;
 
@@ -33,13 +31,12 @@ namespace ListProcessing::Dynamic::Details {
     RangeIterator(RangeIterator const& input);
     RangeIterator(
       shared_ptr<const RangeData> input_pointer,
-      index_type input_offset);
+      index_type                  input_offset);
     shared_ptr<const RangeData> ptr;
-    index_type offset;
+    index_type                  offset;
   };
 
-  class Range
-  {
+  class Range {
   public:
     Range() = delete;
     Range(index_type stop);

@@ -7,8 +7,7 @@
 #include <list_processing/compile_time/Nothing.hpp>
 #include <list_processing/compile_time/import.hpp>
 
-namespace ListProcessing::CompileTime::Details
-{
+namespace ListProcessing::CompileTime::Details {
 
   template<typename D, typename C>
   class Tape;
@@ -18,10 +17,9 @@ namespace ListProcessing::CompileTime::Details
   constructTape(D const& data, C const& context);
 
   template<typename D, typename C>
-  class Tape
-  {
+  class Tape {
   public:
-    using Data = D;
+    using Data    = D;
     using Context = C;
 
     static_assert(isListType(type<Data>));
@@ -29,23 +27,20 @@ namespace ListProcessing::CompileTime::Details
 
     constexpr Tape(Data const& d, Context const& c)
       : data(d)
-      , context(c)
-    {}
+      , context(c) {}
 
   private:
-    Data data;
+    Data    data;
     Context context;
 
   public:
-
     constexpr bool
     isEmpty() const {
       return isNull(data) && isNull(context);
     }
 
     friend constexpr bool
-    isEmpty(Tape const& xs)
-    {
+    isEmpty(Tape const& xs) {
       return xs.isEmpty();
     }
 
@@ -57,17 +52,17 @@ namespace ListProcessing::CompileTime::Details
 
     template<typename V>
     friend constexpr auto
-    insert(V const& x, Tape const& xs)
-    {
+    insert(V const& x, Tape const& xs) {
       return xs.insert(x);
     }
 
     constexpr auto
-    erase() const { return constructTape(tail(data), context); }
+    erase() const {
+      return constructTape(tail(data), context);
+    }
 
     friend constexpr auto
-    erase(Tape const& xs)
-    {
+    erase(Tape const& xs) {
       return xs.erase();
     }
 
@@ -79,60 +74,57 @@ namespace ListProcessing::CompileTime::Details
 
     template<typename V>
     friend constexpr auto
-    write(V const& x, Tape const& xs)
-    {
+    write(V const& x, Tape const& xs) {
       return xs.write(x);
     }
 
     constexpr auto
-    read() const { return head(data); }
+    read() const {
+      return head(data);
+    }
 
     friend constexpr auto
-    read(Tape const& xs)
-    {
+    read(Tape const& xs) {
       return xs.read();
     }
 
     constexpr index_type
-    position() const { return length_(type<C>); }
+    position() const {
+      return length_(type<C>);
+    }
 
     friend constexpr index_type
-    position(Tape const& xs)
-    {
+    position(Tape const& xs) {
       return xs.position();
     }
 
     constexpr size_type
-    remaining() const { return length_(type<D>); }
-
+    remaining() const {
+      return length_(type<D>);
+    }
 
     friend constexpr size_type
-    remaining(Tape const& xs)
-    {
+    remaining(Tape const& xs) {
       return xs.remaining();
     }
 
     constexpr size_type
-    length() const
-    {
+    length() const {
       return length_(type<C>) + length_(type<D>);
     }
 
     friend constexpr size_type
-    length(Tape const& xs)
-    {
+    length(Tape const& xs) {
       return xs.length();
     }
 
     constexpr bool
-    isAtFront() const
-    {
+    isAtFront() const {
       return length_(type<C>) == 0;
     }
 
     friend constexpr bool
-    isAtFront(Tape const& xs)
-    {
+    isAtFront(Tape const& xs) {
       return xs.isAtFront();
     }
 
@@ -142,8 +134,7 @@ namespace ListProcessing::CompileTime::Details
     }
 
     friend constexpr bool
-    isAtBack(Tape const& xs)
-    {
+    isAtBack(Tape const& xs) {
       return xs.isAtBack();
     }
 
@@ -152,40 +143,35 @@ namespace ListProcessing::CompileTime::Details
       if constexpr (length_(type<D>) == 0) {
         return *this;
       } else {
-        return constructTape(
-          tail(data), cons(head(data), context));
+        return constructTape(tail(data), cons(head(data), context));
       }
     }
 
     friend constexpr auto
-    fwd(Tape const& xs)
-    {
+    fwd(Tape const& xs) {
       return xs.fwd();
     }
-
 
     constexpr auto
     bwd() const {
       if constexpr (length_(type<C>) == 0) {
         return *this;
       } else {
-        return constructTape(
-          cons(head(context), data), tail(context));
+        return constructTape(cons(head(context), data), tail(context));
       }
     }
 
     friend constexpr auto
-    bwd(Tape const& xs)
-    {
+    bwd(Tape const& xs) {
       return xs.bwd();
     }
 
     template<offset_type N>
     constexpr auto
     moveBy(integral_constant<offset_type, N>) const {
-      if constexpr (N > 0){
+      if constexpr (N > 0) {
         return fwd().moveBy(integral_constant<offset_type, N - 1>{});
-      } else if constexpr (N < 0){
+      } else if constexpr (N < 0) {
         return bwd().moveBy(integral_constant<offset_type, N + 1>{});
       } else {
         return *this;
@@ -194,22 +180,19 @@ namespace ListProcessing::CompileTime::Details
 
     template<offset_type N>
     friend constexpr auto
-    moveBy(integral_constant<offset_type, N>, Tape const& xs)
-    {
+    moveBy(integral_constant<offset_type, N>, Tape const& xs) {
       return xs.moveBy(integral_constant<offset_type, N>{});
     }
 
     template<index_type N>
     constexpr auto
-    moveTo(integral_constant<index_type, N>) const
-    {
+    moveTo(integral_constant<index_type, N>) const {
       return moveBy(integral_constant<offset_type, N - length_(type<C>)>{});
     }
 
     template<index_type N>
     friend constexpr auto
-    moveTo(integral_constant<index_type, N>, Tape const& xs)
-    {
+    moveTo(integral_constant<index_type, N>, Tape const& xs) {
       return xs.moveTo(integral_constant<index_type, N>{});
     }
 
@@ -218,31 +201,25 @@ namespace ListProcessing::CompileTime::Details
       return moveTo(integral_constant<index_type, 0>{});
     }
 
-
     friend constexpr auto
-    toFront(Tape const& xs)
-    {
+    toFront(Tape const& xs) {
       return xs.toFront();
     }
 
     constexpr auto
     toBack() const {
       return moveTo(
-        integral_constant<
-        index_type,
-        length_(type<C>) + length_(type<D>)>{});
+        integral_constant<index_type, length_(type<C>) + length_(type<D>)>{});
     }
 
     friend constexpr auto
-    toBack(Tape const& xs)
-    {
+    toBack(Tape const& xs) {
       return xs.toBack();
     }
 
     template<typename Stream>
     friend Stream&
-    operator<<(Stream& os, Tape const& xs)
-    {
+    operator<<(Stream& os, Tape const& xs) {
       if constexpr (length_(type<D>) == 0 && length_(type<C>) == 0) {
         os << "#Tape()";
       } else if constexpr (length_(type<C>) == 0) {
@@ -259,8 +236,7 @@ namespace ListProcessing::CompileTime::Details
     // is to disambiguate the ostream operators when
     // using gtest.
     friend ostream&
-    operator<<(ostream& os, Tape const& xs)
-    {
+    operator<<(ostream& os, Tape const& xs) {
       if constexpr (length_(type<D>) == 0 && length_(type<C>) == 0) {
         os << "#Tape()";
       } else if constexpr (length_(type<C>) == 0) {
@@ -276,15 +252,11 @@ namespace ListProcessing::CompileTime::Details
 
   template<typename T>
   struct IsTape
-    : conditional_t<
-        is_same_v<T, decay_t<T>>,
-        false_type,
-        IsTape<decay_t<T>>>
-  {};
+    : conditional_t<is_same_v<T, decay_t<T>>, false_type, IsTape<decay_t<T>>> {
+  };
 
   template<typename D, typename C>
-  struct IsTape<Tape<D, C>> : true_type
-  {};
+  struct IsTape<Tape<D, C>> : true_type {};
 
   template<typename D, typename C>
   Tape(D const& data, C const& context) -> Tape<D, C>;
@@ -293,15 +265,13 @@ namespace ListProcessing::CompileTime::Details
 
   template<typename D, typename C>
   constexpr Tape<D, C>
-  constructTape(D const& data, C const& context)
-  {
+  constructTape(D const& data, C const& context) {
     return Tape<D, C>(data, context);
   }
 
   template<typename T, typename... Ts>
   constexpr auto
-  makeTape(T const& x, Ts const&... xs)
-  {
+  makeTape(T const& x, Ts const&... xs) {
     return Tape(list(x, xs...), nil);
   }
 

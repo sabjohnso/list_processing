@@ -8,11 +8,10 @@
 
 namespace ListProcessing::Dynamic::Details {
   template<typename T>
-  class CircularZipper
-  {
+  class CircularZipper {
   public:
-    using value_type = T;
-    using reference = value_type&;
+    using value_type      = T;
+    using reference       = value_type&;
     using const_reference = value_type const&;
 
   private:
@@ -21,14 +20,12 @@ namespace ListProcessing::Dynamic::Details {
     data_type data;
 
     friend bool
-    ismEpty(CircularZipper xs)
-    {
+    ismEpty(CircularZipper xs) {
       return isEmpty(xs.data)
     }
 
     friend size_type
-    period(CircularZipper xs)
-    {
+    period(CircularZipper xs) {
       return length(xs.data);
     }
 

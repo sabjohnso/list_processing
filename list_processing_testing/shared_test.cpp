@@ -14,124 +14,105 @@
 //
 #include <list_processing/dynamic_shared_list.hpp>
 
-using std::stringstream;
 using ListProcessing::Dynamic::Shared;
 using ListProcessing::Dynamic::sharedList;
+using std::stringstream;
 
-
-namespace ListProcessing::Testing
-{
-  TEST(Shared, Construction){
+namespace ListProcessing::Testing {
+  TEST(Shared, Construction) {
     Shared x(3);
     EXPECT_EQ(*x, 3);
   }
 
-  TEST(Shared, ExplicitCast)
-  {
+  TEST(Shared, ExplicitCast) {
     Shared x(3);
     EXPECT_EQ(int(x), 3);
   }
 
-  TEST(Shared, Addition)
-  {
+  TEST(Shared, Addition) {
     Shared a(3);
     Shared b(4);
-    auto c = a + b;
+    auto   c = a + b;
     EXPECT_EQ(*c, *a + *b);
   }
 
-  TEST(Shared, AdditionLeft)
-  {
+  TEST(Shared, AdditionLeft) {
     Shared a(3);
-    auto c = a + 4;
+    auto   c = a + 4;
     EXPECT_EQ(*c, *a + 4);
   }
 
-  TEST(Shared, AdditionRight)
-  {
+  TEST(Shared, AdditionRight) {
     Shared b(4);
-    auto c = 3 + b;
+    auto   c = 3 + b;
     EXPECT_EQ(*c, 3 + *b);
   }
 
-  TEST(Shared, Subtraction)
-  {
+  TEST(Shared, Subtraction) {
     Shared a(3);
     Shared b(4);
-    auto c = a - b;
+    auto   c = a - b;
     EXPECT_EQ(*c, *a - *b);
   }
 
-  TEST(Shared, SubtractionLeft)
-  {
+  TEST(Shared, SubtractionLeft) {
     Shared a(3);
-    auto c = a - 4;
+    auto   c = a - 4;
     EXPECT_EQ(*c, *a - 4);
   }
 
-  TEST(Shared, SubtractionRight)
-  {
+  TEST(Shared, SubtractionRight) {
     Shared b(4);
-    auto c = 3 - b;
+    auto   c = 3 - b;
     EXPECT_EQ(*c, 3 - *b);
   }
 
-
-
-  TEST(Shared, Multiplication)
-  {
+  TEST(Shared, Multiplication) {
     Shared a(3);
     Shared b(4);
-    auto c = a * b;
+    auto   c = a * b;
     EXPECT_EQ(*c, *a * *b);
   }
 
-  TEST(Shared, MultiplicationLeft)
-  {
+  TEST(Shared, MultiplicationLeft) {
     Shared a(3);
-    auto c = a * 4;
+    auto   c = a * 4;
     EXPECT_EQ(*c, *a * 4);
   }
 
-  TEST(Shared, MultiplicationRight)
-  {
+  TEST(Shared, MultiplicationRight) {
     Shared b(4);
-    auto c = 3 * b;
+    auto   c = 3 * b;
     EXPECT_EQ(*c, 3 * *b);
   }
 
-
-  TEST(Shared, Division)
-  {
+  TEST(Shared, Division) {
     Shared a(3);
     Shared b(4);
-    auto c = a / b;
+    auto   c = a / b;
     EXPECT_EQ(*c, *a / *b);
   }
 
-  TEST(Shared, DivisionLeft)
-  {
+  TEST(Shared, DivisionLeft) {
     Shared a(3);
-    auto c = a / 4;
+    auto   c = a / 4;
     EXPECT_EQ(*c, *a / 4);
   }
 
-  TEST(Shared, DivisionRight)
-  {
+  TEST(Shared, DivisionRight) {
     Shared b(4);
-    auto c = 3 / b;
+    auto   c = 3 / b;
     EXPECT_EQ(*c, 3 / *b);
   }
 
-
-  TEST(Shared, Show){
-    Shared x = 3;
+  TEST(Shared, Show) {
+    Shared       x = 3;
     stringstream ss;
     ss << x;
     EXPECT_EQ(ss.str(), "3");
   }
 
-  TEST(Shared, ListConstruction){
+  TEST(Shared, ListConstruction) {
     auto xs = sharedList(1, 2, 3);
     EXPECT_EQ(length(xs), 3);
     EXPECT_EQ(*head(xs), 1);

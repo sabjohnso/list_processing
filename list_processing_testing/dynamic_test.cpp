@@ -33,15 +33,13 @@ namespace {
 
 namespace ListProcessing::Testing {
 
-  TEST(Dynamic, Nothing)
-  {
+  TEST(Dynamic, Nothing) {
     ASSERT_TRUE(isnothing(nothing<int>));
     ASSERT_FALSE(hasdata(nothing<int>));
     ASSERT_EQ(length(nothing<int>), 0);
   }
 
-  TEST(Dynamic, List)
-  {
+  TEST(Dynamic, List) {
     auto const xs = list(1, 2, 3);
     ASSERT_EQ(length(xs), 3);
     ASSERT_EQ(head(xs), 1);
@@ -81,17 +79,14 @@ namespace ListProcessing::Testing {
 
   TEST(Dynamic, ListRef2) { ASSERT_EQ(listref(list(1, 2, 3), 2), 3); }
 
-  TEST(Dynamic, BadListRefLowerBound)
-  {
+  TEST(Dynamic, BadListRefLowerBound) {
     ASSERT_THROW(listref(list(1, 2, 3), -1), logic_error);
   }
-  TEST(Dynamic, BadListRefUpperBound)
-  {
+  TEST(Dynamic, BadListRefUpperBound) {
     ASSERT_THROW(listref(list(1, 2, 3), 4), logic_error);
   }
 
-  TEST(Dynamic, App)
-  {
+  TEST(Dynamic, App) {
     ASSERT_EQ(app([](auto x, auto y) { return x + y; }, nat<2>, list(1, 2)), 3);
   }
 

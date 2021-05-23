@@ -3,31 +3,25 @@
 //
 // ... List Processing header files
 //
-#include <list_processing/dynamic/import.hpp>
 #include <list_processing/dynamic/List.hpp>
+#include <list_processing/dynamic/import.hpp>
 
-
-
-
-namespace ListProcessing::Dynamic::Details
-{
+namespace ListProcessing::Dynamic::Details {
   template<typename K, typename T>
-  class AList
-  {
+  class AList {
   public:
-
-    using key_type = K;
+    using key_type   = K;
     using value_type = T;
-    using assoc_type = pair<K,T>;
+    using assoc_type = pair<K, T>;
 
-    AList() : data(nil<assoc_type>) {}
+    AList()
+      : data(nil<assoc_type>) {}
+
   private:
-
     using data_type = ListType<assoc_type>;
     data_type data;
 
   public:
-
     //          _
     //  ___ ___| |_
     // (_-</ -_)  _|
@@ -38,27 +32,30 @@ namespace ListProcessing::Dynamic::Details
      * input value associated with the input key.
      */
     AList
-    set(K key, T value) const { return AList(cons(pair(key, value), data)); }
+    set(K key, T value) const {
+      return AList(cons(pair(key, value), data));
+    }
 
     /**
      * @brief Return an `AList` like the input alist, with the addition of a the
      * input value associated with the input key.
      */
     friend AList
-    set(K key, T value, AList xs){ return xs.set(key, value); }
+    set(K key, T value, AList xs) {
+      return xs.set(key, value);
+    }
 
     //                    _
     //  _  _ _ _  ___ ___| |_
     // | || | ' \(_-</ -_)  _|
     //  \_,_|_||_/__/\___|\__|
   public:
-
     /**
      * @brief Remove the first occurace of a value associated with the
      * input key from  this `AList`.
      */
     AList
-    unset(K key){
+    unset(K key) {
       return AList(data_type(unsetAux(key, data_type::nil, data)));
     }
 
@@ -67,27 +64,27 @@ namespace ListProcessing::Dynamic::Details
      * input key from  the input `AList`.
      */
     friend AList
-    unset(K key, AList xs){
+    unset(K key, AList xs) {
       return AList(data_type(unsetAux(key, data_type::nil, xs.data)));
     }
 
   private:
-
     static Trampoline<data_type>
-    unsetAux(K key, data_type accum, data_type xs){
+    unsetAux(K key, data_type accum, data_type xs) {
       using tramp = Trampoline<data_type>;
       return xs.hasData()
-        ? (head(xs).first == key
-           ? tramp(rappend(accum, tail(xs)))
-           : tramp([=]{ return unsetAux(key, cons(head(xs), accum), tail(xs)); }))
-        : tramp(reverse(accum));
+               ? (head(xs).first == key
+                    ? tramp(rappend(accum, tail(xs)))
+                    : tramp([=] {
+                        return unsetAux(key, cons(head(xs), accum), tail(xs));
+                      }))
+               : tramp(reverse(accum));
     }
 
     //  _ _ ___ _ __  _____ _____
     // | '_/ -_) '  \/ _ \ V / -_)
     // |_| \___|_|_|_\___/\_/\___|
   public:
-
     /**
      * @brief Remove the all occurances of a values associated with the
      * input key from this `AList`.
@@ -102,20 +99,21 @@ namespace ListProcessing::Dynamic::Details
      * input key from  the input `AList`.
      */
     friend AList
-    remove(K key, AList xs){
+    remove(K key, AList xs) {
       return AList(data_type(removeAux(key, data_type::nil, xs.data)));
     }
 
   private:
-
     static Trampoline<data_type>
-    removeAux(K key, data_type accum, data_type xs){
+    removeAux(K key, data_type accum, data_type xs) {
       using tramp = Trampoline<data_type>;
       return xs.hasData()
-        ? (head(xs).first == key
-           ? tramp([=]{ return removeAux(key, accum, tail(xs)); })
-           : tramp([=]{ return removeAux(key, cons(head(xs), accum), tail(xs)); }))
-        : tramp(reverse(accum));
+               ? (head(xs).first == key
+                    ? tramp([=] { return removeAux(key, accum, tail(xs)); })
+                    : tramp([=] {
+                        return removeAux(key, cons(head(xs), accum), tail(xs));
+                      }))
+               : tramp(reverse(accum));
     }
 
     //  _            _  __
@@ -124,7 +122,6 @@ namespace ListProcessing::Dynamic::Details
     // |_||_\__,_/__/_|\_\___|\_, |
     //                        |__/
   public:
-
     /**
      * @brief Return `true` if this `AList` has the input key and
      * `false` if it does not.
@@ -139,20 +136,18 @@ namespace ListProcessing::Dynamic::Details
      * `false` if it does not.
      */
     friend bool
-    hasKey(K key, AList xs){
+    hasKey(K key, AList xs) {
       return bool(hasKeyAux(key, xs.data));
     }
 
   private:
-
     static Trampoline<bool>
-    hasKeyAux(K key, data_type xs){
+    hasKeyAux(K key, data_type xs) {
       using tramp = Trampoline<bool>;
-      return xs.hasData()
-        ? (head(xs).first == key
-           ? tramp(true)
-           : tramp([=]{ return hasKeyAux(key, tail(xs)); }))
-        : tramp(false);
+      return xs.hasData() ? (head(xs).first == key ? tramp(true) : tramp([=] {
+        return hasKeyAux(key, tail(xs));
+      }))
+                          : tramp(false);
     }
 
     //   __                 ___     _
@@ -160,37 +155,35 @@ namespace ListProcessing::Dynamic::Details
     // |  _/ _ \ '_/ _/ -_) (_ / -_)  _|
     // |_| \___/_| \__\___|\___\___|\__|
   public:
-
     /**
      * @brief Return the value associated with an input key in this `AList`,
      * or and alternate value if the `AList` does not have a value associated
      * with the input key.
      */
     T
-    forceGet(K const& key, T const& alternate) const & {
+    forceGet(K const& key, T const& alternate) const& {
       return T(forceGetAux(key, alternate, data));
     }
 
     /**
-     * @brief Return the value associated with an input key in the input `AList`,
-     * or and alternate value if the `AList` does not have a value associated with
-     * the input key.
+     * @brief Return the value associated with an input key in the input
+     * `AList`, or and alternate value if the `AList` does not have a value
+     * associated with the input key.
      */
     friend T
-    forceGet(K const& key, T const& alternate, AList const& xs){
+    forceGet(K const& key, T const& alternate, AList const& xs) {
       return xs.forceGet(key, alternate);
     }
 
   private:
-
     static Trampoline<T>
-    forceGetAux(K const& key, T const& alternate, data_type const& xs){
+    forceGetAux(K const& key, T const& alternate, data_type const& xs) {
       using tramp = Trampoline<T>;
       return xs.hasData()
-        ? (head(xs).first == key
-           ? tramp(head(xs).second)
-           : tramp([=]{ return forceGetAux(key, alternate, tail(xs)); }))
-        : tramp(alternate);
+               ? (head(xs).first == key ? tramp(head(xs).second) : tramp([=] {
+                   return forceGetAux(key, alternate, tail(xs));
+                 }))
+               : tramp(alternate);
     }
 
   public:
@@ -214,25 +207,22 @@ namespace ListProcessing::Dynamic::Details
      * the input `AList`.
      */
     friend optional<T>
-    maybeGet(K key, AList xs){
+    maybeGet(K key, AList xs) {
       return optional<T>(maybeGetAux(key, xs.data));
     }
 
   private:
-
     static Trampoline<optional<T>>
-    maybeGetAux(K key, data_type xs){
+    maybeGetAux(K key, data_type xs) {
       using tramp = Trampoline<optional<T>>;
       return xs.hasData()
-        ? (head(xs).first == key
-           ? tramp(head(xs).second)
-           : tramp([=]{ return maybeGetAux(key, tail(xs)); }))
-        : tramp(optional<T>{nullopt});
+               ? (head(xs).first == key ? tramp(head(xs).second) : tramp([=] {
+                   return maybeGetAux(key, tail(xs));
+                 }))
+               : tramp(optional<T>{ nullopt });
     }
 
-
   public:
-
     //  _             ___     _
     // | |_ _ _ _  _ / __|___| |_
     // |  _| '_| || | (_ / -_)  _|
@@ -245,42 +235,42 @@ namespace ListProcessing::Dynamic::Details
     }
 
     friend T
-    tryGet(K key, AList xs){
+    tryGet(K key, AList xs) {
       return T(tryGetAux(key, xs.data));
     }
 
   private:
-
     static Trampoline<T>
-    tryGetAux(K key, data_type xs){
+    tryGetAux(K key, data_type xs) {
       using tramp = Trampoline<T>;
       return xs.hasData()
-        ? (head(xs).first == key
-           ? tramp(head(xs).second)
-           : tramp([=]{ return tryGetAux(key, tail(xs)); }))
-        : throw logic_error(
-          "\n" __FILE__ ":" + std::to_string(__LINE__) + ":0 "
-          "AList does not have requested key!\n");
+               ? (head(xs).first == key ? tramp(head(xs).second) : tramp([=] {
+                   return tryGetAux(key, tail(xs));
+                 }))
+               : throw logic_error(
+                   "\n" __FILE__ ":" + std::to_string(__LINE__) +
+                   ":0 "
+                   "AList does not have requested key!\n");
     }
 
-
   private:
-
     AList(data_type input_data)
-      : data(input_data)
-    {}
+      : data(input_data) {}
 
     //  _            ___       _
     // | |_  __ _ __|   \ __ _| |_ __ _
     // | ' \/ _` (_-< |) / _` |  _/ _` |
     // |_||_\__,_/__/___/\__,_|\__\__,_|
   public:
-
     bool
-    hasData() const { return data.hasData(); }
+    hasData() const {
+      return data.hasData();
+    }
 
     friend bool
-    hasData(AList xs){ return xs.hasData(); }
+    hasData(AList xs) {
+      return xs.hasData();
+    }
 
     //  _    ___            _
     // (_)__| __|_ __  _ __| |_ _  _
@@ -288,16 +278,19 @@ namespace ListProcessing::Dynamic::Details
     // |_/__/___|_|_|_| .__/\__|\_, |
     //                |_|       |__/
   public:
-
     bool
-    isEmpty() const { return isNull(data); }
+    isEmpty() const {
+      return isNull(data);
+    }
 
     friend bool
-    isEmpty(AList xs){ return isNull(xs.data); }
+    isEmpty(AList xs) {
+      return isNull(xs.data);
+    }
 
   }; // end of class AList
 
   template<typename K, typename T>
-  const AList<K,T> empty_alist{};
+  const AList<K, T> empty_alist{};
 
 } // end of namespace ListProcessing::Dynamic::Details

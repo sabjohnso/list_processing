@@ -12,65 +12,51 @@
 using ListProcessing::Dynamic::empty_queue;
 using ListProcessing::Dynamic::queue;
 
-namespace ListProcessing::Testing
-{
-  TEST(Queue, EmptyQueueIsEmpty)
-  {
-    ASSERT_TRUE(isEmpty(empty_queue<int>));
-  }
+namespace ListProcessing::Testing {
+  TEST(Queue, EmptyQueueIsEmpty) { ASSERT_TRUE(isEmpty(empty_queue<int>)); }
 
-  TEST(Queue, FObjEmptyQueueIsEmpty)
-  {
+  TEST(Queue, FObjEmptyQueueIsEmpty) {
     using namespace ListProcessing::Operators;
     ASSERT_TRUE(isEmpty(empty_queue<int>));
   }
 
-  TEST(Queue, EmptyQueueFrontThrows)
-  {
+  TEST(Queue, EmptyQueueFrontThrows) {
     ASSERT_THROW(front(empty_queue<int>), std::logic_error);
   }
 
-  TEST(Queue, FObjEmptyQueueFrontThrows)
-  {
+  TEST(Queue, FObjEmptyQueueFrontThrows) {
     using namespace ListProcessing::Operators;
     ASSERT_THROW(front(empty_queue<int>), std::logic_error);
   }
 
-  TEST(Queue, PushNotEmpty)
-  {
+  TEST(Queue, PushNotEmpty) {
     ASSERT_FALSE(isEmpty(push(1, empty_queue<int>)));
   }
 
-  TEST(Queue, FObjPushNotEmpty)
-  {
+  TEST(Queue, FObjPushNotEmpty) {
     using namespace ListProcessing::Operators;
     ASSERT_FALSE(isEmpty(push(1, empty_queue<int>)));
   }
 
-  TEST(Queue, PushPopIsEmpty)
-  {
+  TEST(Queue, PushPopIsEmpty) {
     ASSERT_TRUE(isEmpty(pop(push(1, empty_queue<int>))));
   }
 
-  TEST(Queue, FObjPushPopIsEmpty)
-  {
+  TEST(Queue, FObjPushPopIsEmpty) {
     using namespace ListProcessing::Operators;
     ASSERT_TRUE(isEmpty(pop(push(1, empty_queue<int>))));
   }
 
-  TEST(Queue, FontPushIsValue)
-  {
+  TEST(Queue, FontPushIsValue) {
     ASSERT_EQ(front(push('x', empty_queue<char>)), 'x');
   }
 
-  TEST(Queue, FObjFontPushIsValue)
-  {
+  TEST(Queue, FObjFontPushIsValue) {
     using namespace ListProcessing::Operators;
     ASSERT_EQ(front(push('x', empty_queue<char>)), 'x');
   }
 
-  TEST(Queue, Order)
-  {
+  TEST(Queue, Order) {
     const auto xs = queue('a', 'b', 'c');
     ASSERT_EQ(front(xs), 'a');
     ASSERT_EQ(front(pop(xs)), 'b');
@@ -78,8 +64,7 @@ namespace ListProcessing::Testing
     ASSERT_TRUE(isEmpty(pop(pop(pop(xs)))));
   }
 
-  TEST(Queue, FObjOrder)
-  {
+  TEST(Queue, FObjOrder) {
     using namespace ListProcessing::Operators;
     const auto xs = queue('a', 'b', 'c');
     ASSERT_EQ(front(xs), 'a');

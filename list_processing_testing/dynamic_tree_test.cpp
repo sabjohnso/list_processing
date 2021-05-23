@@ -11,71 +11,54 @@
 
 using ListProcessing::Dynamic::empty_tree;
 
-
-
-namespace ListProcessing::Testing
-{
+namespace ListProcessing::Testing {
   namespace // anonymous
   {
     constexpr auto pipe = ListProcessing::Operators::pipe;
   } // end of anonymous namespace
 
+  TEST(Tree, EmptyTreeIsEmpty) { ASSERT_TRUE(isEmpty(empty_tree<int>)); }
 
-  TEST(Tree, EmptyTreeIsEmpty)
-  {
-    ASSERT_TRUE(isEmpty(empty_tree<int>));
-  }
-
-  TEST(Tree, InsertEmptyTreeNotEmpty)
-  {
+  TEST(Tree, InsertEmptyTreeNotEmpty) {
     ASSERT_FALSE(isEmpty(insert(empty_tree<char>, 'a')));
   }
 
-  TEST(Tree, RemoveInsertEmptyIsEmpty)
-  {
+  TEST(Tree, RemoveInsertEmptyIsEmpty) {
     ASSERT_TRUE(isEmpty(remove(insert(empty_tree<char>, 'a'))));
   }
 
-  TEST(Tree, InsertBranchIsNotEmpty)
-  {
+  TEST(Tree, InsertBranchIsNotEmpty) {
     ASSERT_FALSE(isEmpty(insertBranch(empty_tree<char>)));
   }
 
-  TEST(Tree, ReadValueIsInsertedValue)
-  {
+  TEST(Tree, ReadValueIsInsertedValue) {
     ASSERT_EQ(read(insert(empty_tree<char>, 'a')), 'a');
   }
 
-  TEST(Tree, ReadValueIsWrittenValue)
-  {
-    ASSERT_EQ(
-      read(write(insert(empty_tree<char>, 'a'), 'b')),
-      'b');
+  TEST(Tree, ReadValueIsWrittenValue) {
+    ASSERT_EQ(read(write(insert(empty_tree<char>, 'a'), 'b')), 'b');
 
-    auto xs = pipe(empty_tree<char>,
-           [](auto tree){ return insert(tree, 'a'); },
-           [](auto tree){ return write(tree, 'b'); },
-           [](auto tree){ return read(tree); });
+    auto xs = pipe(
+      empty_tree<char>,
+      [](auto tree) { return insert(tree, 'a'); },
+      [](auto tree) { return write(tree, 'b'); },
+      [](auto tree) { return read(tree); });
     ASSERT_EQ(xs, 'b');
   }
 
-  TEST(Tree, EmptyTreeBranchIsEmpty)
-  {
+  TEST(Tree, EmptyTreeBranchIsEmpty) {
     ASSERT_TRUE(isBranchEmpty(empty_tree<char>));
   }
 
-  TEST(Tree, InsertBranchIsBranch)
-  {
+  TEST(Tree, InsertBranchIsBranch) {
     ASSERT_TRUE(isBranch(insertBranch(empty_tree<char>)));
   }
 
-  TEST(Tree, InsertBranchIsNotLeaf)
-  {
+  TEST(Tree, InsertBranchIsNotLeaf) {
     ASSERT_FALSE(isLeaf(insertBranch(empty_tree<char>)));
   }
 
-  TEST(Tree, InsertBranchOpenBranch)
-  {
+  TEST(Tree, InsertBranchOpenBranch) {
     ASSERT_TRUE(isBranchEmpty(open(insertBranch(empty_tree<char>))));
   }
 

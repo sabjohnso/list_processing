@@ -5,8 +5,7 @@
 //
 #include <list_processing/compile_time/import.hpp>
 
-namespace ListProcessing::CompileTime::Details
-{
+namespace ListProcessing::CompileTime::Details {
 
   template<typename T, typename U>
   class Cell;
@@ -18,7 +17,7 @@ namespace ListProcessing::CompileTime::Details
   public:
     template<typename T, typename U>
     static constexpr auto
-    call(T&& x, U&& y){
+    call(T&& x, U&& y) {
       return Cell(forward<T>(x), forward<U>(y));
     }
   } constexpr cons{};

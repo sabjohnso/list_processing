@@ -22,26 +22,21 @@ namespace ListProcessing::Testing {
 
   TEST(Stack, Empty) { ASSERT_TRUE(isEmpty(Stack<int>())); }
 
-  TEST(Stack, MemEmpty){ ASSERT_TRUE(Stack<int>().isEmpty()); }
+  TEST(Stack, MemEmpty) { ASSERT_TRUE(Stack<int>().isEmpty()); }
 
-  TEST(Stack, FObjEmpty)
-  {
+  TEST(Stack, FObjEmpty) {
     using namespace ListProcessing::Operators;
     ASSERT_TRUE(isEmpty(Stack<int>()));
   }
 
-
   TEST(Stack, NotEmpty) { ASSERT_FALSE(isEmpty(push(0, Stack<int>()))); }
 
-  TEST(Stack, FObjNotEmpty)
-  {
+  TEST(Stack, FObjNotEmpty) {
     using namespace ListProcessing::Operators;
-    ASSERT_FALSE(
-      pipe(Stack<int>(), push(0), isEmpty));
+    ASSERT_FALSE(pipe(Stack<int>(), push(0), isEmpty));
   }
 
-  TEST(Stack, Pop)
-  {
+  TEST(Stack, Pop) {
     auto xs = pipe(
       Stack<int>{},
       [](auto xs) { return push(0, xs); },
@@ -49,86 +44,64 @@ namespace ListProcessing::Testing {
     ASSERT_EQ(xs, Stack<int>{});
   }
 
-  TEST(Stack, FObjPop)
-  {
+  TEST(Stack, FObjPop) {
     using namespace ListProcessing::Operators;
-    auto xs = pipe(
-      Stack<int>{},
-      push(0),
-      pop);
+    auto xs = pipe(Stack<int>{}, push(0), pop);
     ASSERT_EQ(xs, Stack<int>{});
   }
 
-
-  TEST(Stack, Pop2)
-  {
+  TEST(Stack, Pop2) {
     auto xs = pipe(
       empty_stack<int>,
-      [](auto xs){ return push(0, xs); },
-      [](auto xs){ return push(1, xs); },
-      [](auto xs){ return pop2(xs); });
-    ASSERT_EQ(xs,empty_stack<int>);
+      [](auto xs) { return push(0, xs); },
+      [](auto xs) { return push(1, xs); },
+      [](auto xs) { return pop2(xs); });
+    ASSERT_EQ(xs, empty_stack<int>);
   }
 
-  TEST(Stack, FObjPop2)
-  {
+  TEST(Stack, FObjPop2) {
     using namespace ListProcessing::Operators;
+    auto xs = pipe(empty_stack<int>, push(0), push(1), pop2);
+    ASSERT_EQ(xs, empty_stack<int>);
+  }
+
+  TEST(Stack, Pop3) {
     auto xs = pipe(
       empty_stack<int>,
-      push(0),
-      push(1),
-      pop2);
+      [](auto xs) { return push(0, xs); },
+      [](auto xs) { return push(1, xs); },
+      [](auto xs) { return push(2, xs); },
+      [](auto xs) { return pop3(xs); });
     ASSERT_EQ(xs, empty_stack<int>);
   }
 
-  TEST(Stack, Pop3)
-  {
-    auto xs = pipe(
-        empty_stack<int>,
-        [](auto xs) { return push(0, xs); },
-        [](auto xs) { return push(1, xs); },
-        [](auto xs) { return push(2, xs); },
-        [](auto xs) { return pop3(xs); });
-    ASSERT_EQ(xs, empty_stack<int>);
-  }
-
-
-  TEST(Stack, FObjPop3)
-  {
+  TEST(Stack, FObjPop3) {
     using namespace ListProcessing::Operators;
-    auto xs = pipe(
-        empty_stack<int>,
-        push(0),
-        push(1),
-        push(2),
-        pop3);
+    auto xs = pipe(empty_stack<int>, push(0), push(1), push(2), pop3);
     ASSERT_EQ(xs, empty_stack<int>);
   }
 
-  TEST(Stack, Swap)
-  {
+  TEST(Stack, Swap) {
     auto xs = pipe(
-        empty_stack<int>,
-        [](auto xs) { return push(0, xs); },
-        [](auto xs) { return push(1, xs); },
-        [](auto xs) { return swap(xs); });
+      empty_stack<int>,
+      [](auto xs) { return push(0, xs); },
+      [](auto xs) { return push(1, xs); },
+      [](auto xs) { return swap(xs); });
     auto ys = pipe(
-        empty_stack<int>,
-        [](auto xs) { return push(1, xs); },
-        [](auto xs) { return push(0, xs); });
-    ASSERT_EQ( xs, ys);
+      empty_stack<int>,
+      [](auto xs) { return push(1, xs); },
+      [](auto xs) { return push(0, xs); });
+    ASSERT_EQ(xs, ys);
   }
 
-  TEST(Stack, FObjSwap)
-  {
+  TEST(Stack, FObjSwap) {
     using namespace ListProcessing::Operators;
     auto xs = pipe(empty_stack<int>, push(0), push(1), swap);
     auto ys = pipe(empty_stack<int>, push(1), push(0));
-    ASSERT_EQ( xs, ys);
+    ASSERT_EQ(xs, ys);
   }
 
-  TEST(Stack, Dup)
-  {
+  TEST(Stack, Dup) {
     auto xs = pipe(
       empty_stack<int>,
       [](auto xs) { return push(0, xs); },
@@ -138,113 +111,102 @@ namespace ListProcessing::Testing {
       [](auto xs) { return push(0, xs); },
       [](auto xs) { return push(0, xs); });
     ASSERT_EQ(xs, ys);
-
   }
 
-  TEST(Stack, FObjDup)
-  {
+  TEST(Stack, FObjDup) {
     using namespace ListProcessing::Operators;
     auto xs = pipe(empty_stack<int>, push(0), dup);
     auto ys = pipe(empty_stack<int>, push(0), push(0));
     ASSERT_EQ(xs, ys);
   }
 
-  TEST(Stack, Nip)
-  {
+  TEST(Stack, Nip) {
     auto xs = pipe(
-        empty_stack<int>,
-        [](auto xs) { return push(0, xs); },
-        [](auto xs) { return push(1, xs); },
-        [](auto xs) { return nip(xs); });
+      empty_stack<int>,
+      [](auto xs) { return push(0, xs); },
+      [](auto xs) { return push(1, xs); },
+      [](auto xs) { return nip(xs); });
     auto ys = pipe(empty_stack<int>, [](auto xs) { return push(1, xs); });
     ASSERT_EQ(xs, ys);
   }
 
-  TEST(Stack, FObjNip)
-  {
+  TEST(Stack, FObjNip) {
     using namespace ListProcessing::Operators;
     auto xs = pipe(empty_stack<int>, push(0), push(1), nip);
     auto ys = pipe(empty_stack<int>, push(1));
     ASSERT_EQ(xs, ys);
   }
 
-  TEST(Stack, Tuck)
-  {
+  TEST(Stack, Tuck) {
     auto xs = pipe(
-        empty_stack<int>,
-        [](auto xs) { return push(0, xs); },
-        [](auto xs) { return push(1, xs); },
-        [](auto xs) { return tuck(xs); });
+      empty_stack<int>,
+      [](auto xs) { return push(0, xs); },
+      [](auto xs) { return push(1, xs); },
+      [](auto xs) { return tuck(xs); });
     auto ys = pipe(
-        empty_stack<int>,
-        [](auto xs) { return push(1, xs); },
-        [](auto xs) { return push(0, xs); },
-        [](auto xs) { return push(1, xs); });
+      empty_stack<int>,
+      [](auto xs) { return push(1, xs); },
+      [](auto xs) { return push(0, xs); },
+      [](auto xs) { return push(1, xs); });
     ASSERT_EQ(xs, ys);
   }
 
-  TEST(Stack, FObjTuck)
-  {
+  TEST(Stack, FObjTuck) {
     using namespace ListProcessing::Operators;
     auto xs = pipe(empty_stack<int>, push(0), push(1), tuck);
     auto ys = pipe(empty_stack<int>, push(1), push(0), push(1));
     ASSERT_EQ(xs, ys);
   }
 
-  TEST(Stack, Over)
-  {
+  TEST(Stack, Over) {
     auto xs = pipe(
-        empty_stack<int>,
-        [](auto xs) { return push(0, xs); },
-        [](auto xs) { return push(1, xs); },
-        [](auto xs) { return over(xs); });
+      empty_stack<int>,
+      [](auto xs) { return push(0, xs); },
+      [](auto xs) { return push(1, xs); },
+      [](auto xs) { return over(xs); });
     auto ys = pipe(
-        empty_stack<int>,
-        [](auto xs) { return push(0, xs); },
-        [](auto xs) { return push(1, xs); },
-        [](auto xs) { return push(0, xs); });
+      empty_stack<int>,
+      [](auto xs) { return push(0, xs); },
+      [](auto xs) { return push(1, xs); },
+      [](auto xs) { return push(0, xs); });
     ASSERT_EQ(xs, ys);
   }
 
-  TEST(Stack, FObjOver)
-  {
+  TEST(Stack, FObjOver) {
     using namespace ListProcessing::Operators;
     auto xs = pipe(empty_stack<int>, push(0), push(1), over);
     auto ys = pipe(empty_stack<int>, push(0), push(1), push(0));
     ASSERT_EQ(xs, ys);
   }
 
-  TEST(Stack, App1)
-  {
+  TEST(Stack, App1) {
     auto xs = pipe(
-        empty_stack<int>,
-        [](auto xs) { return push(2, xs); },
-        [](auto xs) { return app1([](auto x) { return x * x; }, xs); });
+      empty_stack<int>,
+      [](auto xs) { return push(2, xs); },
+      [](auto xs) { return app1([](auto x) { return x * x; }, xs); });
     auto ys = pipe(empty_stack<int>, [](auto xs) { return push(4, xs); });
     ASSERT_EQ(xs, ys);
   }
 
-  TEST(Stack, FObjApp1)
-  {
+  TEST(Stack, FObjApp1) {
     using namespace ListProcessing::Operators;
-    auto xs = pipe(empty_stack<int>, push(2), app1([](auto x){ return x*x; }));
+    auto xs =
+      pipe(empty_stack<int>, push(2), app1([](auto x) { return x * x; }));
     auto ys = pipe(empty_stack<int>, push(4));
     ASSERT_EQ(xs, ys);
   }
 
-  TEST(Stack, App2)
-  {
+  TEST(Stack, App2) {
     auto xs = pipe(
-        empty_stack<int>,
-        [](auto xs) { return push(1, xs); },
-        [](auto xs) { return push(2, xs); },
-        [](auto xs) { return app2( [](auto x, auto y) { return x + y; }, xs); });
+      empty_stack<int>,
+      [](auto xs) { return push(1, xs); },
+      [](auto xs) { return push(2, xs); },
+      [](auto xs) { return app2([](auto x, auto y) { return x + y; }, xs); });
     auto ys = pipe(empty_stack<int>, [](auto xs) { return push(3, xs); });
     ASSERT_EQ(xs, ys);
   }
 
-  TEST(Stack, FObjApp2)
-  {
+  TEST(Stack, FObjApp2) {
     using std::plus;
     using namespace ListProcessing::Operators;
     auto xs = pipe(empty_stack<int>, push(1), push(2), app2(plus{}));

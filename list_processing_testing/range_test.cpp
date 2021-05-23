@@ -3,10 +3,8 @@
 //
 #include <gtest/gtest.h>
 
-namespace ListProcessing::Testing
-{
+namespace ListProcessing::Testing {
 
-  TEST(Range, Construction1)
-  {}
+  TEST(Range, Construction1) {}
 
 } // end of namespace ListProcessing::Testing
