@@ -7,8 +7,8 @@
 //
 // ... External header files
 //
-#include <type_utility/type_utility.hpp>
 #include <function_utility/function_utility.hpp>
+#include <type_utility/type_utility.hpp>
 
 //
 // ... List Processing header files
@@ -18,16 +18,16 @@
 
 namespace {
 
-  using TypeUtility::nat;
-  using TypeUtility::type;
   using FunctionUtility::curry;
   using FunctionUtility::identity;
+  using TypeUtility::nat;
+  using TypeUtility::type;
 
+  using ListProcessing::CompileTime::buildList;
   using ListProcessing::CompileTime::cons;
+  using ListProcessing::CompileTime::length_;
   using ListProcessing::CompileTime::list;
   using ListProcessing::CompileTime::nothing;
-  using ListProcessing::CompileTime::length_;
-  using ListProcessing::CompileTime::buildList;
 
 } // end of anonymous namespace
 
@@ -120,19 +120,21 @@ namespace ListProcessing::Testing {
     STATIC_EXPECT_EQ(drop(nat<4>, xs), nothing);
     STATIC_EXPECT_EQ(drop(nat<5>, xs), nothing);
 
-
     STATIC_EXPECT_EQ(foldl([](auto x, auto y) { return x + y; }, 0, xs), 10);
-    STATIC_EXPECT_EQ(foldr([](auto x, auto y) { return std::min(x, y); }, 10, xs), 1);
+    STATIC_EXPECT_EQ(
+      foldr([](auto x, auto y) { return std::min(x, y); }, 10, xs), 1);
   }
 
-  TEST(CompileTime, Append){
+  TEST(CompileTime, Append)
+  {
     constexpr auto xs = list(1, 2, 3, 4);
     STATIC_EXPECT_EQ(append(xs, nothing), xs);
     STATIC_EXPECT_EQ(append(nothing, xs), xs);
     STATIC_EXPECT_EQ(append(list(1, 2), list(3, 4)), xs);
   }
 
-  TEST(CompileTime, FObjAppend){
+  TEST(CompileTime, FObjAppend)
+  {
     using namespace ListProcessing::Operators;
     constexpr auto xs = list(1, 2, 3, 4);
     STATIC_EXPECT_EQ(append(xs, nothing), xs);
@@ -140,75 +142,197 @@ namespace ListProcessing::Testing {
     STATIC_EXPECT_EQ(append(list(1, 2), list(3, 4)), xs);
   }
 
-  TEST(CompileTime, TypeLength){
+  TEST(CompileTime, TypeLength)
+  {
     STATIC_EXPECT_EQ(length_(type<decltype(list(1, 2))>), 2);
   }
 
-  TEST(CompileTime, ButLast){
+  TEST(CompileTime, ButLast)
+  {
     STATIC_EXPECT_EQ(butLast(list(1, 2, 3)), list(1, 2));
   }
 
-  TEST(CompileTime, ApplyList){
-    STATIC_EXPECT_EQ(applyList([](auto x, auto y){ return x + y; }, list(3, 4)), 7);
+  TEST(CompileTime, ApplyList)
+  {
+    STATIC_EXPECT_EQ(
+      applyList([](auto x, auto y) { return x + y; }, list(3, 4)), 7);
   }
 
-  TEST(CompileTime, MapList){
-    STATIC_EXPECT_EQ(
-      mapList([](auto x){ return x*x; }, list(1, 2, 3)),
-      list(1, 4, 9));
+  TEST(CompileTime, MapList)
+  {
+    STATIC_EXPECT_EQ(mapList([](auto x) { return x * x; }, list(1, 2, 3)),
+                     list(1, 4, 9));
   }
 
-  TEST(CompileTime, FApplyList){
+  TEST(CompileTime, FApplyList)
+  {
     STATIC_EXPECT_EQ(
-      fApplyList(mapList(curry<2>([](auto x, auto y){ return x+y; }), list(1, 2)), list(3, 4)),
+      fApplyList(
+        mapList(curry<2>([](auto x, auto y) { return x + y; }), list(1, 2)),
+        list(3, 4)),
       list(4, 5, 5, 6));
   }
 
-  TEST(CompileTime, FObjFApplyList){
+  TEST(CompileTime, FObjFApplyList)
+  {
     using namespace ListProcessing::Operators;
     STATIC_EXPECT_EQ(
-      fApplyList(mapList(curry<2>([](auto x, auto y){ return x+y; }), list(1, 2)), list(3, 4)),
+      fApplyList(
+        mapList(curry<2>([](auto x, auto y) { return x + y; }), list(1, 2)),
+        list(3, 4)),
       list(4, 5, 5, 6));
   }
 
-  TEST(CompileTime, FlattenList){
-    STATIC_EXPECT_EQ(
-      flattenList(list(list(1, 2), nothing, list(3, 4))),
-      list(1, 2, 3, 4));
+  TEST(CompileTime, FlattenList)
+  {
+    STATIC_EXPECT_EQ(flattenList(list(list(1, 2), nothing, list(3, 4))),
+                     list(1, 2, 3, 4));
   }
 
-  TEST(CompileTime, FObjFlattenList){
+  TEST(CompileTime, FObjFlattenList)
+  {
     using namespace ListProcessing::Operators;
-    STATIC_EXPECT_EQ(
-      flattenList(list(list(1, 2), nothing, list(3, 4))),
-      list(1, 2, 3, 4));
+    STATIC_EXPECT_EQ(flattenList(list(list(1, 2), nothing, list(3, 4))),
+                     list(1, 2, 3, 4));
   }
 
-  TEST(CompileTime, BuildListNothing){
-    STATIC_EXPECT_EQ(
-      buildList(nat<0>, [](auto i){ return i*i; }),
-      nothing);
+  TEST(CompileTime, BuildListNothing)
+  {
+    STATIC_EXPECT_EQ(buildList(nat<0>, [](auto i) { return i * i; }), nothing);
   }
 
-  TEST(CompileTime, BuildList){
-    STATIC_EXPECT_EQ(
-      buildList(nat<3>, [](auto i){ return i*i; }),
-      list(0, 1, 4));
+  TEST(CompileTime, BuildList)
+  {
+    STATIC_EXPECT_EQ(buildList(nat<3>, [](auto i) { return i * i; }),
+                     list(0, 1, 4));
   }
 
-  TEST(CompileTime, FlatMapList){
-    constexpr auto flip = curry<3>([](auto f, auto x, auto y){ return f(y, x); });
+  TEST(CompileTime, FlatMapList)
+  {
+    constexpr auto flip =
+      curry<3>([](auto f, auto x, auto y) { return f(y, x); });
     STATIC_EXPECT_EQ(
       flatMapList(flip(buildList, identity), list(nat<1>, nat<2>, nat<3>)),
       list(0, 0, 1, 0, 1, 2));
   }
 
-  TEST(CompileTime, FobjFlatMapList){
+  TEST(CompileTime, FobjFlatMapList)
+  {
     using namespace ListProcessing::Operators;
-    constexpr auto flip = curry<3>([](auto f, auto x, auto y){ return f(y, x); });
+    constexpr auto flip =
+      curry<3>([](auto f, auto x, auto y) { return f(y, x); });
     STATIC_EXPECT_EQ(
       flatMapList(flip(buildList, identity), list(nat<1>, nat<2>, nat<3>)),
       list(0, 0, 1, 0, 1, 2));
   }
 
-} // end of namespace ListProcessing::Testing
+  TEST(CompileTime, FilterNothing)
+  {
+    STATIC_EXPECT_EQ(filter([](auto) { return true; }, list()), list());
+  }
+
+  TEST(CompileTime, FobjFilterNothing)
+  {
+    using namespace ListProcessing::Operators;
+    STATIC_EXPECT_EQ(filter([](auto) { return true; }, list()), list());
+  }
+
+  TEST(CompileTime, FilterNone)
+  {
+    EXPECT_EQ(filter([](auto) { return true; }, list(nat<1>, nat<2>, nat<3>)),
+              list(nat<1>, nat<2>, nat<3>));
+  }
+
+  TEST(CompileTime, FobjFilterNone)
+  {
+    using namespace ListProcessing::Operators;
+    EXPECT_EQ(filter([](auto) { return true; }, list(nat<1>, nat<2>, nat<3>)),
+              list(nat<1>, nat<2>, nat<3>));
+  }
+
+  TEST(CompileTime, FilterAll)
+  {
+    EXPECT_EQ(filter([](auto) { return false; }, list(nat<1>, nat<2>, nat<3>)),
+              list());
+  }
+
+  TEST(CompileTime, FobjFilterAll)
+  {
+    using namespace ListProcessing::Operators;
+    EXPECT_EQ(filter([](auto) { return false; }, list(nat<1>, nat<2>, nat<3>)),
+              list());
+  }
+
+  TEST(CompileTime, FilterSome)
+  {
+    EXPECT_EQ(
+      filter([](auto x) { return x < nat<2>; }, list(nat<1>, nat<2>, nat<3>)),
+      list(nat<1>));
+  }
+
+  TEST(CompileTime, FobjFilterSome)
+  {
+    using namespace ListProcessing::Operators;
+    EXPECT_EQ(
+      filter([](auto x) { return x < nat<2>; }, list(nat<1>, nat<2>, nat<3>)),
+      list(nat<1>));
+  }
+
+  TEST(CompileTime, SortNothing)
+  {
+    EXPECT_EQ(sort(std::less{}, list()), list());
+  }
+
+  TEST(CompileTime, FobjSortNothing)
+  {
+    using namespace ListProcessing::Operators;
+    EXPECT_EQ(ListProcessing::Operators::sort(std::less{}, list()), list());
+  }
+
+  TEST(CompileTime, Sort1)
+  {
+    EXPECT_EQ(sort(std::less{}, list(nat<2>)), list(nat<2>));
+  }
+
+  TEST(CompileTime, FObjSort1)
+  {
+    using namespace ListProcessing::Operators;
+    EXPECT_EQ(sort(std::less{}, list(nat<2>)), list(nat<2>));
+  }
+
+  TEST(CompileTime, Sort2)
+  {
+    EXPECT_EQ(sort(std::less{}, list(nat<1>, nat<2>)), list(nat<1>, nat<2>));
+  }
+
+  TEST(CompileTime, FObjSort2)
+  {
+    using namespace ListProcessing::Operators;
+    EXPECT_EQ(sort(std::less{}, list(nat<1>, nat<2>)), list(nat<1>, nat<2>));
+  }
+
+  TEST(CompileTime, Sort2Reverse)
+  {
+    EXPECT_EQ(sort(std::less{}, list(nat<2>, nat<1>)), list(nat<1>, nat<2>));
+  }
+
+  TEST(CompileTime, FObjSort2Reverse)
+  {
+    using namespace ListProcessing::Operators;
+    EXPECT_EQ(sort(std::less{}, list(nat<2>, nat<1>)), list(nat<1>, nat<2>));
+  }
+
+  TEST(CompileTime, Sort3Reverse)
+  {
+    EXPECT_EQ(sort(std::less{}, list(nat<2>, nat<1>, nat<3>)),
+              list(nat<1>, nat<2>, nat<3>));
+  }
+
+  TEST(CompileTime, FObjSort3Reverse)
+  {
+    using namespace ListProcessing::Operators;
+    EXPECT_EQ(sort(std::less{}, list(nat<2>, nat<1>, nat<3>)),
+              list(nat<1>, nat<2>, nat<3>));
+  }
+
+} // End of namespace ListProcessing::Testing

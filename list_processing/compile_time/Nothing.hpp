@@ -3,18 +3,14 @@
 //
 // ... ListProcessing header files
 //
-#include <list_processing/compile_time/import.hpp>
 #include <list_processing/compile_time/CellFwd.hpp>
+#include <list_processing/compile_time/import.hpp>
 
-namespace ListProcessing::CompileTime::Details
-{
+namespace ListProcessing::CompileTime::Details {
 
   template<typename T>
   struct IsList
-    : conditional_t<
-        is_same_v<T, decay_t<T>>,
-        false_type,
-        IsList<decay_t<T>>>
+    : conditional_t<is_same_v<T, decay_t<T>>, false_type, IsList<decay_t<T>>>
   {};
 
   struct Nothing
@@ -41,6 +37,12 @@ namespace ListProcessing::CompileTime::Details
 
     friend constexpr bool
     isNull(Nothing const&)
+    {
+      return true;
+    }
+
+    constexpr bool
+    isEmpty() const
     {
       return true;
     }
@@ -103,27 +105,35 @@ namespace ListProcessing::CompileTime::Details
       return true;
     }
 
+    constexpr Nothing
+    reverse() const
+    {
+      return {};
+    }
+
     friend constexpr Nothing
     reverse(Nothing const&)
     {
       return Nothing{};
     }
 
-
     constexpr auto
-    rappend(Nothing const&) const {
+    rappend(Nothing const&) const
+    {
       return Nothing{};
     }
 
     template<typename T>
     constexpr auto
-    rappend(T const& xs) const {
+    rappend(T const& xs) const
+    {
       return cons(head(xs), Nothing{}).rappend(tail(xs));
     }
 
     template<typename T>
     friend constexpr auto
-    rappend(T const& xs, Nothing const& ys){
+    rappend(T const& xs, Nothing const& ys)
+    {
       return ys.rappend(xs);
     }
 
@@ -134,7 +144,6 @@ namespace ListProcessing::CompileTime::Details
       return xs;
     }
 
-
     template<typename T>
     friend constexpr auto
     append(T const& xs, Nothing const& ys)
@@ -143,8 +152,7 @@ namespace ListProcessing::CompileTime::Details
     }
 
     template<size_t n>
-    constexpr auto
-    take(Nat<n>) const
+    constexpr auto take(Nat<n>) const
     {
       return Nothing{};
     }
@@ -157,8 +165,10 @@ namespace ListProcessing::CompileTime::Details
     }
 
     template<size_t N>
-    constexpr auto
-    drop(Nat<N>) const { return Nothing{}; }
+    constexpr auto drop(Nat<N>) const
+    {
+      return Nothing{};
+    }
 
     template<size_t N>
     friend constexpr auto
@@ -169,7 +179,10 @@ namespace ListProcessing::CompileTime::Details
 
     template<typename F, typename T>
     constexpr auto
-    foldl(F const&, T const& init) const { return init; }
+    foldl(F const&, T const& init) const
+    {
+      return init;
+    }
 
     template<typename F, typename T>
     friend constexpr auto
@@ -180,50 +193,103 @@ namespace ListProcessing::CompileTime::Details
 
     template<typename Fs>
     constexpr auto
-    fApplyList(Fs const&) const { return Nothing{}; }
+    fApplyList(Fs const&) const
+    {
+      return Nothing{};
+    }
 
     template<typename Fs>
     friend constexpr auto
-    fApplyList(Fs const& fs, Nothing const& xs) { return xs.fApplyList(fs); }
+    fApplyList(Fs const& fs, Nothing const& xs)
+    {
+      return xs.fApplyList(fs);
+    }
 
     template<typename F>
     constexpr auto
-    mapList(F const&) const { return Nothing{}; }
-
-    template<typename F>
-    friend constexpr auto
-    mapList(F const& f, Nothing const& xs){ return xs.mapList(f); }
-
-    template<typename F, typename ... Ts>
-    constexpr auto
-    applyList(F const& f, Ts const& ... xs) const {
-      return f(xs ...);
+    mapList(F const&) const
+    {
+      return Nothing{};
     }
 
     template<typename F>
     friend constexpr auto
-    applyList(F const& f, Nothing const& xs){ return xs.applyList(f); }
+    mapList(F const& f, Nothing const& xs)
+    {
+      return xs.mapList(f);
+    }
+
+    template<typename F, typename... Ts>
+    constexpr auto
+    applyList(F const& f, Ts const&... xs) const
+    {
+      return f(xs...);
+    }
+
+    template<typename F>
+    friend constexpr auto
+    applyList(F const& f, Nothing const& xs)
+    {
+      return xs.applyList(f);
+    }
 
     constexpr auto
-    flattenList() const { return Nothing{}; }
+    flattenList() const
+    {
+      return Nothing{};
+    }
 
     friend constexpr auto
-    flattenList(Nothing const& xs){ return xs.flattenList(); }
+    flattenList(Nothing const& xs)
+    {
+      return xs.flattenList();
+    }
 
     template<typename F>
     constexpr auto
-    flatMapList(F const&) const { return Nothing{}; }
+    flatMapList(F const&) const
+    {
+      return Nothing{};
+    }
 
     template<typename F>
     friend constexpr auto
-    flatMapList(F const& f, Nothing const& xs){
+    flatMapList(F const& f, Nothing const& xs)
+    {
       return xs.flatMapList(f);
     }
 
     template<typename F>
-    friend void
-    doList(Nothing, F){}
+    constexpr Nothing
+    filter(F const&) const
+    {
+      return {};
+    }
 
+    template<typename F>
+    friend constexpr Nothing
+    filter(F const&, Nothing const&)
+    {
+      return {};
+    }
+
+    template<typename F>
+    constexpr Nothing
+    sort(F const&) const
+    {
+      return {};
+    }
+
+    template<typename F>
+    friend constexpr Nothing
+    sort(F const&, Nothing const&)
+    {
+      return {};
+    }
+
+    template<typename F>
+    friend void doList(Nothing, F)
+    {}
 
     template<typename Stream>
     friend Stream&
@@ -245,10 +311,10 @@ namespace ListProcessing::CompileTime::Details
 
     template<typename Stream>
     Stream&
-    printElements(Stream& os) const {
+    printElements(Stream& os) const
+    {
       return os;
     }
-
 
     template<typename Stream>
     friend Stream&
@@ -259,10 +325,7 @@ namespace ListProcessing::CompileTime::Details
 
   }; // end of struct Nothing
 
-  constexpr bool length_(Type<Nothing>)
-  {
-    return 0;
-  }
+  constexpr bool length_(Type<Nothing>) { return 0; }
 
   template<typename T>
   constexpr bool isListType(Type<T>)
@@ -270,10 +333,7 @@ namespace ListProcessing::CompileTime::Details
     return false;
   }
 
-  constexpr bool isListType(Type<Nothing>)
-  {
-    return true;
-  }
+  constexpr bool isListType(Type<Nothing>) { return true; }
 
   constexpr Nothing nothing{};
   constexpr Nothing nil = nothing;

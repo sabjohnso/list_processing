@@ -150,7 +150,40 @@ namespace ListProcessing::Operators::Details
   } constexpr flattenList{};
 
 
+  template<typename T, typename Pred>
+  concept HasFilter = requires(T&& xs, Pred&& pred){
+    {forward<T>(xs).filter(forward<Pred>(pred))};
+  };
+
+  /**
+   * @brief Filter the contents of an input list
+   */
+  class Filter : public Static_curried<Filter, Nat<2>>{
+  public:
+    template<typename Pred, HasFilter<Pred> T>
+    static constexpr auto
+    call(Pred&& pred, T&& xs){
+      return forward<T>(xs).filter(forward<Pred>(pred));
+    }
+  } constexpr filter{};
 
 
+  template<typename T, typename Cmp>
+  concept HasSort = requires(T&& xs, Cmp&& cmp){
+    {forward<T>(xs).sort(forward<Cmp>(cmp))};
+  };
+
+
+  /**
+   * @brief Sort the elements of a list
+   */
+  class Sort : public Static_curried<Sort, Nat<2>>{
+  public:
+    template<typename Cmp, HasSort<Cmp> T>
+    static constexpr auto
+    call(Cmp&& cmp, T&& xs){
+      return forward<T>(xs).sort(forward<Cmp>(cmp));
+    }
+  } constexpr sort{};
 
 } // end of namespace ListProcessing::Operators::Details

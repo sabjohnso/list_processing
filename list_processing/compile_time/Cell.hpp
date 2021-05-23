@@ -7,8 +7,7 @@
 #include <list_processing/compile_time/Nothing.hpp>
 #include <list_processing/compile_time/import.hpp>
 
-namespace ListProcessing::CompileTime::Details
-{
+namespace ListProcessing::CompileTime::Details {
 
   template<typename T>
   constexpr bool ispair_type(Type<T>)
@@ -183,18 +182,16 @@ namespace ListProcessing::CompileTime::Details
       return xs.head() == ys.head() && xs.tail() == ys.tail();
     }
 
-    template<
-      typename V,
-      typename Check = enable_if_t<!ispair_type(type<V>), void>>
+    template<typename V,
+             typename Check = enable_if_t<!ispair_type(type<V>), void>>
     friend constexpr bool
     operator==(Cell const&, V const&)
     {
       return false;
     }
 
-    template<
-      typename V,
-      typename Check = enable_if_t<!ispair_type(type<V>), void>>
+    template<typename V,
+             typename Check = enable_if_t<!ispair_type(type<V>), void>>
     friend constexpr bool
     operator==(V const&, Cell const&)
     {
@@ -323,10 +320,7 @@ namespace ListProcessing::CompileTime::Details
       return ys.append(xs);
     }
 
-    constexpr auto listRef(Nat<0>) const
-    {
-      return head();
-    }
+    constexpr auto listRef(Nat<0>) const { return head(); }
 
     template<size_t N>
     constexpr auto listRef(Nat<N>) const
@@ -342,10 +336,7 @@ namespace ListProcessing::CompileTime::Details
       return xs.listRef(nat<N>);
     }
 
-    constexpr auto take(Nat<0>) const
-    {
-      return nothing;
-    }
+    constexpr auto take(Nat<0>) const { return nothing; }
 
     template<size_t N>
     constexpr auto take(Nat<N>) const
@@ -360,10 +351,7 @@ namespace ListProcessing::CompileTime::Details
       return xs.take(nat<N>);
     }
 
-    constexpr auto drop(Nat<0>) const
-    {
-      return *this;
-    }
+    constexpr auto drop(Nat<0>) const { return *this; }
 
     template<size_t N>
     constexpr auto drop(Nat<N>) const
@@ -408,8 +396,7 @@ namespace ListProcessing::CompileTime::Details
     constexpr auto
     foldr(F f, V const& init) const
     {
-      return reverse().foldl(
-        [=](auto x, auto y) { return f(y, x); }, init);
+      return reverse().foldl([=](auto x, auto y) { return f(y, x); }, init);
     }
 
     template<typename F, typename V>
@@ -493,6 +480,99 @@ namespace ListProcessing::CompileTime::Details
       return xs.flatMapList(f);
     }
 
+    template<typename F, typename Accum>
+    static constexpr auto
+    filterAux(F const&, Nothing const&, Accum const& accum)
+    {
+      return accum.reverse();
+    }
+
+    template<typename Pred, typename V, typename W, typename Accum>
+    static constexpr auto
+    filterAux(Pred const& pred, Cell<V, W> const& xs, Accum const& accum)
+    {
+      if constexpr (Pred{}(V{})) {
+        return filterAux(pred, xs.tail(), cons(xs.head(), accum));
+      } else {
+        return filterAux(pred, xs.tail(), accum);
+      }
+    }
+
+    template<typename Pred>
+    constexpr auto
+    filter(Pred const& pred) const
+    {
+      return filterAux(pred, *this, nothing);
+    }
+
+    template<typename F>
+    friend constexpr auto
+    filter(F const& pred, Cell const& xs)
+    {
+      return filterAux(pred, xs, nothing);
+    }
+
+    template<typename Cmp, typename V>
+    struct PartialRelation
+    {
+      template<typename W>
+      constexpr bool
+      operator()(W const&) const
+      {
+        return Cmp{}(V{}, W{});
+      }
+    };
+
+    template<typename Cmp, typename V>
+    struct NegatePartialRelation
+    {
+      template<typename W>
+      constexpr bool
+      operator()(W const&) const
+      {
+        constexpr bool result = !(Cmp{}(V{}, W{}));
+        return result;
+      }
+    };
+
+    template<typename Cmp>
+    static constexpr Nothing
+    sortAux(Cmp const&, Nothing)
+    {
+      return nothing;
+    }
+
+    template<typename Cmp, typename V>
+    static constexpr Cell<V, Nothing>
+    sortAux(Cmp const&, Cell<V, Nothing> const& xs)
+    {
+      return xs;
+    }
+
+    template<typename Cmp, typename V, typename W>
+    static constexpr auto
+    sortAux(Cmp const& cmp, Cell<V, W> const& xs)
+    {
+      return cons(xs.head(),
+                  sortAux(cmp, xs.tail().filter(PartialRelation<Cmp, V>{})))
+        .append(
+          sortAux(cmp, xs.tail().filter(NegatePartialRelation<Cmp, V>{})));
+    }
+
+    template<typename F>
+    constexpr auto
+    sort(F const& cmp) const
+    {
+      return sortAux(cmp, *this);
+    }
+
+    template<typename F>
+    friend constexpr auto
+    sort(F const& cmp, Cell const& xs)
+    {
+      return sortAux(cmp, xs);
+    }
+
     template<typename F>
     friend void
     doList(Cell const& xs, F f)
@@ -549,6 +629,7 @@ namespace ListProcessing::CompileTime::Details
     {
       return xs.printList(os);
     }
+
   }; // end of class Cell
 
   class List : public Static_callable<List>
@@ -590,8 +671,7 @@ namespace ListProcessing::CompileTime::Details
       if constexpr (N == M) {
         return reverse(accum);
       } else {
-        return aux(
-          nat<N>, f, nat<M + 1>, cons(f(index_type{ M }), accum));
+        return aux(nat<N>, f, nat<M + 1>, cons(f(index_type{ M }), accum));
       }
     }
   } constexpr buildList{};

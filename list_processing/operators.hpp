@@ -82,6 +82,9 @@ namespace ListProcessing::Operators
   constexpr auto fApplyList  = Details::fApplyList;
   constexpr auto flatMapList = Details::flatMapList;
   constexpr auto flattenList = Details::flattenList;
+  constexpr auto filter      = Details::filter;
+  constexpr auto sort        = Details::sort;
+
 
 
 } // end of namespace ListProcessing::Operators
