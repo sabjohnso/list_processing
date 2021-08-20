@@ -5,8 +5,7 @@
 //
 #include <list_processing/dynamic/AList.hpp>
 
-namespace ListProcessing::Dynamic
-{
+namespace ListProcessing::Dynamic {
   using Details::empty_alist;
 
 } // end of namespace ListProcessing::Dynamic

@@ -5,8 +5,7 @@
 //
 #include <list_processing/dynamic/Tree.hpp>
 
-namespace ListProcessing::Dynamic
-{
+namespace ListProcessing::Dynamic {
   using Details::empty_tree;
 
 } // end of namespace ListProcessing::Dynamic

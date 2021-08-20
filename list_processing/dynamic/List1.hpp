@@ -3,14 +3,16 @@
 //
 // ... ListProcessing header files
 //
-#include <list_processing/dynamic/ListFwd.hpp>
+#include <list_processing/dynamic/ListOperators.hpp>
+#include <list_processing/dynamic/Nil.hpp>
 
 namespace ListProcessing::Dynamic::Details {
   /**
    * @brief Reference specialization of the List class template
    */
   template<typename T>
-  class List<T, 1> : public ListTraits<T> {
+  class List<T, 1> : public ListTraits<T>
+  {
   public:
     using value_type       = T;
     using const_reference  = value_type const&;
@@ -19,23 +21,29 @@ namespace ListProcessing::Dynamic::Details {
     friend ListOperators<List, T>;
 
     List()
-      : ptr(nullptr) {}
+      : ptr(nullptr)
+    {}
 
     List(Nil)
-      : ptr(nullptr) {}
+      : ptr(nullptr)
+    {}
 
     List(const_reference x, List const& xs)
-      : ptr(make_shared<Kernel>(x, xs)) {}
+      : ptr(make_shared<Kernel>(x, xs))
+    {}
 
   private:
-    struct Kernel {
+    struct Kernel
+    {
       Kernel(const_reference x, List const& xs)
         : head(x)
-        , tail(xs) {}
+        , tail(xs)
+      {}
 
       Kernel(Kernel&& input)
         : head(move(input.head))
-        , tail(move(input.tail)) {}
+        , tail(move(input.tail))
+      {}
 
       value_type head;
       List       tail;
@@ -49,13 +57,15 @@ namespace ListProcessing::Dynamic::Details {
      * input value at the front.
      */
     friend List
-    cons(const_reference x, List xs) {
+    cons(const_reference x, List xs)
+    {
       return List(x, xs);
     }
 
   public:
     bool
-    hasData() const {
+    hasData() const
+    {
       return bool(ptr);
     }
 
@@ -63,7 +73,8 @@ namespace ListProcessing::Dynamic::Details {
      * @brief Return true if the input list has data and false otherwise.
      */
     friend bool
-    hasData(List xs) {
+    hasData(List xs)
+    {
       return xs.hasData();
     }
 
@@ -71,7 +82,8 @@ namespace ListProcessing::Dynamic::Details {
      * @brief Return true if this list is empty and false otherwise
      */
     bool
-    isEmpty() const {
+    isEmpty() const
+    {
       return !hasData();
     }
 
@@ -79,7 +91,8 @@ namespace ListProcessing::Dynamic::Details {
      * @brief Return true if the input list is empty and false otherwise
      */
     friend bool
-    isEmpty(List xs) {
+    isEmpty(List xs)
+    {
       return xs.isEmpty();
     }
 
@@ -87,7 +100,8 @@ namespace ListProcessing::Dynamic::Details {
      * @brief Return true if this list is empty and false otherwise
      */
     bool
-    isNull() const {
+    isNull() const
+    {
       return !hasData();
     }
 
@@ -95,7 +109,8 @@ namespace ListProcessing::Dynamic::Details {
      * @brief Return true if the list is empty and false otherwise
      */
     friend bool
-    isNull(List xs) {
+    isNull(List xs)
+    {
       return xs.isNull();
     }
 
@@ -185,11 +200,14 @@ namespace ListProcessing::Dynamic::Details {
      * reversed and the second input appended to it.
      */
     friend List
-    rappend(List xs, List ys) {
+    rappend(List xs, List ys)
+    {
       using tramp = Trampoline<List>;
-      struct Aux {
+      struct Aux
+      {
         tramp
-        run(List xs, List ys) const {
+        run(List xs, List ys) const
+        {
           return xs.hasData() ? tramp([=, this] {
             return run(xs.tail(), cons(xs.head(), ys));
           })
@@ -204,7 +222,8 @@ namespace ListProcessing::Dynamic::Details {
      * order of the input values reversed.
      */
     friend List
-    reverse(List xs) {
+    reverse(List xs)
+    {
       return rappend(xs, nil);
     }
 
@@ -213,7 +232,8 @@ namespace ListProcessing::Dynamic::Details {
      * appended to the first input list.
      */
     friend List
-    append(List xs, List ys) {
+    append(List xs, List ys)
+    {
       return rappend(reverse(xs), ys);
     }
 
@@ -223,11 +243,14 @@ namespace ListProcessing::Dynamic::Details {
      */
     template<typename F, typename U>
     friend U
-    foldL(F f, U init, List xs) {
+    foldL(F f, U init, List xs)
+    {
       using tramp = Trampoline<U>;
-      struct Aux {
+      struct Aux
+      {
         tramp
-        run(F f, U init, List xs) const {
+        run(F f, U init, List xs) const
+        {
           return xs.hasData() ? Trampoline<U>([=, this] {
             return run(f, f(init, xs.head()), xs.tail());
           })
@@ -245,11 +268,14 @@ namespace ListProcessing::Dynamic::Details {
      */
     template<typename F, typename U>
     friend U
-    foldR(F f, List xs, U init) {
+    foldR(F f, List xs, U init)
+    {
       using tramp = Trampoline<U>;
-      struct Aux {
+      struct Aux
+      {
         tramp
-        run(F f, List xs, U init) const {
+        run(F f, List xs, U init) const
+        {
           return xs.hasData() ? tramp([=, this] {
             return run(f, xs.tail(), f(xs.head(), init));
           })
@@ -267,11 +293,14 @@ namespace ListProcessing::Dynamic::Details {
      */
     template<typename F, typename Result>
     static Result
-    rMap(F f, List xs, Result accum) {
+    rMap(F f, List xs, Result accum)
+    {
       using tramp = Trampoline<Result>;
-      struct Aux {
+      struct Aux
+      {
         tramp
-        run(F f, List xs, Result accum) const {
+        run(F f, List xs, Result accum) const
+        {
           return xs.hasData() ? tramp([=, this] {
             return run(f, xs.tail(), cons(f(xs.head()), accum));
           })
@@ -292,13 +321,15 @@ namespace ListProcessing::Dynamic::Details {
       typename U      = decay_t<result_of_t<F(T)>>,
       typename Result = List<U>>
     friend Result
-    map(F f, List xs) {
+    map(F f, List xs)
+    {
       return reverse(rMap(f, xs, Result::nil));
     }
 
     template<typename F, typename Result>
     static Trampoline<Result>
-    aMapAux(F fs, List xs, Result accum) {
+    aMapAux(F fs, List xs, Result accum)
+    {
       using tramp = Trampoline<Result>;
       return fs.hasData() ? tramp([=] {
         return aMapAux(fs.tail(), xs, rappend(map(fs.head(), xs), accum));
@@ -313,7 +344,8 @@ namespace ListProcessing::Dynamic::Details {
      */
     template<typename F>
     friend auto
-    aMap(F fs, List xs) {
+    aMap(F fs, List xs)
+    {
       using Result = decltype(map(fs.head(), xs));
       return Result(aMapAux(fs, xs, Result::nil));
     }
@@ -325,7 +357,8 @@ namespace ListProcessing::Dynamic::Details {
      */
     template<typename F, size_type M, typename Us, typename... Vss>
     friend auto
-    aMap(List<F, M> fs, List xs, Us ys, Vss... zss) {
+    aMap(List<F, M> fs, List xs, Us ys, Vss... zss)
+    {
       return aMap(aMap(fs, xs), ys, zss...);
     }
 
@@ -336,11 +369,14 @@ namespace ListProcessing::Dynamic::Details {
      */
     template<typename F, typename Result = result_of_t<F(T)>>
     friend Result
-    mMap(F f, List xs) {
+    mMap(F f, List xs)
+    {
       using tramp = Trampoline<Result>;
-      struct Aux {
+      struct Aux
+      {
         tramp
-        run(F f, List xs, Result accum) const {
+        run(F f, List xs, Result accum) const
+        {
           return xs.hasData() ? tramp([=, this] {
             return run(f, xs.tail(), rappend(f(xs.head()), accum));
           })
@@ -357,11 +393,14 @@ namespace ListProcessing::Dynamic::Details {
      */
     template<typename F>
     friend List
-    buildListAux(F f, size_type n, List accum) {
+    buildListAux(F f, size_type n, List accum)
+    {
       using tramp = Trampoline<List>;
-      struct Aux {
+      struct Aux
+      {
         tramp
-        run(F f, size_type n, List accum) const {
+        run(F f, size_type n, List accum) const
+        {
           return n > 0 ? tramp([=, this] {
             return run(f, n - 1, cons(f(n - 1), accum));
           })
@@ -379,11 +418,14 @@ namespace ListProcessing::Dynamic::Details {
      * signature: List<A>(List<A>, Size)
      */
     friend List
-    drop(List xs, size_type n) {
+    drop(List xs, size_type n)
+    {
       using tramp = Trampoline<List>;
-      struct Aux {
+      struct Aux
+      {
         tramp
-        run(List xs, size_type n) const {
+        run(List xs, size_type n) const
+        {
           return xs.hasData() && n > 0
                    ? tramp([=, this] { return run(xs.tail(), n - 1); })
                    : tramp(xs);
@@ -401,11 +443,14 @@ namespace ListProcessing::Dynamic::Details {
      * signature: List<A>(List<A>, Size)
      */
     friend List
-    take(List xs, size_type n) {
+    take(List xs, size_type n)
+    {
       using tramp = Trampoline<List>;
-      struct Aux {
+      struct Aux
+      {
         tramp
-        run(List xs, size_type n, List accum) {
+        run(List xs, size_type n, List accum)
+        {
           return xs.hasData() && n > 0 ? tramp([=, this] {
             return run(xs.tail(), n - 1, cons(xs.head(), accum));
           })
@@ -424,7 +469,8 @@ namespace ListProcessing::Dynamic::Details {
      * signature: A(List<A>, Index)
      */
     friend value_type
-    listRef(List xs, index_type index) {
+    listRef(List xs, index_type index)
+    {
       return xs.drop(index).head();
     }
 
@@ -434,11 +480,14 @@ namespace ListProcessing::Dynamic::Details {
      * signature: bool(List<A>, List<A>)
      */
     friend bool
-    operator==(List xs, List ys) {
+    operator==(List xs, List ys)
+    {
       using tramp = Trampoline<bool>;
-      struct Aux {
+      struct Aux
+      {
         tramp
-        run(List xs, List ys) const {
+        run(List xs, List ys) const
+        {
           return xs.hasData() && ys.hasData()
                    ? (xs.head() == ys.head()
                         ? tramp([=, this] { return run(xs.tail(), ys.tail()); })
@@ -455,7 +504,8 @@ namespace ListProcessing::Dynamic::Details {
      * signature: bool(List<A>, List<A>)
      */
     friend bool
-    operator!=(List xs, List ys) {
+    operator!=(List xs, List ys)
+    {
       return !(xs == ys);
     }
 
@@ -466,7 +516,8 @@ namespace ListProcessing::Dynamic::Details {
      */
     template<typename F>
     friend F
-    doList(List xs, F f) {
+    doList(List xs, F f)
+    {
       unique_ptr<List> ptr(make_unique<List>(xs));
       while (!ptr->isNull()) {
         f(ptr->head());

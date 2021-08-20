@@ -5,10 +5,12 @@
 //
 #include <algorithm>
 #include <array>
+#include <bitset>
 #include <cassert>
 #include <concepts>
 #include <cstddef>
 #include <functional>
+#include <initializer_list>
 #include <iostream>
 #include <memory>
 #include <mutex>
@@ -27,9 +29,9 @@
 
 namespace ListProcessing::Dynamic::Details {
 
-  using integer     = std::ptrdiff_t;
-  using size_type   = integer;
-  using index_type  = integer;
+  using integer = std::ptrdiff_t;
+  using size_type = integer;
+  using index_type = integer;
   using offset_type = integer;
 
   using std::declval;
@@ -45,6 +47,7 @@ namespace ListProcessing::Dynamic::Details {
 
   using std::copy_n;
 
+  using std::enable_shared_from_this;
   using std::make_shared;
   using std::make_unique;
   using std::shared_ptr;
@@ -80,6 +83,10 @@ namespace ListProcessing::Dynamic::Details {
 
   using std::nullopt;
   using std::optional;
+
+  using std::initializer_list;
+
+  using std::bitset;
 
   using TypeUtility::count_types;
   using TypeUtility::Nat;

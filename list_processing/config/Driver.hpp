@@ -1,9 +1,7 @@
 #pragma once
 
-namespace ListProcessing::Config
-{
-  class Driver
-  {
+namespace ListProcessing::Config {
+  class Driver {
   public:
     Driver(int argc, char** argv);
 

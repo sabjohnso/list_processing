@@ -5,8 +5,7 @@
 //
 #include <list_processing/dynamic/Stack.hpp>
 
-namespace ListProcessing::Dynamic
-{
+namespace ListProcessing::Dynamic {
   using Details::empty_stack;
   using Details::Stack;
 

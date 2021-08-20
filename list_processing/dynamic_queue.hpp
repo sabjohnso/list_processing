@@ -5,8 +5,7 @@
 //
 #include <list_processing/dynamic/Queue.hpp>
 
-namespace ListProcessing::Dynamic
-{
+namespace ListProcessing::Dynamic {
   using Details::empty_queue;
   using Details::queue;
 

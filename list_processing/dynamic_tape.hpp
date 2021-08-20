@@ -5,8 +5,7 @@
 //
 #include <list_processing/dynamic/Tape.hpp>
 
-namespace ListProcessing::Dynamic
-{
+namespace ListProcessing::Dynamic {
   using Details::empty_tape;
   using Details::tape;
 

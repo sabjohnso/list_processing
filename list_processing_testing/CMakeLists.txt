@@ -25,9 +25,11 @@ list_processing_add_test(dynamic dynamic_test
   dynamic_alist_test.cpp
   dynamic_stream_test.cpp
   range_test.cpp
-  shared_test.cpp)
+  shared_test.cpp
+  dynamic_hash_table_test.cpp)
 
 list_processing_add_test(
   short_list short_list_test short_list_test.cpp)
-  
 
+list_processing_add_test(
+  bucket_list bucket_test bucket_test.cpp)
