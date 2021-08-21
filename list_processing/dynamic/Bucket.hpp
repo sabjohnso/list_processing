@@ -5,14 +5,9 @@
 //
 #include <list_processing/config.hpp>
 #include <list_processing/dynamic/import.hpp>
+#include <list_processing/dynamic/utility.hpp>
 
 namespace ListProcessing::Dynamic::Details {
-
-  constexpr bool
-  is_power_of_2(auto i)
-  {
-    return i ? ((i & 1) && (i & ~1) ? false : is_power_of_2(i >> 1)) : true;
-  }
 
   enum class BucketResponse
   {
