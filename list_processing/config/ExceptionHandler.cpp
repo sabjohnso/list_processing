@@ -11,7 +11,8 @@
 
 namespace ListProcessing::Config {
   ExceptionHandler::ExceptionHandler(int argc, char** argv)
-    : exit_code(1) {
+    : exit_code(1)
+  {
     try {
       std::rethrow_exception(std::current_exception());
     } catch (std::exception& e) {

@@ -15,9 +15,9 @@
 #include <type_utility/type_utility.hpp>
 
 namespace ListProcessing::CompileTime::Details {
-  using integer     = std::ptrdiff_t;
-  using size_type   = integer;
-  using index_type  = integer;
+  using integer = std::ptrdiff_t;
+  using size_type = integer;
+  using index_type = integer;
   using offset_type = integer;
 
   using std::declval;

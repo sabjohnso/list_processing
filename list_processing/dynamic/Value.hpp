@@ -9,30 +9,35 @@
 
 namespace ListProcessing::Dynamic::Details {
   template<typename T>
-  class Shared {
-    using value_type       = T;
-    using const_reference  = value_type const&;
+  class Shared
+  {
+    using value_type = T;
+    using const_reference = value_type const&;
     using rvalue_reference = value_type&&;
-    using value_pointer    = shared_ptr<const value_type>;
-    using const_pointer    = const value_type*;
+    using value_pointer = shared_ptr<const value_type>;
+    using const_pointer = const value_type*;
     value_pointer ptr;
 
   public:
     Shared() = delete;
     Shared(const_reference value)
-      : ptr(value) {}
+      : ptr(value)
+    {}
     Shared(rvalue_reference value)
-      : ptr(make_shared<value_type>(move(value))) {}
+      : ptr(make_shared<value_type>(move(value)))
+    {}
 
     explicit operator const_reference() const { return *ptr; }
 
     const_reference
-    operator*() const {
+    operator*() const
+    {
       return *ptr;
     }
 
     const_pointer
-    operator->() {
+    operator->()
+    {
       return ptr.get();
     }
 
@@ -48,19 +53,22 @@ namespace ListProcessing::Dynamic::Details {
 
   template<AdditiveMagma T>
   Shared<T>
-  operator+(Shared<T> x, Shared<T> y) {
+  operator+(Shared<T> x, Shared<T> y)
+  {
     return Shared<T>(*x + *y);
   }
 
   template<AdditiveMagma T>
   Shared<T>
-  operator+(Shared<T> x, T const& y) {
+  operator+(Shared<T> x, T const& y)
+  {
     return Shared<T>(*x + y);
   }
 
   template<AdditiveMagma T>
   Shared<T>
-  operator+(T const& x, Shared<T> y) {
+  operator+(T const& x, Shared<T> y)
+  {
     return Shared<T>(x + *y);
   }
 
@@ -68,19 +76,22 @@ namespace ListProcessing::Dynamic::Details {
 
   template<AdditiveInverse T>
   Shared<T>
-  operator-(Shared<T> x, Shared<T> y) {
+  operator-(Shared<T> x, Shared<T> y)
+  {
     return Shared<T>(*x - *y);
   }
 
   template<AdditiveInverse T>
   Shared<T>
-  operator-(Shared<T> x, T const& y) {
+  operator-(Shared<T> x, T const& y)
+  {
     return Shared<T>(*x - y);
   }
 
   template<AdditiveInverse T>
   Shared<T>
-  operator-(T const& x, Shared<T> y) {
+  operator-(T const& x, Shared<T> y)
+  {
     return Shared<T>(x - *y);
   }
 
@@ -88,19 +99,22 @@ namespace ListProcessing::Dynamic::Details {
 
   template<MultiplicativeMagma T>
   Shared<T>
-  operator*(Shared<T> x, Shared<T> y) {
+  operator*(Shared<T> x, Shared<T> y)
+  {
     return Shared<T>(*x * *y);
   }
 
   template<MultiplicativeMagma T>
   Shared<T>
-  operator*(Shared<T> x, T const& y) {
+  operator*(Shared<T> x, T const& y)
+  {
     return Shared<T>(*x * y);
   }
 
   template<MultiplicativeMagma T>
   Shared<T>
-  operator*(T const& x, Shared<T> y) {
+  operator*(T const& x, Shared<T> y)
+  {
     return Shared<T>(x * *y);
   }
 
@@ -108,19 +122,22 @@ namespace ListProcessing::Dynamic::Details {
 
   template<MultiplicativeInverse T>
   Shared<T>
-  operator/(Shared<T> x, Shared<T> y) {
+  operator/(Shared<T> x, Shared<T> y)
+  {
     return Shared<T>(*x / *y);
   }
 
   template<MultiplicativeInverse T>
   Shared<T>
-  operator/(Shared<T> x, T const& y) {
+  operator/(Shared<T> x, T const& y)
+  {
     return Shared<T>(*x / y);
   }
 
   template<MultiplicativeInverse T>
   Shared<T>
-  operator/(T const& x, Shared<T> y) {
+  operator/(T const& x, Shared<T> y)
+  {
     return Shared<T>(x / *y);
   }
 
@@ -128,13 +145,15 @@ namespace ListProcessing::Dynamic::Details {
 
   template<typename Char, Show<Char> T>
   basic_ostream<Char>&
-  operator<<(basic_ostream<Char>& os, Shared<T> x) {
+  operator<<(basic_ostream<Char>& os, Shared<T> x)
+  {
     return os << *x;
   }
 
   template<typename T1, typename... Ts>
   auto
-  sharedList(T1&& x, Ts&&... xs) {
+  sharedList(T1&& x, Ts&&... xs)
+  {
     using U = common_type_t<T1, Ts...>;
     return list(Shared<U>(forward<T1>(x)), Shared<U>(forward<Ts>(xs))...);
   }

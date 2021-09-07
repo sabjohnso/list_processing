@@ -13,11 +13,13 @@ namespace ListProcessing::CompileTime::Details {
   template<typename T, typename U>
   Cell(T&& x, U&& y) -> Cell<decay_t<T>, decay_t<U>>;
 
-  class Cons : public Static_curried<Cons, Nat<2>> {
+  class Cons : public Static_curried<Cons, Nat<2>>
+  {
   public:
     template<typename T, typename U>
     static constexpr auto
-    call(T&& x, U&& y) {
+    call(T&& x, U&& y)
+    {
       return Cell(forward<T>(x), forward<U>(y));
     }
   } constexpr cons{};

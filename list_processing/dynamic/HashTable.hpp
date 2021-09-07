@@ -3,37 +3,46 @@
 //
 // ... List Processing header files
 //
+#include <list_processing/dynamic/AList.hpp>
 #include <list_processing/dynamic/Bucket.hpp>
+#include <list_processing/dynamic/Stream.hpp>
+#include <list_processing/dynamic/hash_table/utility.hpp>
 #include <list_processing/dynamic/import.hpp>
 
 namespace ListProcessing::Dynamic::Details {
 
-  template<typename Key, typename Value, size_type BinWidth = 32>
+  template<
+    typename Key,
+    typename Mapped,
+    size_type BinSizeExponent =
+      Config::Info::Parameters::default_bin_size_exponent>
   class HashTable
   {
+
+    static_assert(BinSizeExponent > 0, "BinSizeExponent must be positive");
+
   public:
     using key_type = Key;
-    using mapped_type = Value;
+    using key_const_reference = key_type const&;
+    using mapped_type = Mapped;
+    using mapped_const_reference = mapped_type&;
     using value_type = pair<key_type, mapped_type>;
+    using const_reference = value_type const&;
 
-    constexpr static size_type bin_width = BinWidth;
+    constexpr static size_type bin_size_exponent = BinSizeExponent;
+    constexpr static size_type bin_size = 1 << bin_size_exponent;
 
-    HashTable()
-      : ptr(nullptr)
-    {}
+    HashTable() = default;
+    HashTable(HashTable const&) = default;
 
-    HashTable(HashTable const& input)
-      : ptr(input.ptr)
-    {}
-
-    HashTable(initializer_list<value_type> const& input)
-      : ptr(make_shared<Kernel>(initializer_list_to_kernel(input)))
+    HashTable(initializer_list<value_type> const&)
+      : pkernel(make_shared<Kernel>())
     {}
 
     bool
     hasData() const
     {
-      return bool(ptr);
+      return bool(pkernel);
     }
 
     friend bool
@@ -54,52 +63,95 @@ namespace ListProcessing::Dynamic::Details {
       return xs.isEmpty();
     }
 
-  private:
-    class Leaf : enable_shared_from_this<Leaf>
+    mapped_const_reference get(key_const_reference) const
     {
-      using element_type = value_type;
-      using storage_type = array<value_type, bin_width>;
-      using indicator_type = bitset<bin_width>;
+      throw logic_error("not implemented");
+      return *this;
+    }
 
-    public:
-      Leaf()
-        : storage{}
-        , indicator{}
-      {}
+    mapped_const_reference
+    forceGet(key_const_reference, mapped_const_reference alternate) const
+    {
+      throw logic_error("not implemented");
+      return alternate;
+    }
 
-      bool
-      hasSlot(index_type index) const
-      {
-        assert(index >= 0);
-        assert(index < bin_width);
+    optional<mapped_type> maybeGet(key_const_reference) const
+    {
+      throw logic_error("not implemented");
+      return {};
+    }
 
-        return indicator[index];
-      }
+    HashTable set(key_const_reference, mapped_const_reference) const
+    {
+      throw logic_error("not implemented");
+      return *this;
+    }
 
-    private:
-      storage_type storage;
-      indicator_type indicator;
-    };
+    HashTable remove(key_const_reference) const
+    {
+      throw logic_error("not implemented");
+      return *this;
+    }
 
+    AList<key_type, mapped_type>
+    toAList() const
+    {
+      throw logic_error("not implemented");
+      return {};
+    }
+
+    Stream<value_type>
+    toStream() const
+    {
+      throw logic_error("not implemented");
+      return {};
+    }
+
+    List<key_type>
+    keys() const
+    {
+      throw logic_error("not implemented");
+      return {};
+    }
+
+    List<mapped_type>
+    values() const
+    {
+      throw logic_error("not implemented");
+      return {};
+    }
+
+    Stream<key_type>
+    inKeys() const
+    {
+      throw logic_error("not implemented");
+      return {};
+    }
+
+    Stream<mapped_type>
+    inValues() const
+    {
+      throw logic_error("not implemented");
+      return {};
+    }
+
+    size_type
+    size() const
+    {
+      throw logic_error("not implemented");
+      return 0;
+    }
+
+  private:
     class Kernel
     {};
 
-    using kernel_pointer = shared_ptr<const Kernel>;
-    kernel_pointer ptr;
-
-    static Kernel
-    initializer_list_to_kernel(initializer_list<value_type> const& input)
-    {
-      auto it = begin(input);
-      auto last = end(input);
-      std::unique_ptr<Kernel> pkernel;
-      while (it != last) {
-        // ptable = make_unique<HashTable>(ptable->set(it->first, it->second));
-        ++it;
-      }
-      return *pkernel;
-    }
-
+    using kernel_pointer = shared_ptr<Kernel>;
+    kernel_pointer pkernel;
   }; // end of class HasData
+
+  template<typename Key, typename Mapped>
+  HashTable(initializer_list<pair<Key, Mapped>>) -> HashTable<Key, Mapped>;
 
 } // end of namespace ListProcessing::Dynamic::Details

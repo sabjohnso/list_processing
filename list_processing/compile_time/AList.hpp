@@ -13,7 +13,8 @@ namespace ListProcessing::CompileTime::Details {
   class AList;
 
   template<typename K, typename V, typename Tail>
-  class AList<Cell<pair<K, V>, Tail>> {
+  class AList<Cell<pair<K, V>, Tail>>
+  {
     using DataType = Cell<pair<K, V>, Tail>;
 
     DataType data;
@@ -21,9 +22,11 @@ namespace ListProcessing::CompileTime::Details {
   public:
     constexpr AList() = delete;
     constexpr AList(DataType const& input)
-      : data(input) {}
+      : data(input)
+    {}
     constexpr AList(DataType&& input)
-      : data(move(input)) {}
+      : data(move(input))
+    {}
 
     //          _
     //  ___ ___| |_
@@ -31,14 +34,16 @@ namespace ListProcessing::CompileTime::Details {
     // /__/\___|\__|
     template<typename K2, typename V2>
     constexpr auto
-    set(K2 const& key, V2 const& value) const& {
+    set(K2 const& key, V2 const& value) const&
+    {
       using NewDataType = decltype(cons(pair(key, value), data));
       return AList<NewDataType>(cons(pair(key, value), data));
     }
 
     template<typename K2, typename V2>
     friend constexpr auto
-    set(K2 const& key, V2 const& value, AList const& xs) {
+    set(K2 const& key, V2 const& value, AList const& xs)
+    {
       return xs.set(key, value);
     }
 
@@ -47,13 +52,15 @@ namespace ListProcessing::CompileTime::Details {
     // | || | ' \(_-</ -_)  _|
     //  \_,_|_||_/__/\___|\__|
     constexpr auto
-    unset(K const&) const {
+    unset(K const&) const
+    {
       return AList<Tail>(tail(data));
     }
 
     template<typename U>
     constexpr auto
-    unset(U const& key) const {
+    unset(U const& key) const
+    {
       return AList<Tail>(tail(data))
         .unset(key)
         .set(head(data).first, head(data).second);
@@ -61,7 +68,8 @@ namespace ListProcessing::CompileTime::Details {
 
     template<typename U>
     friend constexpr auto
-    unset(U const& key, AList const& xs) {
+    unset(U const& key, AList const& xs)
+    {
       return xs.unset(key);
     }
 
@@ -69,13 +77,15 @@ namespace ListProcessing::CompileTime::Details {
     // | '_/ -_) '  \/ _ \ V / -_)
     // |_| \___|_|_|_\___/\_/\___|
     constexpr auto
-    remove(K const& key) const {
+    remove(K const& key) const
+    {
       return AList<Tail>(tail(data)).remove(key);
     }
 
     template<typename U>
     constexpr auto
-    remove(U const& key) const {
+    remove(U const& key) const
+    {
       return AList<Tail>(tail(data))
         .remove(key)
         .set(head(data).first, head(data).second);
@@ -83,7 +93,8 @@ namespace ListProcessing::CompileTime::Details {
 
     template<typename U>
     friend constexpr auto
-    remove(U const& key, AList const& xs) {
+    remove(U const& key, AList const& xs)
+    {
       return xs.remove(key);
     }
 
@@ -94,19 +105,22 @@ namespace ListProcessing::CompileTime::Details {
     //                        |__/
 
     constexpr bool
-    hasKey(K const&) const {
+    hasKey(K const&) const
+    {
       return true;
     }
 
     template<typename T>
     constexpr bool
-    hasKey(T const& key) const {
+    hasKey(T const& key) const
+    {
       return AList<Tail>(tail(data)).hasKey(key);
     }
 
     template<typename T>
     friend bool
-    hasKey(T const& key, AList const& xs) {
+    hasKey(T const& key, AList const& xs)
+    {
       return xs.hasKey(key);
     }
 
@@ -117,19 +131,22 @@ namespace ListProcessing::CompileTime::Details {
 
     template<typename T>
     constexpr auto
-    forceGet(K const&, T const&) const {
+    forceGet(K const&, T const&) const
+    {
       return head(data).second;
     }
 
     template<typename U, typename T>
     constexpr auto
-    forceGet(U const& key, T const& alternative) const {
+    forceGet(U const& key, T const& alternative) const
+    {
       return AList<Tail>(tail(data)).forceGet(key, alternative);
     }
 
     template<typename U, typename T>
     friend constexpr auto
-    forceGet(U const& key, T const& alternative, AList const& xs) {
+    forceGet(U const& key, T const& alternative, AList const& xs)
+    {
       return xs.forceGet(key, alternative);
     }
 
@@ -139,19 +156,22 @@ namespace ListProcessing::CompileTime::Details {
     //  \__|_|  \_, |\___\___|\__|
     //          |__/
     constexpr auto
-    tryGet(K const&) const {
+    tryGet(K const&) const
+    {
       return head(data).second;
     }
 
     template<typename U>
     constexpr auto
-    tryGet(U const& key) const {
+    tryGet(U const& key) const
+    {
       return AList<Tail>(tail(data)).tryGet(key);
     }
 
     template<typename U>
     friend constexpr auto
-    tryGet(U const& key, AList const& xs) {
+    tryGet(U const& key, AList const& xs)
+    {
       return xs.tryGet(key);
     }
 
@@ -160,12 +180,14 @@ namespace ListProcessing::CompileTime::Details {
     // | ' \/ _` (_-< |) / _` |  _/ _` |
     // |_||_\__,_/__/___/\__,_|\__\__,_|
     constexpr bool
-    hasData() const {
+    hasData() const
+    {
       return true;
     }
 
     friend constexpr bool
-    hasData(AList const& xs) {
+    hasData(AList const& xs)
+    {
       return xs.hasData();
     }
 
@@ -175,19 +197,22 @@ namespace ListProcessing::CompileTime::Details {
     // |_/__/___|_|_|_| .__/\__|\_, |
     //                |_|       |__/
     constexpr bool
-    isEmpty() const {
+    isEmpty() const
+    {
       return !hasData();
     }
 
     friend constexpr bool
-    isEmpty(AList const& xs) {
+    isEmpty(AList const& xs)
+    {
       return xs.isEmpty();
     }
 
     ////////////////////////////////////////////////////////////////////////
 
     friend ostream&
-    operator<<(ostream& os, AList const& xs) {
+    operator<<(ostream& os, AList const& xs)
+    {
       auto printpair = [&](auto const& x) {
         os << "(" << x.first << " . " << x.second << ")";
       };
@@ -205,7 +230,8 @@ namespace ListProcessing::CompileTime::Details {
   }; // end of class AList<Cell<pair<K,V>, Tail>>
 
   template<>
-  class AList<Nothing> {
+  class AList<Nothing>
+  {
     using DataType = Nothing;
 
     DataType data;
@@ -221,14 +247,16 @@ namespace ListProcessing::CompileTime::Details {
     // /__/\___|\__|
     template<typename K, typename V>
     constexpr auto
-    set(K const& key, V const& value) const {
+    set(K const& key, V const& value) const
+    {
       using NewDataType = Cell<pair<K, V>, Nothing>;
       return AList<NewDataType>(cons(pair(key, value), nothing));
     }
 
     template<typename K, typename V>
     friend constexpr auto
-    set(K const& key, V const& value, AList const& xs) {
+    set(K const& key, V const& value, AList const& xs)
+    {
       return xs.set(key, value);
     }
 
@@ -238,13 +266,15 @@ namespace ListProcessing::CompileTime::Details {
     //  \_,_|_||_/__/\___|\__|
     template<typename K>
     constexpr AList
-    unset(K const&) const {
+    unset(K const&) const
+    {
       return *this;
     }
 
     template<typename K>
     friend constexpr AList
-    unset(K const& key, AList const& xs) {
+    unset(K const& key, AList const& xs)
+    {
       return xs.unset(key);
     }
 
@@ -253,13 +283,15 @@ namespace ListProcessing::CompileTime::Details {
     // |_| \___|_|_|_\___/\_/\___|
     template<typename K>
     constexpr AList
-    remove(K const&) const {
+    remove(K const&) const
+    {
       return *this;
     }
 
     template<typename K>
     friend constexpr AList
-    remove(K const& key, AList const& xs) {
+    remove(K const& key, AList const& xs)
+    {
       return xs.remove(key);
     }
 
@@ -270,13 +302,15 @@ namespace ListProcessing::CompileTime::Details {
     //                        |__/
     template<typename K>
     constexpr bool
-    hasKey(K const&) const {
+    hasKey(K const&) const
+    {
       return false;
     }
 
     template<typename K>
     friend constexpr bool
-    hasKey(K const& key, AList const& xs) {
+    hasKey(K const& key, AList const& xs)
+    {
       return xs.hasKey(key);
     }
 
@@ -286,13 +320,15 @@ namespace ListProcessing::CompileTime::Details {
     // |_| \___/_| \__\___|\___\___|\__|
     template<typename K, typename V>
     constexpr V
-    forceGet(K const&, V const& alternative) const {
+    forceGet(K const&, V const& alternative) const
+    {
       return alternative;
     }
 
     template<typename K, typename V>
     friend constexpr V
-    forceGet(K const& key, V const& alternative, AList const& xs) {
+    forceGet(K const& key, V const& alternative, AList const& xs)
+    {
       return xs.forceGet(key, alternative);
     }
 
@@ -301,12 +337,14 @@ namespace ListProcessing::CompileTime::Details {
     // | ' \/ _` (_-< |) / _` |  _/ _` |
     // |_||_\__,_/__/___/\__,_|\__\__,_|
     constexpr bool
-    hasData() const {
+    hasData() const
+    {
       return false;
     }
 
     friend constexpr bool
-    hasData(AList const& xs) {
+    hasData(AList const& xs)
+    {
       return xs.hasData();
     }
 
@@ -316,19 +354,22 @@ namespace ListProcessing::CompileTime::Details {
     // |_/__/___|_|_|_| .__/\__|\_, |
     //                |_|       |__/
     constexpr bool
-    isEmpty() const {
+    isEmpty() const
+    {
       return !hasData();
     }
 
     friend constexpr bool
-    isEmpty(AList const& xs) {
+    isEmpty(AList const& xs)
+    {
       return xs.isEmpty();
     }
 
     ////////////////////////////////////////////////////////////////////////
 
     friend ostream&
-    operator<<(ostream& os, AList const&) {
+    operator<<(ostream& os, AList const&)
+    {
       return os << "empty_alist";
     }
 
@@ -341,23 +382,29 @@ namespace ListProcessing::CompileTime::Details {
   struct HasKeyByType;
 
   template<EmbelishedType K, EmbelishedType Table>
-  struct HasKeyByType<K, Table> : HasKeyByType<decay_t<K>, decay_t<Table>> {};
+  struct HasKeyByType<K, Table> : HasKeyByType<decay_t<K>, decay_t<Table>>
+  {};
 
   template<EmbelishedType K, typename Table>
-  struct HasKeyByType<K, Table> : HasKeyByType<decay_t<K>, Table> {};
+  struct HasKeyByType<K, Table> : HasKeyByType<decay_t<K>, Table>
+  {};
 
   template<typename K, EmbelishedType Table>
-  struct HasKeyByType<K, Table> : HasKeyByType<K, decay_t<Table>> {};
+  struct HasKeyByType<K, Table> : HasKeyByType<K, decay_t<Table>>
+  {};
 
   template<typename U>
-  struct HasKeyByType<U, AList<Nothing>> : false_type {};
+  struct HasKeyByType<U, AList<Nothing>> : false_type
+  {};
 
   template<typename K, typename V, typename Tail>
-  struct HasKeyByType<K, AList<Cell<pair<K, V>, Tail>>> : true_type {};
+  struct HasKeyByType<K, AList<Cell<pair<K, V>, Tail>>> : true_type
+  {};
 
   template<typename U, typename K, typename V, typename Tail>
   struct HasKeyByType<U, AList<Cell<pair<K, V>, Tail>>>
-    : HasKeyByType<U, AList<Tail>> {};
+    : HasKeyByType<U, AList<Tail>>
+  {};
 
   template<typename K, typename Table>
   constexpr bool hasKeyByType = HasKeyByType<decay_t<K>, decay_t<Table>>::value;

@@ -5,8 +5,8 @@ project(list_processing VERSION 0.1.0 LANGUAGES C CXX)
 option(list_processing_BUILD_TESTING "Build the list_processing tests" ON)
 set(list_processing_DEFAULT_CHUNK_SIZE 32 CACHE STRING
   "Default number of elements per chunk for optimized lists")
-set(list_processing_DEFAULT_BUCKET_SIZE 32 CACHE STRING
-  "Default number of elements per bucket for hash tables")
+set(list_processing_DEFAULT_BIN_SIZE_EXPONENT 5 CACHE STRING
+  "Default exponent for the power of two sized bins for hash tables")
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)

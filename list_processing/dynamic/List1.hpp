@@ -14,8 +14,8 @@ namespace ListProcessing::Dynamic::Details {
   class List<T, 1> : public ListTraits<T>
   {
   public:
-    using value_type       = T;
-    using const_reference  = value_type const&;
+    using value_type = T;
+    using const_reference = value_type const&;
     using rvalue_reference = value_type&&;
 
     friend ListOperators<List, T>;
@@ -46,7 +46,7 @@ namespace ListProcessing::Dynamic::Details {
       {}
 
       value_type head;
-      List       tail;
+      List tail;
     };
 
     using kernel_pointer = shared_ptr<const Kernel>;
@@ -318,7 +318,7 @@ namespace ListProcessing::Dynamic::Details {
      */
     template<
       typename F,
-      typename U      = decay_t<result_of_t<F(T)>>,
+      typename U = decay_t<result_of_t<F(T)>>,
       typename Result = List<U>>
     friend Result
     map(F f, List xs)

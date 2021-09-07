@@ -20,10 +20,10 @@ namespace ListProcessing::Dynamic::Details {
   class List
   {
   public:
-    using value_type                      = T;
-    using const_reference                 = value_type const&;
-    using Datum                           = ShortList<T, N>;
-    using Data                            = List<Datum, 1>;
+    using value_type = T;
+    using const_reference = value_type const&;
+    using Datum = ShortList<T, N>;
+    using Data = List<Datum, 1>;
     static constexpr size_type chunk_size = N;
 
   private:
@@ -346,7 +346,7 @@ namespace ListProcessing::Dynamic::Details {
 
     template<
       typename F,
-      typename U      = decay_t<result_of_t<F(T)>>,
+      typename U = decay_t<result_of_t<F(T)>>,
       typename Result = ListType<U>>
     friend Result
     map(F f, List xs)
@@ -392,7 +392,7 @@ namespace ListProcessing::Dynamic::Details {
     mMap(F f, List xs)
     {
       using Result = result_of_t<F(T)>;
-      using tramp  = Trampoline<Result>;
+      using tramp = Trampoline<Result>;
       struct Aux
       {
         tramp

@@ -1,7 +1,8 @@
 #pragma once
 
 namespace ListProcessing::Config {
-  class ExceptionHandler {
+  class ExceptionHandler
+  {
   public:
     ExceptionHandler(int argc, char** argv);
 

@@ -38,7 +38,7 @@ namespace ListProcessing::Config
     struct Parameters
     {
       static constexpr int default_chunk_size = ${list_processing_DEFAULT_CHUNK_SIZE};
-      static constexpr int default_bucket_size = ${list_processing_DEFAULT_BUCKET_SIZE};
+      static constexpr int default_bin_size_exponent = ${list_processing_DEFAULT_BIN_SIZE_EXPONENT};
     };
   };
 

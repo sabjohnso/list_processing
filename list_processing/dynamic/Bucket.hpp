@@ -4,8 +4,8 @@
 // ... List Processing header files
 //
 #include <list_processing/config.hpp>
+#include <list_processing/dynamic/hash_table/utility.hpp>
 #include <list_processing/dynamic/import.hpp>
-#include <list_processing/dynamic/utility.hpp>
 
 namespace ListProcessing::Dynamic::Details {
 
@@ -14,17 +14,19 @@ namespace ListProcessing::Dynamic::Details {
     injection,
     mutation,
     collision
-
   };
 
   template<
     typename Key,
     typename Mapped,
-    size_type Extent = Config::Info::Parameters::default_bucket_size>
+    size_type BinSizeExponent =
+      Config::Info::Parameters::default_bin_size_exponent>
   class Bucket
   {
   public:
-    static constexpr size_type extent = Extent;
+    static constexpr size_type bin_size_exponent = BinSizeExponent;
+    static constexpr size_type extent = 1 << bin_size_exponent;
+
     static_assert(is_power_of_2(extent), "Expected extent to be a power of 2");
 
     using key_type = Key;
