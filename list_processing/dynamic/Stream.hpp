@@ -9,28 +9,33 @@
 namespace ListProcessing::Dynamic::Details {
 
   template<typename T>
-  class Stream {
+  class Stream
+  {
     using F = function<pair<T, Stream>()>;
 
   public:
-    using value_type      = T;
+    using value_type = T;
     using const_reference = value_type const&;
 
     Stream() = default;
 
     Stream(Nil)
-      : Stream() {}
+      : Stream()
+    {}
 
     template<typename U>
     Stream(U&& x, Stream const& xs)
-      : ptr(make_shared<Kernel>(forward<U>(x), xs)) {}
+      : ptr(make_shared<Kernel>(forward<U>(x), xs))
+    {}
 
     template<typename U>
     Stream(U&& x, Nil)
-      : ptr(make_shared<Kernel>(forward<U>(x), Stream{})) {}
+      : ptr(make_shared<Kernel>(forward<U>(x), Stream{}))
+    {}
 
     Stream(F f)
-      : ptr(make_shared<Kernel>(f)) {}
+      : ptr(make_shared<Kernel>(f))
+    {}
 
     //  _            ___       _
     // | |_  __ _ __|   \ __ _| |_ __ _
@@ -42,7 +47,8 @@ namespace ListProcessing::Dynamic::Details {
      * if it does not.
      */
     bool
-    hasData() const {
+    hasData() const
+    {
       return bool(ptr);
     }
 
@@ -51,7 +57,8 @@ namespace ListProcessing::Dynamic::Details {
      * if it does not.
      */
     friend bool
-    hasData(Stream xs) {
+    hasData(Stream xs)
+    {
       return xs.hasData();
     };
 
@@ -65,7 +72,8 @@ namespace ListProcessing::Dynamic::Details {
      * if it is not.
      */
     bool
-    isEmpty() const {
+    isEmpty() const
+    {
       return !hasData();
     }
 
@@ -74,7 +82,8 @@ namespace ListProcessing::Dynamic::Details {
      * if it is not.
      */
     friend bool
-    isEmpty(Stream xs) {
+    isEmpty(Stream xs)
+    {
       return xs.isEmpty();
     }
 
@@ -84,14 +93,16 @@ namespace ListProcessing::Dynamic::Details {
     // |_||_\___\__,_\__,_|
 
     value_type
-    head() const {
+    head() const
+    {
       return hasData()
                ? ptr->head()
                : throw logic_error("Cannot access the head of an empty Stream");
     }
 
     friend value_type
-    head(Stream xs) {
+    head(Stream xs)
+    {
       return xs.head();
     }
 
@@ -103,7 +114,8 @@ namespace ListProcessing::Dynamic::Details {
      * @brief Return the tail of this stream
      */
     Stream
-    tail() const {
+    tail() const
+    {
       return hasData() ? ptr->tail() : *this;
     }
 
@@ -111,7 +123,8 @@ namespace ListProcessing::Dynamic::Details {
      * @brief Return the tail of the input stream
      */
     friend Stream
-    tail(Stream xs) {
+    tail(Stream xs)
+    {
       return xs.tail();
     }
 
@@ -123,7 +136,8 @@ namespace ListProcessing::Dynamic::Details {
      * front of this list.
      */
     Stream
-    cons(const_reference x) const {
+    cons(const_reference x) const
+    {
       return Stream(x, *this);
     }
 
@@ -132,7 +146,8 @@ namespace ListProcessing::Dynamic::Details {
      * front of the input list.
      */
     friend Stream
-    cons(const_reference x, Stream xs) {
+    cons(const_reference x, Stream xs)
+    {
       return xs.cons(x);
     }
 
@@ -146,7 +161,8 @@ namespace ListProcessing::Dynamic::Details {
      * stream.
      */
     Stream
-    append(Stream xs) const {
+    append(Stream xs) const
+    {
       return hasData() ? (xs.hasData() ? Stream([=, this] {
         return pair(xs.head(), append(xs.tail()));
       })
@@ -159,7 +175,8 @@ namespace ListProcessing::Dynamic::Details {
      * first input stream stream.
      */
     friend Stream
-    append(Stream xs, Stream ys) {
+    append(Stream xs, Stream ys)
+    {
       return ys.append(xs);
     }
 
@@ -173,7 +190,8 @@ namespace ListProcessing::Dynamic::Details {
      */
     template<typename G, typename U = decay_t<result_of_t<G(T)>>>
     Stream<U>
-    map(G g) const {
+    map(G g) const
+    {
       return hasData() ? Stream<U>([=, xs = *this] {
         return pair(g(xs.head()), xs.tail().map(g));
       })
@@ -182,7 +200,8 @@ namespace ListProcessing::Dynamic::Details {
 
     template<typename G>
     friend auto
-    map(G g, Stream xs) {
+    map(G g, Stream xs)
+    {
       return xs.map(g);
     }
 
@@ -198,13 +217,16 @@ namespace ListProcessing::Dynamic::Details {
      * @details For an infinite stream, this function will not return
      */
     size_type
-    length() const {
+    length() const
+    {
       using tramp = Trampoline<size_type>;
-      struct Aux {
+      struct Aux
+      {
         tramp
-        run(Stream xs, size_type accum) const {
+        run(Stream xs, size_type accum) const
+        {
           return xs.hasData()
-                   ? tramp([=, this] { return run(xs.tail(), accum + 1); })
+                   ? tramp([=, *this] { return run(xs.tail(), accum + 1); })
                    : tramp(accum);
         }
       } constexpr aux{};
@@ -217,7 +239,8 @@ namespace ListProcessing::Dynamic::Details {
      * @details For an infinite stream, this function will not return
      */
     friend size_type
-    length(Stream xs) {
+    length(Stream xs)
+    {
       return xs.length();
     }
 
@@ -226,14 +249,16 @@ namespace ListProcessing::Dynamic::Details {
     // |  _/ _` | / / -_)
     //  \__\__,_|_\_\___|
     Stream
-    take(size_type n) const {
+    take(size_type n) const
+    {
       return hasData() && n > 0
                ? Stream([=, this] { return pair(head(), tail().take(n - 1)); })
                : Stream();
     }
 
     friend Stream
-    take(size_type n, Stream xs) {
+    take(size_type n, Stream xs)
+    {
       return xs.take(n);
     }
 
@@ -243,12 +268,14 @@ namespace ListProcessing::Dynamic::Details {
     // \__,_|_| \___/ .__/
     //              |_|
     Stream
-    drop(size_type n) const {
+    drop(size_type n) const
+    {
       return hasData() && n > 0 ? tail().drop(n - 1) : *this;
     }
 
     friend Stream
-    drop(size_type n, Stream xs) {
+    drop(size_type n, Stream xs)
+    {
       return xs.drop(n);
     }
 
@@ -257,11 +284,14 @@ namespace ListProcessing::Dynamic::Details {
     // (_-<  _| '_/ -_) _` | '  \|   / -_)  _|
     // /__/\__|_| \___\__,_|_|_|_|_|_\___|_|
     value_type
-    streamRef(index_type i) const {
+    streamRef(index_type i) const
+    {
       using tramp = Trampoline<value_type>;
-      struct Aux {
+      struct Aux
+      {
         tramp
-        run(index_type i, Stream xs) const {
+        run(index_type i, Stream xs) const
+        {
           return xs.hasData()
                    ? (i > 0 ? tramp([=, this] { return run(i - 1, xs.tail()); })
                             : tramp(xs.head()))
@@ -272,7 +302,8 @@ namespace ListProcessing::Dynamic::Details {
     }
 
     friend value_type
-    streamRef(index_type i, Stream xs) {
+    streamRef(index_type i, Stream xs)
+    {
       return xs.streamRef(i);
     }
 
@@ -282,12 +313,14 @@ namespace ListProcessing::Dynamic::Details {
     // |_|_/__/\__|_|_\___|_|
 
     value_type
-    listRef(index_type i) const {
+    listRef(index_type i) const
+    {
       return streamRef(i);
     }
 
     friend value_type
-    listRef(index_type i, Stream xs) {
+    listRef(index_type i, Stream xs)
+    {
       return xs.streamRef(i);
     }
 
@@ -298,11 +331,14 @@ namespace ListProcessing::Dynamic::Details {
 
     template<typename F>
     F
-    doList(F f) const {
+    doList(F f) const
+    {
       using tramp = Trampoline<F>;
-      struct aux {
+      struct aux
+      {
         tramp
-        run(F f, Stream xs) const {
+        run(F f, Stream xs) const
+        {
           return xs.hasData() ? tramp([=, this, x = xs.head(), xs = xs.tail()] {
             f(x);
             return run(f, xs);
@@ -315,7 +351,8 @@ namespace ListProcessing::Dynamic::Details {
 
     template<typename F>
     friend F
-    doList(Stream xs, F f) {
+    doList(Stream xs, F f)
+    {
       return xs.doList(f);
     }
 
@@ -325,16 +362,19 @@ namespace ListProcessing::Dynamic::Details {
     // |_| \___/_\__,_|____|
     template<typename F, typename U>
     U
-    foldL(F f, U init) {
+    foldL(F f, U init)
+    {
       using tramp = Trampoline<U>;
-      struct Aux {
+      struct Aux
+      {
         tramp
-        run(F f, U init, Stream xs) const {
+        run(F f, U init, Stream xs) const
+        {
           return xs.hasData()
                    ? tramp([=,
                             this,
                             init = move(init),
-                            x    = xs.head(),
+                            x = xs.head(),
                             xs = xs.tail()] { return run(f, f(init, x), xs); })
                    : tramp(init);
         }
@@ -344,51 +384,59 @@ namespace ListProcessing::Dynamic::Details {
 
     template<typename F, typename U>
     friend U
-    foldL(F f, U init, Stream xs) {
+    foldL(F f, U init, Stream xs)
+    {
       return xs.foldL(f, init);
     }
 
   private:
-    class Kernel {
+    class Kernel
+    {
       using Pair = pair<value_type, Stream>;
       using Data = variant<Pair, F>;
 
     public:
       Kernel(Kernel&& input)
-        : data(move(input.data)) {}
+        : data(move(input.data))
+      {}
 
       template<typename U>
       Kernel(U&& x, Stream const& xs)
-        : data(pair(forward<U>(x), xs)) {}
+        : data(pair(forward<U>(x), xs))
+      {}
 
       Kernel(F f)
-        : data(f) {}
+        : data(f)
+      {}
 
     public:
       value_type
-      head() const {
+      head() const
+      {
         reify();
         return get<Pair>(data).first;
       }
 
       Stream
-      tail() const {
+      tail() const
+      {
         reify();
         return get<Pair>(data).second;
       }
 
     private:
       void
-      reify() const {
+      reify() const
+      {
         if (holds_alternative<F>(data)) {
-          lock_guard lock{ mex };
+          lock_guard lock{mex};
           if (holds_alternative<F>(data)) {
             data = get<F>(data)();
           }
         }
       }
 
-      mutable Data  data;
+      mutable Data data;
       mutable mutex mex;
     };
 
@@ -410,16 +458,19 @@ namespace ListProcessing::Dynamic::Details {
   inline const Stream<T> empty_stream{};
 
   template<typename T>
-  class StreamOf : public Static_callable<StreamOf<T>> {
+  class StreamOf : public Static_callable<StreamOf<T>>
+  {
   public:
     static Stream<T>
-    call() {
+    call()
+    {
       return empty_stream<T>;
     }
 
     template<typename U, typename... Us>
     static Stream<T>
-    call(U&& x, Us&&... xs) {
+    call(U&& x, Us&&... xs)
+    {
       return Stream<T>(forward<U>(x), call(forward<Us>(xs)...));
     }
   };
@@ -427,28 +478,33 @@ namespace ListProcessing::Dynamic::Details {
   template<typename T>
   constexpr StreamOf<T> streamOf{};
 
-  class StreamConstructor : public Static_callable<StreamConstructor> {
+  class StreamConstructor : public Static_callable<StreamConstructor>
+  {
   public:
     template<typename T, typename... Ts>
     static auto
-    stream(T&& x, Ts&&... xs) {
+    stream(T&& x, Ts&&... xs)
+    {
       using U = common_type_t<decay_t<T>, decay_t<Ts>...>;
       return streamOf<U>(forward<T>(x), forward<Ts>(xs)...);
     }
   } constexpr stream{};
 
-  class BuildStream : public Static_curried<BuildStream, Nat<2>> {
+  class BuildStream : public Static_curried<BuildStream, Nat<2>>
+  {
   public:
     template<typename F, typename U = decay_t<result_of_t<F(index_type)>>>
     static Stream<U>
-    call(size_type n, F&& f) {
+    call(size_type n, F&& f)
+    {
       return aux(n, f, 0);
     }
 
   private:
     template<typename F, typename U = decay_t<result_of_t<F(index_type)>>>
     static Stream<U>
-    aux(size_type n, F&& f, index_type i) {
+    aux(size_type n, F&& f, index_type i)
+    {
       return i < n ? Stream<U>([=] {
         return pair<U, Stream<U>>(f(i), aux(n, f, i + 1));
       })
@@ -457,11 +513,13 @@ namespace ListProcessing::Dynamic::Details {
 
   } constexpr buildStream{};
 
-  class Iterate : public Static_curried<Iterate, Nat<2>> {
+  class Iterate : public Static_curried<Iterate, Nat<2>>
+  {
   public:
     template<typename T, typename F, typename U = decay_t<T>>
     static Stream<U>
-    call(T x, F f) {
+    call(T x, F f)
+    {
       return Stream<U>([=] { return pair(x, call(f(x), f)); });
     }
   } constexpr iterate{};
