@@ -163,7 +163,7 @@ namespace ListProcessing::Dynamic::Details {
     Stream
     append(Stream xs) const
     {
-      return hasData() ? (xs.hasData() ? Stream([=, this] {
+      return hasData() ? (xs.hasData() ? Stream([=, *this] {
         return pair(xs.head(), append(xs.tail()));
       })
                                        : *this)
@@ -252,7 +252,7 @@ namespace ListProcessing::Dynamic::Details {
     take(size_type n) const
     {
       return hasData() && n > 0
-               ? Stream([=, this] { return pair(head(), tail().take(n - 1)); })
+               ? Stream([=, *this] { return pair(head(), tail().take(n - 1)); })
                : Stream();
     }
 
@@ -293,8 +293,9 @@ namespace ListProcessing::Dynamic::Details {
         run(index_type i, Stream xs) const
         {
           return xs.hasData()
-                   ? (i > 0 ? tramp([=, this] { return run(i - 1, xs.tail()); })
-                            : tramp(xs.head()))
+                   ? (i > 0
+                        ? tramp([=, *this] { return run(i - 1, xs.tail()); })
+                        : tramp(xs.head()))
                    : throw logic_error("no more data in stream to reference");
         }
       } constexpr aux{};
@@ -339,11 +340,12 @@ namespace ListProcessing::Dynamic::Details {
         tramp
         run(F f, Stream xs) const
         {
-          return xs.hasData() ? tramp([=, this, x = xs.head(), xs = xs.tail()] {
-            f(x);
-            return run(f, xs);
-          })
-                              : tramp(f);
+          return xs.hasData()
+                   ? tramp([=, *this, x = xs.head(), xs = xs.tail()] {
+                       f(x);
+                       return run(f, xs);
+                     })
+                   : tramp(f);
         }
       } constexpr aux{};
       return F(aux.run(f, *this));
@@ -372,7 +374,7 @@ namespace ListProcessing::Dynamic::Details {
         {
           return xs.hasData()
                    ? tramp([=,
-                            this,
+                            *this,
                             init = move(init),
                             x = xs.head(),
                             xs = xs.tail()] { return run(f, f(init, x), xs); })
