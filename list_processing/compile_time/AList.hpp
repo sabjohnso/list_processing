@@ -233,6 +233,18 @@ namespace ListProcessing::CompileTime::Details {
       return xs.vals();
     }
 
+    constexpr auto
+    toList() const
+    {
+      return data;
+    }
+
+    friend constexpr auto
+    toList(AList const& xs)
+    {
+      return xs.toList();
+    }
+
     ////////////////////////////////////////////////////////////////////////
 
     friend ostream&
@@ -412,6 +424,18 @@ namespace ListProcessing::CompileTime::Details {
     vals(AList const& xs)
     {
       return xs.vals();
+    }
+
+    constexpr auto
+    toList() const
+    {
+      return data;
+    }
+
+    friend constexpr auto
+    toList(AList const& xs)
+    {
+      return xs.toList();
     }
 
     ////////////////////////////////////////////////////////////////////////

@@ -32,6 +32,16 @@ using TypeUtility::type;
 
 #define KEY(str) CTString::hoist([] { return ::CTString::static_string(str); })
 
+// to satisfy gtest
+namespace std {
+  template<typename T, typename U>
+  ostream&
+  operator<<(ostream& os, pair<T, U> const& pr)
+  {
+    return os << "(" << pr.first << " . " << pr.second << ")";
+  }
+} // namespace std
+
 namespace ListProcessing::Testing {
 
   TEST(CompileTimeAList, EmptyDoesNotHaveData)
@@ -239,5 +249,14 @@ namespace ListProcessing::Testing {
   }
 
   TEST(AList, ValsEmpty) { EXPECT_EQ(vals(empty_alist), nothing); }
+
+  TEST(AList, toList)
+  {
+    EXPECT_EQ(
+      toList(alist(pair(KEY("x"), 1), pair(KEY("y"), 2))),
+      list(pair(KEY("x"), 1), pair(KEY("y"), 2)));
+  }
+
+  TEST(AList, toListEmpty) { EXPECT_EQ(toList(empty_alist), nothing); }
 
 } // end of namespace ListProcessing::Testing
