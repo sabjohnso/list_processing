@@ -6,6 +6,7 @@
 #include <list_processing/compile_time/AList.hpp>
 
 namespace ListProcessing::CompileTime {
+  using Details::alist;
   using Details::AList;
   using Details::empty_alist;
   using Details::hasKeyByType;

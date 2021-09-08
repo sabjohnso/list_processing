@@ -76,6 +76,7 @@ namespace ListProcessing::CompileTime::Details {
     //  _ _ ___ _ __  _____ _____
     // | '_/ -_) '  \/ _ \ V / -_)
     // |_| \___|_|_|_\___/\_/\___|
+    //
     constexpr auto
     remove(K const& key) const
     {
@@ -103,7 +104,6 @@ namespace ListProcessing::CompileTime::Details {
     // | ' \/ _` (_-< ' </ -_) || |
     // |_||_\__,_/__/_|\_\___|\_, |
     //                        |__/
-
     constexpr bool
     hasKey(K const&) const
     {
@@ -179,6 +179,7 @@ namespace ListProcessing::CompileTime::Details {
     // | |_  __ _ __|   \ __ _| |_ __ _
     // | ' \/ _` (_-< |) / _` |  _/ _` |
     // |_||_\__,_/__/___/\__,_|\__\__,_|
+    //
     constexpr bool
     hasData() const
     {
@@ -206,6 +207,30 @@ namespace ListProcessing::CompileTime::Details {
     isEmpty(AList const& xs)
     {
       return xs.isEmpty();
+    }
+
+    constexpr auto
+    keys() const
+    {
+      return mapList([](auto kv) { return kv.first; }, data);
+    }
+
+    friend constexpr auto
+    keys(AList const& xs)
+    {
+      return xs.keys();
+    }
+
+    constexpr auto
+    vals() const
+    {
+      return mapList([](auto kv) { return kv.second; }, data);
+    }
+
+    friend constexpr auto
+    vals(AList const& xs)
+    {
+      return xs.vals();
     }
 
     ////////////////////////////////////////////////////////////////////////
@@ -365,6 +390,30 @@ namespace ListProcessing::CompileTime::Details {
       return xs.isEmpty();
     }
 
+    constexpr auto
+    keys() const
+    {
+      return mapList([](auto kv) { return kv.first; }, data);
+    }
+
+    friend constexpr auto
+    keys(AList const& xs)
+    {
+      return xs.keys();
+    }
+
+    constexpr auto
+    vals() const
+    {
+      return mapList([](auto kv) { return kv.second; }, data);
+    }
+
+    friend constexpr auto
+    vals(AList const& xs)
+    {
+      return xs.vals();
+    }
+
     ////////////////////////////////////////////////////////////////////////
 
     friend ostream&
@@ -374,6 +423,9 @@ namespace ListProcessing::CompileTime::Details {
     }
 
   }; // end of class AList<Nothing>
+
+  template<typename K, typename V, typename Tail>
+  AList(Cell<pair<K, V>, Tail>) -> AList<Cell<pair<K, V>, Tail>>;
 
   template<typename T>
   concept EmbelishedType = !is_same_v<T, decay_t<T>>;
@@ -410,5 +462,12 @@ namespace ListProcessing::CompileTime::Details {
   constexpr bool hasKeyByType = HasKeyByType<decay_t<K>, decay_t<Table>>::value;
 
   constexpr AList<Nothing> empty_alist{};
+
+  template<typename... Ts>
+  constexpr auto
+  alist(Ts&&... xs)
+  {
+    return AList(list(forward<Ts>(xs)...));
+  }
 
 } // end of namespace ListProcessing::CompileTime::Details
