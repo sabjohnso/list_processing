@@ -3,6 +3,7 @@
 //
 #include <optional>
 #include <stdexcept>
+#include <utility>
 
 //
 // ... Testing header files
@@ -17,86 +18,105 @@
 //
 // ... List Processing header files
 //
+#include <list_processing/dynamic.hpp>
 #include <list_processing/dynamic_alist.hpp>
 #include <list_processing/operators.hpp>
 
 using std::nullopt;
 using std::optional;
+using std::pair;
 
 using FunctionUtility::rpart;
 
+using ListProcessing::Dynamic::alist;
 using ListProcessing::Dynamic::empty_alist;
+using ListProcessing::Dynamic::list;
 
 namespace ListProcessing::Testing {
 
-  TEST(AList, EmptyDoesNotHaveData) {
+  TEST(AList, EmptyDoesNotHaveData)
+  {
     ASSERT_FALSE(hasData(empty_alist<char, int>));
   }
 
-  TEST(AList, FObjEmptyDoesNotHaveData) {
+  TEST(AList, FObjEmptyDoesNotHaveData)
+  {
     using namespace ::ListProcessing::Operators;
     ASSERT_FALSE(hasData(empty_alist<char, int>));
   }
 
   TEST(AList, EmptyIsEmpty) { ASSERT_TRUE(isEmpty(empty_alist<char, int>)); }
 
-  TEST(AList, FObjEmptyIsEmpty) {
+  TEST(AList, FObjEmptyIsEmpty)
+  {
     using namespace ::ListProcessing::Operators;
     ASSERT_TRUE(isEmpty(empty_alist<char, int>));
   }
 
-  TEST(AList, SetHasData) {
+  TEST(AList, SetHasData)
+  {
     EXPECT_TRUE(hasData(set('x', 3, empty_alist<char, int>)));
   }
 
-  TEST(AList, FObjSetHasData) {
+  TEST(AList, FObjSetHasData)
+  {
     using namespace ::ListProcessing::Operators;
     EXPECT_TRUE(hasData(set('x', 3, empty_alist<char, int>)));
   }
 
-  TEST(AList, SetIsNotEmpty) {
+  TEST(AList, SetIsNotEmpty)
+  {
     EXPECT_FALSE(isEmpty(set('x', 3, empty_alist<char, int>)));
   }
 
-  TEST(AList, FObjSetIsNotEmpty) {
+  TEST(AList, FObjSetIsNotEmpty)
+  {
     using namespace ::ListProcessing::Operators;
     EXPECT_FALSE(isEmpty(set('x', 3, empty_alist<char, int>)));
   }
 
-  TEST(AList, SetHasKey) {
+  TEST(AList, SetHasKey)
+  {
     EXPECT_TRUE(hasKey('x', set('x', 3, empty_alist<char, int>)));
   }
 
-  TEST(AList, FObjSetHasKey) {
+  TEST(AList, FObjSetHasKey)
+  {
     using namespace ::ListProcessing::Operators;
     EXPECT_TRUE(pipe(empty_alist<char, int>, set('x', 3), hasKey('x')));
   }
 
-  TEST(AList, SetDoesNotHaveKeyNotSet) {
+  TEST(AList, SetDoesNotHaveKeyNotSet)
+  {
     EXPECT_FALSE(hasKey('y', set('x', 3, empty_alist<char, int>)));
   }
 
-  TEST(AList, FObjSetDoesNotHaveKeyNotSet) {
+  TEST(AList, FObjSetDoesNotHaveKeyNotSet)
+  {
     using namespace ::ListProcessing::Operators;
     EXPECT_FALSE(pipe(empty_alist<char, int>, set('x', 3), hasKey('y')));
   }
 
-  TEST(AList, UnsetRemovesKey) {
+  TEST(AList, UnsetRemovesKey)
+  {
     EXPECT_FALSE(hasKey('x', unset('x', set('x', 3, empty_alist<char, int>))));
   }
 
-  TEST(AList, FObjUnsetRemovesKey) {
+  TEST(AList, FObjUnsetRemovesKey)
+  {
     using namespace ::ListProcessing::Operators;
     EXPECT_FALSE(
       pipe(empty_alist<char, int>, set('x', 3), unset('x'), hasKey('x')));
   }
 
-  TEST(AList, UnsetOnlyRemovesFirstOccurance) {
+  TEST(AList, UnsetOnlyRemovesFirstOccurance)
+  {
     EXPECT_TRUE(hasKey(
       'x', unset('x', set('x', 4, set('x', 3, empty_alist<char, int>)))));
   }
 
-  TEST(AList, FObjUnsetOnlyRemovesFirstOccurance) {
+  TEST(AList, FObjUnsetOnlyRemovesFirstOccurance)
+  {
     using namespace ::ListProcessing::Operators;
     EXPECT_TRUE(pipe(
       empty_alist<char, int>,
@@ -106,12 +126,14 @@ namespace ListProcessing::Testing {
       hasKey('x')));
   }
 
-  TEST(AList, RemoveRemovesAllOccurances) {
+  TEST(AList, RemoveRemovesAllOccurances)
+  {
     EXPECT_FALSE(hasKey(
       'x', remove('x', set('x', 4, set('x', 3, empty_alist<char, int>)))));
   }
 
-  TEST(AList, FObjRemoveRemovesAllOccurances) {
+  TEST(AList, FObjRemoveRemovesAllOccurances)
+  {
     using namespace ::ListProcessing::Operators;
     EXPECT_FALSE(pipe(
       empty_alist<char, int>,
@@ -121,7 +143,8 @@ namespace ListProcessing::Testing {
       hasKey('x')));
   }
 
-  TEST(AList, ForceGetReturnsValueByKey) {
+  TEST(AList, ForceGetReturnsValueByKey)
+  {
     using ListProcessing::Operators::pipe;
     EXPECT_EQ(
       pipe(
@@ -131,12 +154,14 @@ namespace ListProcessing::Testing {
       3);
   }
 
-  TEST(AList, FObjForceGetReturnsValueByKey) {
+  TEST(AList, FObjForceGetReturnsValueByKey)
+  {
     using namespace ::ListProcessing::Operators;
     EXPECT_EQ(pipe(empty_alist<char, int>, set('x', 3), forceGet('x', 0)), 3);
   }
 
-  TEST(AList, ForceGetReturnsAlternateForMissingKey) {
+  TEST(AList, ForceGetReturnsAlternateForMissingKey)
+  {
     using ListProcessing::Operators::pipe;
     EXPECT_EQ(
       pipe(
@@ -146,12 +171,14 @@ namespace ListProcessing::Testing {
       0);
   }
 
-  TEST(AList, FObjForceGetReturnsAlternateForMissingKey) {
+  TEST(AList, FObjForceGetReturnsAlternateForMissingKey)
+  {
     using namespace ::ListProcessing::Operators;
     EXPECT_EQ(pipe(empty_alist<char, int>, set('x', 3), forceGet('y', 0)), 0);
   }
 
-  TEST(AList, MaybeGetReturnsOptionalValueByKey) {
+  TEST(AList, MaybeGetReturnsOptionalValueByKey)
+  {
     using ListProcessing::Operators::pipe;
     EXPECT_EQ(
       pipe(
@@ -161,13 +188,15 @@ namespace ListProcessing::Testing {
       optional(3));
   }
 
-  TEST(AList, FObjMaybeGetReturnsOptionalValueByKey) {
+  TEST(AList, FObjMaybeGetReturnsOptionalValueByKey)
+  {
     using namespace ::ListProcessing::Operators;
     EXPECT_EQ(
       pipe(empty_alist<char, int>, set('x', 3), maybeGet('x')), optional(3));
   }
 
-  TEST(AList, MaybeGetReturnsNullOptForMissingKey) {
+  TEST(AList, MaybeGetReturnsNullOptForMissingKey)
+  {
     using ListProcessing::Operators::pipe;
     EXPECT_EQ(
       pipe(
@@ -177,14 +206,16 @@ namespace ListProcessing::Testing {
       nullopt);
   }
 
-  TEST(AList, FObjMaybeGetReturnsNullOptForMissingKey) {
+  TEST(AList, FObjMaybeGetReturnsNullOptForMissingKey)
+  {
     using namespace ::ListProcessing::Operators;
     EXPECT_EQ(
       pipe(empty_alist<char, int>, set('x', 3), maybeGet('y')),
-      optional<int>{ nullopt });
+      optional<int>{nullopt});
   }
 
-  TEST(AList, TryGetReturnsValueByKey) {
+  TEST(AList, TryGetReturnsValueByKey)
+  {
     using ListProcessing::Operators::pipe;
     EXPECT_EQ(
       pipe(
@@ -194,12 +225,14 @@ namespace ListProcessing::Testing {
       3);
   }
 
-  TEST(AList, FObjTryGetReturnsValueByKey) {
+  TEST(AList, FObjTryGetReturnsValueByKey)
+  {
     using namespace ::ListProcessing::Operators;
     EXPECT_EQ(pipe(empty_alist<char, int>, set('x', 3), tryGet('x')), 3);
   }
 
-  TEST(AList, TryGetReturnsThrowsForMissingKey) {
+  TEST(AList, TryGetReturnsThrowsForMissingKey)
+  {
     using ListProcessing::Operators::pipe;
     EXPECT_THROW(
       pipe(
@@ -209,9 +242,28 @@ namespace ListProcessing::Testing {
       std::logic_error);
   }
 
-  TEST(AList, FObjTryGetReturnsThrowsForMissingKey) {
+  TEST(AList, FObjTryGetReturnsThrowsForMissingKey)
+  {
     using namespace ::ListProcessing::Operators;
     EXPECT_THROW(
       pipe(empty_alist<char, int>, set('x', 3), tryGet('y')), std::logic_error);
   }
+
+  TEST(AList, constructor)
+  {
+    const auto xs = alist(pair('x', 1), pair('y', 2));
+    EXPECT_EQ(tryGet('x', xs), 1);
+    EXPECT_EQ(tryGet('y', xs), 2);
+  }
+
+  TEST(AList, keys)
+  {
+    EXPECT_EQ(keys(alist(pair('x', 1), pair('y', 2))), list('x', 'y'));
+  }
+
+  TEST(AList, vals)
+  {
+    EXPECT_EQ(vals(alist(pair('x', 1), pair('y', 2))), list(1, 2));
+  }
+
 } // end of namespace ListProcessing::Testing

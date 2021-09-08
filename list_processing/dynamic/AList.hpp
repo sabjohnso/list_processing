@@ -14,13 +14,17 @@ namespace ListProcessing::Dynamic::Details {
     using key_type = K;
     using value_type = T;
     using assoc_type = pair<K, T>;
+    using data_type = ListType<assoc_type>;
 
     AList()
       : data(nil<assoc_type>)
     {}
 
+    AList(data_type input_data)
+      : data(input_data)
+    {}
+
   private:
-    using data_type = ListType<assoc_type>;
     data_type data;
 
   public:
@@ -276,10 +280,6 @@ namespace ListProcessing::Dynamic::Details {
     }
 
   private:
-    AList(data_type input_data)
-      : data(input_data)
-    {}
-
     //  _            ___       _
     // | |_  __ _ __|   \ __ _| |_ __ _
     // | ' \/ _` (_-< |) / _` |  _/ _` |
@@ -315,9 +315,44 @@ namespace ListProcessing::Dynamic::Details {
       return isNull(xs.data);
     }
 
+  public:
+    auto
+    keys() const
+    {
+      return map([](auto pr) { return pr.first; }, data);
+    }
+
+    friend auto
+    keys(AList xs)
+    {
+      return xs.keys();
+    }
+
+  public:
+    auto
+    vals() const
+    {
+      return map([](auto pr) { return pr.second; }, data);
+    }
+
+    friend auto
+    vals(AList xs)
+    {
+      return xs.vals();
+    }
+
   }; // end of class AList
 
   template<typename K, typename T>
   const AList<K, T> empty_alist{};
+
+  template<typename... Ks, typename... Vs>
+  auto
+  alist(pair<Ks, Vs> const&... pairs)
+  {
+    using K = common_type_t<Ks...>;
+    using V = common_type_t<Vs...>;
+    return AList<K, V>{list(pairs...)};
+  }
 
 } // end of namespace ListProcessing::Dynamic::Details
