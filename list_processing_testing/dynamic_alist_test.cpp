@@ -266,4 +266,11 @@ namespace ListProcessing::Testing {
     EXPECT_EQ(vals(alist(pair('x', 1), pair('y', 2))), list(1, 2));
   }
 
+  TEST(Alist, toList)
+  {
+    EXPECT_EQ(
+      toList(alist(pair('x', 1), pair('y', 2))),
+      list(pair('x', 1), pair('y', 2)));
+  }
+
 } // end of namespace ListProcessing::Testing

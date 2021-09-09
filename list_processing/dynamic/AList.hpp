@@ -341,6 +341,19 @@ namespace ListProcessing::Dynamic::Details {
       return xs.vals();
     }
 
+  public:
+    auto
+    toList() const
+    {
+      return data;
+    }
+
+    friend auto
+    toList(AList xs)
+    {
+      return xs.toList();
+    }
+
   }; // end of class AList
 
   template<typename K, typename T>
