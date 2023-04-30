@@ -216,7 +216,7 @@ namespace ListProcessing::Dynamic::Details {
     {
       using U = common_type_t<decay_t<T>, decay_t<Ts>...>;
       return listIntoQueue(
-        list(forward<T>(x), forward<Ts>(xs)...), empty_queue<U>);
+        list(std::forward<T>(x), std::forward<Ts>(xs)...), empty_queue<U>);
     }
   } constexpr queue{};
 

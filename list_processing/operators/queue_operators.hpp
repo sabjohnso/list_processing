@@ -8,7 +8,7 @@
 namespace ListProcessing::Operators::Details {
   template<typename T>
   concept HasFront = requires(T&& xs) {
-    { forward<T>(xs).front() };
+    { std::forward<T>(xs).front() };
   };
 
   class Front : public Static_curried<Front, Nat<1>> {
@@ -16,7 +16,7 @@ namespace ListProcessing::Operators::Details {
     template<typename T>
     static constexpr auto
     call(T&& xs) {
-      return forward<T>(xs).front();
+      return std::forward<T>(xs).front();
     }
   } constexpr front{};
 

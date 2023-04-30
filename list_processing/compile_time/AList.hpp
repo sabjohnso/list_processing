@@ -25,7 +25,7 @@ namespace ListProcessing::CompileTime::Details {
       : data(input)
     {}
     constexpr AList(DataType&& input)
-      : data(move(input))
+      : data(std::move(input))
     {}
 
     //          _
@@ -491,7 +491,7 @@ namespace ListProcessing::CompileTime::Details {
   constexpr auto
   alist(Ts&&... xs)
   {
-    return AList(list(forward<Ts>(xs)...));
+    return AList(list(std::forward<Ts>(xs)...));
   }
 
 } // end of namespace ListProcessing::CompileTime::Details

@@ -8,7 +8,7 @@
 namespace ListProcessing::Operators::Details {
   template<typename T>
   concept HasHead = requires(T&& xs) {
-    { forward<T>(xs).head() };
+    { std::forward<T>(xs).head() };
   };
 
   /**
@@ -19,13 +19,13 @@ namespace ListProcessing::Operators::Details {
     template<HasHead T>
     static constexpr auto
     call(T&& xs) {
-      return forward<T>(xs).head();
+      return std::forward<T>(xs).head();
     }
   } constexpr head{};
 
   template<typename T>
   concept HasTail = requires(T&& xs) {
-    forward<T>(xs).tail();
+    std::forward<T>(xs).tail();
   };
 
   /**
@@ -36,13 +36,13 @@ namespace ListProcessing::Operators::Details {
     template<HasTail T>
     static constexpr auto
     call(T&& xs) {
-      return forward<T>(xs).tail();
+      return std::forward<T>(xs).tail();
     }
   } constexpr tail{};
 
   template<typename T, typename I>
   concept HasListRef = requires(I&& index, T&& xs) {
-    { forward<T>(xs).listRef(forward<I>(index)) };
+    { std::forward<T>(xs).listRef(std::forward<I>(index)) };
   };
 
   /**
@@ -53,13 +53,13 @@ namespace ListProcessing::Operators::Details {
     template<typename I, HasListRef<I> T>
     static constexpr auto
     call(I&& index, T&& xs) {
-      return forward<T>(xs).listRef(forward<I>(index));
+      return std::forward<T>(xs).listRef(std::forward<I>(index));
     }
   } constexpr listRef{};
 
   template<typename T, typename U>
   concept HasAppend = requires(U&& xs, T&& ys) {
-    { forward<T>(ys).append(forward<U>(xs)) };
+    { std::forward<T>(ys).append(std::forward<U>(xs)) };
   };
 
   /**
@@ -70,13 +70,13 @@ namespace ListProcessing::Operators::Details {
     template<typename U, HasAppend<U> T>
     static constexpr auto
     call(U&& xs, T&& ys) {
-      return forward<T>(ys).append(forward<U>(xs));
+      return std::forward<T>(ys).append(std::forward<U>(xs));
     }
   } constexpr append{};
 
   template<typename T, typename F>
   concept HasMapList = requires(F&& f, T&& xs) {
-    { forward<T>(xs).mapList(forward<F>(f)) };
+    { std::forward<T>(xs).mapList(std::forward<F>(f)) };
   };
 
   /**
@@ -87,13 +87,13 @@ namespace ListProcessing::Operators::Details {
     template<typename F, HasMapList<F> T>
     static constexpr auto
     call(F&& f, T&& xs) {
-      return forward<T>(xs).mapList(forward<F>(f));
+      return std::forward<T>(xs).mapList(std::forward<F>(f));
     }
   } constexpr mapList{};
 
   template<typename T, typename F>
   concept HasFApplyList = requires(F&& fs, T&& xs) {
-    { forward<T>(xs).fApplyList(forward<F>(fs)) };
+    { std::forward<T>(xs).fApplyList(std::forward<F>(fs)) };
   };
 
   /**
@@ -104,13 +104,13 @@ namespace ListProcessing::Operators::Details {
     template<typename F, HasFApplyList<F> T>
     static constexpr auto
     call(F&& fs, T&& xs) {
-      return forward<T>(xs).fApplyList(forward<F>(fs));
+      return std::forward<T>(xs).fApplyList(std::forward<F>(fs));
     }
   } constexpr fApplyList{};
 
   template<typename T, typename F>
   concept HasFlatMapList = requires(F&& f, T&& xs) {
-    { forward<T>(xs).flatMapList(forward<F>(f)) };
+    { std::forward<T>(xs).flatMapList(std::forward<F>(f)) };
   };
 
   /**
@@ -121,13 +121,13 @@ namespace ListProcessing::Operators::Details {
     template<typename F, HasFlatMapList<F> T>
     static constexpr auto
     call(F&& f, T&& xs) {
-      return forward<T>(xs).flatMapList(forward<F>(f));
+      return std::forward<T>(xs).flatMapList(std::forward<F>(f));
     }
   } constexpr flatMapList{};
 
   template<typename T>
   concept HasFlattenList = requires(T&& xss) {
-    { forward<T>(xss).flattenList() };
+    { std::forward<T>(xss).flattenList() };
   };
 
   /**
@@ -138,13 +138,13 @@ namespace ListProcessing::Operators::Details {
     template<typename T>
     static constexpr auto
     call(T&& xss) {
-      return forward<T>(xss).flattenList();
+      return std::forward<T>(xss).flattenList();
     }
   } constexpr flattenList{};
 
   template<typename T, typename Pred>
   concept HasFilter = requires(T&& xs, Pred&& pred) {
-    { forward<T>(xs).filter(forward<Pred>(pred)) };
+    { std::forward<T>(xs).filter(std::forward<Pred>(pred)) };
   };
 
   /**
@@ -155,13 +155,13 @@ namespace ListProcessing::Operators::Details {
     template<typename Pred, HasFilter<Pred> T>
     static constexpr auto
     call(Pred&& pred, T&& xs) {
-      return forward<T>(xs).filter(forward<Pred>(pred));
+      return std::forward<T>(xs).filter(std::forward<Pred>(pred));
     }
   } constexpr filter{};
 
   template<typename T, typename Cmp>
   concept HasSort = requires(T&& xs, Cmp&& cmp) {
-    { forward<T>(xs).sort(forward<Cmp>(cmp)) };
+    { std::forward<T>(xs).sort(std::forward<Cmp>(cmp)) };
   };
 
   /**
@@ -172,7 +172,7 @@ namespace ListProcessing::Operators::Details {
     template<typename Cmp, HasSort<Cmp> T>
     static constexpr auto
     call(Cmp&& cmp, T&& xs) {
-      return forward<T>(xs).sort(forward<Cmp>(cmp));
+      return std::forward<T>(xs).sort(std::forward<Cmp>(cmp));
     }
   } constexpr sort{};
 

@@ -9,7 +9,7 @@ namespace ListProcessing::Operators::Details {
 
   template<typename T, typename K>
   concept HasUnset = requires(K&& key, T&& xs) {
-    { forward<T>(xs).unset(forward<K>(key)) };
+    { std::forward<T>(xs).unset(std::forward<K>(key)) };
   };
 
   class Unset : public Static_curried<Unset, Nat<2>> {
@@ -17,7 +17,7 @@ namespace ListProcessing::Operators::Details {
     template<typename K, HasUnset<K> T>
     static constexpr auto
     call(K&& key, T&& xs) {
-      return forward<T>(xs).unset(forward<K>(key));
+      return std::forward<T>(xs).unset(std::forward<K>(key));
     }
   } constexpr unset{};
 

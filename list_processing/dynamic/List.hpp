@@ -26,7 +26,7 @@ namespace ListProcessing::Dynamic::Details {
     {
       if constexpr (bool(count_types<Ts...>())) {
         using T = common_type_t<decay_t<Ts>...>;
-        return listOf<T>(forward<Ts>(xs)...);
+        return listOf<T>(std::forward<Ts>(xs)...);
 
       } else {
         return Nil{};
@@ -44,7 +44,7 @@ namespace ListProcessing::Dynamic::Details {
     static List<T>
     listOf(T1&& x1, Ts&&... xs)
     {
-      return cons(forward<T1>(x1), listOf<T>(forward<Ts>(xs)...));
+      return cons(std::forward<T1>(x1), listOf<T>(std::forward<Ts>(xs)...));
     }
   } constexpr list{};
 
@@ -62,7 +62,7 @@ namespace ListProcessing::Dynamic::Details {
     static Result
     call(F&& f, size_type n)
     {
-      return buildListAux(forward<F>(f), n, Result::nil);
+      return buildListAux(std::forward<F>(f), n, Result::nil);
     }
   } constexpr buildList{};
 

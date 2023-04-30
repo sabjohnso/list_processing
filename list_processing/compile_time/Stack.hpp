@@ -22,7 +22,7 @@ namespace ListProcessing::CompileTime::Details {
     static constexpr auto
     call(T&& xs)
     {
-      return Stack(forward<T>(xs));
+      return Stack(std::forward<T>(xs));
     }
   } constexpr listToStack{};
 

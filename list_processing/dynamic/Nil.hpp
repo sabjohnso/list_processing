@@ -96,7 +96,7 @@ namespace ListProcessing::Dynamic::Details {
     template<typename T>
     friend auto
     cons(T&& x, Nil) {
-      return cons(forward<T>(x), nil<decay_t<T>>);
+      return cons(std::forward<T>(x), nil<decay_t<T>>);
     }
   };
 

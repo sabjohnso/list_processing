@@ -9,7 +9,7 @@ namespace ListProcessing::Operators::Details {
 
   template<typename T, typename K>
   concept HasTryGet = requires(K&& key, T&& xs) {
-    { forward<T>(xs).tryGet(forward<K>(key)) };
+    { std::forward<T>(xs).tryGet(std::forward<K>(key)) };
   };
 
   class TryGet : public Static_curried<TryGet, Nat<2>> {
@@ -17,7 +17,7 @@ namespace ListProcessing::Operators::Details {
     template<typename K, HasTryGet<K> T>
     static constexpr auto
     call(K&& key, T&& xs) {
-      return forward<T>(xs).tryGet(forward<K>(key));
+      return std::forward<T>(xs).tryGet(std::forward<K>(key));
     }
   } constexpr tryGet{};
 

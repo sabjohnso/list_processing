@@ -426,7 +426,7 @@ namespace ListProcessing::Dynamic::Details {
   ShortList<T, N>
   short_list(T1&& x1)
   {
-    return ShortList<T, N>(forward<T1>(x1));
+    return ShortList<T, N>(std::forward<T1>(x1));
   }
 
   template<typename T, size_type N, typename T1, typename T2, typename... Ts>
@@ -434,7 +434,7 @@ namespace ListProcessing::Dynamic::Details {
   short_list(T1&& x1, T2&& x2, Ts&&... xs)
   {
     return cons(
-      forward<T1>(x1), short_list<T, N>(forward<T2>(x2), forward<Ts>(xs)...));
+      std::forward<T1>(x1), short_list<T, N>(std::forward<T2>(x2), std::forward<Ts>(xs)...));
   }
 
   template<typename T, size_type N, typename F>

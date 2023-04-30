@@ -25,12 +25,12 @@ namespace ListProcessing::Dynamic::Details {
 
     template<typename U>
     Stream(U&& x, Stream const& xs)
-      : ptr(make_shared<Kernel>(forward<U>(x), xs))
+      : ptr(make_shared<Kernel>(std::forward<U>(x), xs))
     {}
 
     template<typename U>
     Stream(U&& x, Nil)
-      : ptr(make_shared<Kernel>(forward<U>(x), Stream{}))
+      : ptr(make_shared<Kernel>(std::forward<U>(x), Stream{}))
     {}
 
     Stream(F f)
@@ -404,7 +404,7 @@ namespace ListProcessing::Dynamic::Details {
 
       template<typename U>
       Kernel(U&& x, Stream const& xs)
-        : data(pair(forward<U>(x), xs))
+        : data(pair(std::forward<U>(x), xs))
       {}
 
       Kernel(F f)
@@ -473,7 +473,7 @@ namespace ListProcessing::Dynamic::Details {
     static Stream<T>
     call(U&& x, Us&&... xs)
     {
-      return Stream<T>(forward<U>(x), call(forward<Us>(xs)...));
+      return Stream<T>(std::forward<U>(x), call(std::forward<Us>(xs)...));
     }
   };
 
@@ -488,7 +488,7 @@ namespace ListProcessing::Dynamic::Details {
     stream(T&& x, Ts&&... xs)
     {
       using U = common_type_t<decay_t<T>, decay_t<Ts>...>;
-      return streamOf<U>(forward<T>(x), forward<Ts>(xs)...);
+      return streamOf<U>(std::forward<T>(x), std::forward<Ts>(xs)...);
     }
   } constexpr stream{};
 

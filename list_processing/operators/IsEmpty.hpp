@@ -9,7 +9,7 @@ namespace ListProcessing::Operators::Details {
 
   template<typename T>
   concept HasIsEmpty = requires(T&& xs) {
-    { forward<T>(xs).isEmpty() };
+    { std::forward<T>(xs).isEmpty() };
   };
 
   class IsEmpty : public Static_curried<IsEmpty, Nat<1>> {
@@ -17,7 +17,7 @@ namespace ListProcessing::Operators::Details {
     template<typename T>
     static constexpr auto
     call(T&& xs) {
-      return forward<T>(xs).isEmpty();
+      return std::forward<T>(xs).isEmpty();
     }
   } constexpr isEmpty{};
 

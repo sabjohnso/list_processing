@@ -573,9 +573,9 @@ namespace ListProcessing::Dynamic::Details {
     {
       if constexpr (bool(count_types<Ts...>())) {
         using U = common_type_t<decay_t<T>, decay_t<Ts>...>;
-        return tapeOf<U>(forward<T>(x), forward<Ts>(xs)...);
+        return tapeOf<U>(std::forward<T>(x), std::forward<Ts>(xs)...);
       } else {
-        return tapeOf<T>(forward<T>(x));
+        return tapeOf<T>(std::forward<T>(x));
       }
     }
   } constexpr tape{};

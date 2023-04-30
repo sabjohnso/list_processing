@@ -21,10 +21,10 @@ namespace ListProcessing::Dynamic::Details {
   public:
     Shared() = delete;
     Shared(const_reference value)
-      : ptr(value)
+      : ptr(make_shared<value_type>(value))
     {}
     Shared(rvalue_reference value)
-      : ptr(make_shared<value_type>(move(value)))
+      : ptr(make_shared<value_type>(std::move(value)))
     {}
 
     explicit operator const_reference() const { return *ptr; }
@@ -39,6 +39,24 @@ namespace ListProcessing::Dynamic::Details {
     operator->()
     {
       return ptr.get();
+    }
+
+    friend constexpr bool
+    operator==(Shared x, Shared y)
+    {
+      return *x == *y;
+    }
+
+    friend constexpr bool
+    operator!=(Shared x, Shared y)
+    {
+      return !(x == y);
+    }
+
+    friend ostream&
+    operator<<(ostream& os, Shared x)
+    {
+      return os << *x;
     }
 
   }; // end of class Shared
@@ -155,7 +173,7 @@ namespace ListProcessing::Dynamic::Details {
   sharedList(T1&& x, Ts&&... xs)
   {
     using U = common_type_t<T1, Ts...>;
-    return list(Shared<U>(forward<T1>(x)), Shared<U>(forward<Ts>(xs))...);
+    return list(Shared<U>(std::forward<T1>(x)), Shared<U>(std::forward<Ts>(xs))...);
   }
 
 } // end of namespace ListProcessing::Dynamic::Details

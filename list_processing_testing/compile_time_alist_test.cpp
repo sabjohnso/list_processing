@@ -1,6 +1,7 @@
 //
 // ... Standard header files
 //
+#include <cstdint>
 #include <utility>
 
 //
@@ -12,7 +13,6 @@
 //
 // ... External header files
 //
-#include <ctstring/ctstring.hpp>
 #include <type_utility/type_utility.hpp>
 
 //
@@ -30,8 +30,6 @@ using ListProcessing::CompileTime::nothing;
 using std::pair;
 using TypeUtility::type;
 
-#define KEY(str) CTString::hoist([] { return ::CTString::static_string(str); })
-
 // to satisfy gtest
 namespace std {
   template<typename T, typename U>
@@ -43,6 +41,99 @@ namespace std {
 } // namespace std
 
 namespace ListProcessing::Testing {
+  template<auto N>
+  struct FixedString
+  {
+    constexpr FixedString(const char* input)
+    {
+      for (std::size_t i = 0; i < N; ++i) {
+        value[i] = input[i];
+      }
+    }
+
+    friend std::ostream&
+    operator<<(std::ostream& os, const FixedString& str)
+    {
+      return os << str.value;
+    }
+
+    constexpr bool
+    operator==(const FixedString& other) const
+    {
+      return [&]<auto... Indices>(std::index_sequence<Indices...>)
+      {
+        return ((value[Indices] == other.value[Indices]) && ...);
+      }
+      (std::make_index_sequence<N>());
+    }
+
+    constexpr bool
+    operator!=(const FixedString& other) const
+    {
+      return !(*this == other);
+    }
+
+    template<auto M>
+    constexpr bool
+    operator==(const FixedString<M>&) const
+    {
+      return false;
+    }
+
+    template<auto M>
+    constexpr bool
+    operator!=(const FixedString<M>&) const
+    {
+      return true;
+    }
+
+    char value[N];
+  };
+
+  template<auto N>
+  FixedString(const char (&)[N]) -> FixedString<N>;
+
+  template<FixedString Str>
+  struct Hoisted
+  {
+    friend std::ostream&
+    operator<<(std::ostream& os, const Hoisted&)
+    {
+      return os << '"' << Str << '"' << "_key";
+    }
+
+    template<FixedString Str2>
+    constexpr bool
+    operator==(const Hoisted<Str2>&) const
+    {
+      return Str == Str2;
+    }
+
+    template<FixedString Str2>
+    constexpr bool
+    operator!=(const Hoisted<Str2>& other) const
+    {
+      return !(*this == other);
+    }
+
+    template<typename T>
+    constexpr bool
+    operator!=(const T&) const
+    {
+      return true;
+    }
+  };
+
+  template<FixedString Str>
+  constexpr Hoisted<Str> operator""_key()
+  {
+    return {};
+  }
+
+#define KEY(str)                                                               \
+  Hoisted<str>                                                                 \
+  {                                                                            \
+  }
 
   TEST(CompileTimeAList, EmptyDoesNotHaveData)
   {
@@ -66,7 +157,7 @@ namespace ListProcessing::Testing {
   TEST(AList, Constructor)
   {
     constexpr auto xs =
-      alist(pair(KEY("x"), 1.0), pair(KEY("y"), 2.0), pair(KEY("z"), 3.0));
+      alist(pair("x"_key, 1.0), pair(KEY("y"), 2.0), pair(KEY("z"), 3.0));
 
     EXPECT_TRUE(hasKey(KEY("x"), xs));
     EXPECT_EQ(tryGet(KEY("x"), xs), 1.0);

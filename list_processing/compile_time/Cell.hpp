@@ -10,25 +10,29 @@
 namespace ListProcessing::CompileTime::Details {
 
   template<typename T>
-  constexpr bool ispair_type(Type<T>)
+  constexpr bool
+  ispair_type(Type<T>)
   {
     return false;
   }
 
   template<typename T, typename U>
-  constexpr bool ispair_type(Type<Cell<T, U>>)
+  constexpr bool
+  ispair_type(Type<Cell<T, U>>)
   {
     return true;
   }
 
   template<typename T, typename U>
-  constexpr size_type length_(Type<Cell<T, U>>)
+  constexpr size_type
+  length_(Type<Cell<T, U>>)
   {
     return 1 + length_(type<U>);
   }
 
   template<typename T, typename U>
-  constexpr bool isListType(Type<Cell<T, U>>)
+  constexpr bool
+  isListType(Type<Cell<T, U>>)
   {
     return isListType(type<U>);
   }
@@ -322,10 +326,15 @@ namespace ListProcessing::CompileTime::Details {
       return ys.append(xs);
     }
 
-    constexpr auto listRef(Nat<0>) const { return head(); }
+    constexpr auto
+    listRef(Nat<0>) const
+    {
+      return head();
+    }
 
     template<size_t N>
-    constexpr auto listRef(Nat<N>) const
+    constexpr auto
+    listRef(Nat<N>) const
     {
       return tail().listRef(nat<N - 1>);
     }
@@ -338,10 +347,15 @@ namespace ListProcessing::CompileTime::Details {
       return xs.listRef(nat<N>);
     }
 
-    constexpr auto take(Nat<0>) const { return nothing; }
+    constexpr auto
+    take(Nat<0>) const
+    {
+      return nothing;
+    }
 
     template<size_t N>
-    constexpr auto take(Nat<N>) const
+    constexpr auto
+    take(Nat<N>) const
     {
       return cons(head(), tail().take(nat<N - 1>));
     }
@@ -353,10 +367,15 @@ namespace ListProcessing::CompileTime::Details {
       return xs.take(nat<N>);
     }
 
-    constexpr auto drop(Nat<0>) const { return *this; }
+    constexpr auto
+    drop(Nat<0>) const
+    {
+      return *this;
+    }
 
     template<size_t N>
-    constexpr auto drop(Nat<N>) const
+    constexpr auto
+    drop(Nat<N>) const
     {
       return tail().drop(nat<N - 1>);
     }
@@ -648,7 +667,7 @@ namespace ListProcessing::CompileTime::Details {
     static constexpr auto
     call(T&& x, Ts&&... xs)
     {
-      return cons(forward<T>(x), call(forward<Ts>(xs)...));
+      return cons(std::forward<T>(x), call(std::forward<Ts>(xs)...));
     }
   } constexpr list{};
 

@@ -20,7 +20,7 @@ namespace ListProcessing::CompileTime::Details {
     static constexpr auto
     call(T&& x, U&& y)
     {
-      return Cell(forward<T>(x), forward<U>(y));
+      return Cell(std::forward<T>(x), std::forward<U>(y));
     }
   } constexpr cons{};
 
