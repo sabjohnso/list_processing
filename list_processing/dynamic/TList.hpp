@@ -9,266 +9,213 @@
 namespace ListProcessing::Dynamic::Details {
 
   template<typename T>
-  class Construct;
-
-  struct Nothing
-  {
+  class Construct {
   public:
-    template<typename T>
-    constexpr auto
-    cons(T&& x) const
-    {
-      return Construct<decay_t<T>>{std::forward<T>(x), *this};
-    }
+    using slot_base = variant<Shared<T>, Construct>;
 
-    template<typename T>
-    friend constexpr auto
-    cons(T&& x, Nothing const& nothing)
-    {
-      return nothing.cons(std::forward<T>(x));
-    }
-
-    friend ostream&
-    operator<<(ostream& os, Nothing const&)
-    {
-      return os << "<>";
-    }
-  } constexpr nothing{};
-
-  template<typename T>
-  class Construct
-  {
-    using value_type = T;
-    using const_reference = const value_type&;
-
-    using shared = Shared<value_type>;
-    struct list_pointer : shared_ptr<Construct>
-    {
-      using base = shared_ptr<Construct>;
-      using base::base;
-
-      list_pointer(shared_ptr<Construct> const& input)
-        : base(input)
-      {}
-
-      friend bool
-      operator==(list_pointer px, list_pointer py)
-      {
-        return px->car() == py->car() && px->cdr() == py->cdr();
+    struct Slot : slot_base {
+      using slot_base::slot_base;
+      friend bool ispair(Slot x){
+	return holds_alternative<Construct>(x)
+	  ? ispair(std::get<Construct>(x))
+	  : false;
       }
 
       friend bool
-      operator!=(list_pointer px, list_pointer py)
-      {
-        return !(px == py);
-      }
-
-      template<typename U>
-      friend bool
-      operator==(list_pointer, U&&)
-      {
-        return false;
-      }
-
-      template<typename U>
-      friend bool
-      operator!=(list_pointer, U&&)
-      {
-        return true;
-      }
-    };
-
-  public:
-    struct datum_type : variant<shared, list_pointer, Nothing>
-    {
-      using base = variant<shared, list_pointer, Nothing>;
-      using base::base;
-
-      friend bool
-      operator==(datum_type x, datum_type y)
-      {
-        if (holds_alternative<shared>(x) && holds_alternative<shared>(y)) {
-          return get<shared>(x) == get<shared>(y);
-        } else if (
-          holds_alternative<list_pointer>(x) &&
-          holds_alternative<list_pointer>(y)) {
-          return get<list_pointer>(x) == get<list_pointer>(y);
-        } else if (
-          holds_alternative<Nothing>(x) && holds_alternative<Nothing>(y)) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-
-      bool
-      ispair() const
-      {
-        return holds_alternative<list_pointer>(*this);
-      }
-
-      friend bool
-      ispair(const datum_type& x)
-      {
-        return x.ispair();
-      }
-
-      auto
-      car() const
-      {
-        return get<list_pointer>(*this)->car();
+      operator==(Slot x, Slot y){
+	return holds_alternative<Construct>(x) && holds_alternative<Construct>(y)
+	  ? std::get<Construct>(x) == std::get<Construct>(x)
+	  : ((holds_alternative<Shared<T>>(x) && holds_alternative<Shared<T>>(y))
+	     ? std::get<Shared<T>>(x) == std::get<Shared<T>>(x)
+	     : false);
       }
 
       friend auto
-      car(datum_type const& x)
-      {
-        return x.car();
+      car(Slot x){
+	return holds_alternative<Construct>(x)
+	  ? car(std::get<Construct>(x))
+	  : throw logic_error("Shared value does not have a car");
       }
 
-      friend bool
-      operator!=(datum_type x, datum_type y)
-      {
-        return !(x == y);
+      friend auto
+      cdr(Slot x){
+	return holds_alternative<Construct>(x)
+	  ? cdr(std::get<Construct>(x))
+	  : throw logic_error("Shared value does not have a car");
       }
 
-      friend ostream&
-      operator<<(ostream& os, datum_type x)
-      {
-        if (holds_alternative<shared>(x)) {
-          return os << get<shared>(x);
-        } else if (holds_alternative<list_pointer>(x)) {
-          return os << get<list_pointer>(x);
-        } else {
-          return os << nothing;
-        }
+      friend auto
+      cadr(Slot x){
+	return car(cdr(x));
       }
     };
+  private:
+
+
+
+    struct Kernel {
+
+      Kernel(const Kernel&) = delete;
+
+      Kernel(Kernel&& input)
+	: car(std::move(input.car))
+	, cdr(std::move(input.cdr)){
+      }
+
+      template<convertible_to<Slot> U, convertible_to<Slot> V>
+      Kernel(U&& car, V&& cdr)
+	: car(std::forward<U>(car))
+	, cdr(std::forward<V>(cdr)){
+      }
+
+      Slot car;
+      Slot cdr;
+
+    }; // end of struct Kernel
+
+    using kernel_pointer = shared_ptr<const Kernel>;
+
+    kernel_pointer ptr{};
 
   public:
-    Construct(datum_type car, datum_type cdr)
-      : ptr(make_shared<Kernel>(car, cdr))
-    {}
 
-    datum_type
-    car() const
-    {
-      return ptr->car;
+    using value_type = T;
+
+    Construct() = default;
+
+    Construct(const Construct&) = default;
+
+    template<
+      convertible_to<Slot> U,
+      convertible_to<Slot> V>
+    Construct(U&& car, V&& cdr) : ptr(make_shared<Kernel>(std::forward<U>(car), std::forward<V>(cdr))){
     }
 
-    friend datum_type
-    car(Construct<T> xs)
-    {
-      return xs.car();
+    static const Construct nil;
+
+    friend bool
+    operator ==(Construct xs, Construct ys){
+      return bool(xs.ptr) && bool(ys.ptr)
+	? car(xs) == car(ys) && cdr(xs) == cdr(ys)
+	: (! bool(xs.ptr)) && (! bool(ys.ptr));
     }
 
-    datum_type
-    cdr() const
-    {
-      return ptr->cdr;
-    }
-
-    friend datum_type
-    cdr(Construct<T> xs)
-    {
-      return xs.cdr();
-    }
-
-    friend ostream&
-    operator<<(ostream& os, Construct xs)
-    {
-      os << xs.car() << " " << xs.cdr();
-      return os;
-    }
-
-    template<typename U>
-    auto
-    cons(U&& x) const
-    {
-      return Construct(
-        std::forward<U>(x), list_pointer(make_shared<Construct>(*this)));
-    }
-
-    template<typename U>
     friend auto
-    cons(U&& x, Construct<T> xs)
-    {
-      return xs.cons(std::forward<U>(x));
+    car(Construct xs){
+      return bool(xs.ptr)
+	? xs.ptr->car
+	: throw logic_error("Cannot access the head of an empty list");
     }
 
+    friend auto
+    cdr(Construct xs){
+      return bool(xs.ptr)
+	? xs.ptr->cdr
+	: Slot{xs};
+    }
+    friend auto
+    cadr(Construct xs){
+      return car(cdr(xs));
+    }
+
+    friend auto
+    ispair(Construct xs){
+      return bool(xs.ptr);
+    }
   private:
-    struct Kernel
-    {
-      datum_type car;
-      datum_type cdr;
 
-      Kernel(Kernel const&) = delete;
-      Kernel(Kernel&& input) = default;
+  }; // end of class Construct
 
-      Kernel(datum_type input_car, datum_type input_cdr)
-        : car(input_car)
-        , cdr(input_cdr)
-      {}
-    };
+  template<typename T>
+  const Construct<T> Construct<T>::nil = Construct<T>{};
 
-    using kernel_pointer = shared_ptr<Kernel>;
-    kernel_pointer ptr;
-  };
-
-  template<typename... Ts>
-  struct ConstructValueType
-  {
-    template<typename... Us>
-    struct Aux;
-
-    template<typename T, typename... Us>
-    struct Aux<Nothing, Construct<T>, Us...> : Aux<T, Us...>
-    {};
-
-    template<typename T, typename... Us>
-    struct Aux<Nothing, T, Us...> : Aux<T, Us...>
-    {};
-
-    template<typename T, typename... Us>
-    struct Aux<T, Nothing, Us...> : Aux<T, Us...>
-    {};
-
-    template<typename T, typename... Us>
-    struct Aux<T, Construct<Nothing>, Us...> : Aux<T, Us...>
-    {};
-
-    template<typename T, typename U, typename... Us>
-    struct Aux<T, Construct<U>, Us...> : Aux<common_type_t<T, U>, Us...>
-    {};
-
-    template<typename T, typename U, typename... Us>
-    struct Aux<T, U, Us...> : Aux<common_type_t<T, U>, Us...>
-    {};
+  struct TCons {
 
     template<typename T>
-    struct Aux<T>
-    {
-      using type = T;
-    };
-
-    using type = typename Aux<Nothing, Ts...>::type;
-  };
-
-  struct
-  {
-    constexpr auto
-    operator()() const
-    {
-      return nothing;
+    auto
+    operator()(Shared<T> x, Shared<T> y) const {
+      return Construct<T>{x, y};
     }
 
-    template<typename T, typename... Ts>
+    template<typename T>
     auto
-    operator()(T&& x, Ts&&... xs) const
-    {
-      using U = typename ConstructValueType<decay_t<T>, decay_t<Ts>...>::type;
-      return cons(U(std::forward<T>(x)), (*this)(U(std::forward<Ts>(xs))...));
+    operator()(Shared<T> x, Construct<T> y) const {
+      return Construct{x, y};
+    }
+
+    template<typename T>
+    auto
+    operator()(Construct<T> x, Shared<T> y) const {
+      return Construct<T>{x, y};
+    }
+
+
+    template<typename T>
+    auto
+    operator()(Construct<T> x, Construct<T> y) const {
+      return Construct<T>{x, y};
+    }
+
+    template<typename T>
+    auto
+    operator()(T x, Construct<T> y) const {
+      return Construct<T>{ Shared<T>{x}, y };
+    }
+
+    template<typename T>
+    auto
+    operator()(T x, Shared<T> y) const {
+      return Construct<T>{ Shared<T>{x}, y };
+    }
+
+    template<typename T>
+    auto
+    operator()(Shared<T> x, T y) const {
+      return Construct<T>{ x, Shared<T>{y} };
+    }
+
+
+    template<typename T>
+    auto
+    operator()(Construct<T> x,  T y) const {
+      return Construct<T>{ x, Shared<T>{y} };
+    }
+
+  } constexpr tcons{};
+
+
+  struct TListConstructor {
+    auto
+    operator()() const {
+      return Construct<int>{};
+    }
+
+    template<typename T>
+    auto
+    operator()(Shared<T> x) const {
+      return tcons(x, Construct<T>::nil);
+    }
+
+    template<typename T>
+    auto
+    operator()(Construct<T> x) const {
+      return tcons(x, Construct<T>::nil);
+    }
+
+    template<typename T>
+    auto
+    operator()(T x) const {
+      return tcons(x, Construct<T>::nil);
+    }
+
+    template<typename T1, typename T2, typename ... Ts>
+    auto
+    operator()(T1 x1, T2 x2, Ts ... xs) const {
+      return tcons(x1, (*this)(x2, xs ...));
     }
 
   } constexpr tlist{};
+
+
 
 } // end of namespace ListProcessing::Dynamic::Details

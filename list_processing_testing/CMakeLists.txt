@@ -25,6 +25,7 @@ list_processing_add_test(dynamic dynamic_test
   dynamic_tree_test.cpp
   dynamic_alist_test.cpp
   dynamic_stream_test.cpp
+  dynamic_tlist_test.cpp
   range_test.cpp
   shared_test.cpp
   dynamic_hash_table_test.cpp)

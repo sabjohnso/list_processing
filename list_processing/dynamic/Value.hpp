@@ -58,7 +58,6 @@ namespace ListProcessing::Dynamic::Details {
     {
       return os << *x;
     }
-
   }; // end of class Shared
 
   template<typename T>

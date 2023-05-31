@@ -8,8 +8,7 @@
 namespace ListProcessing::Dynamic {
 
   using Details::Construct;
-  using Details::Nothing;
-  constexpr auto nothing = ::ListProcessing::Dynamic::Details::nothing;
-  constexpr auto tlist = ::ListProcessing::Dynamic::Details::tlist;
+  using ::ListProcessing::Dynamic::Details::tlist;
+  constexpr auto tcons = ::ListProcessing::Dynamic::Details::tcons;
 
 } // end of namespace ListProcessing::Dynamic
