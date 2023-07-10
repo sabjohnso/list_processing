@@ -375,7 +375,7 @@ namespace ListProcessing::Dynamic::Details {
           return xs.hasData()
                    ? tramp([=,
                             *this,
-                            init = move(init),
+                            init = std::move(init),
                             x = xs.head(),
                             xs = xs.tail()] { return run(f, f(init, x), xs); })
                    : tramp(init);

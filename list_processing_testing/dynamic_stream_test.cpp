@@ -91,6 +91,11 @@ namespace ListProcessing::Dynamic::Testing {
     EXPECT_EQ(length(take(10, iterate(0, [](auto x) { return x + 1; }))), 10);
   }
 
-  TEST(DynamicStream, Fold) {}
+  TEST(DynamicStream, Fold) {
+    EXPECT_EQ(foldL([](auto x, auto y){ return x + y;}, 0, take(4, iterate(1, [](auto x){ return x + 1; }))), 10);
+    EXPECT_EQ(foldL([](auto x, auto y){ return x + y;}, 0, buildStream(4, [](auto x){ return x+1; })), 10);
+  }
+
+
 
 } // end of namespace ListProcessing::Dynamic::Testing
