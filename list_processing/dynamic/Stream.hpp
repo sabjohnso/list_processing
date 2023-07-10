@@ -5,6 +5,7 @@
 //
 #include <list_processing/dynamic/Nil.hpp>
 #include <list_processing/dynamic/import.hpp>
+#include <list_processing/dynamic/List.hpp>
 
 namespace ListProcessing::Dynamic::Details {
 
@@ -169,6 +170,15 @@ namespace ListProcessing::Dynamic::Details {
                                        : *this)
                        : xs;
     }
+
+    //
+    //
+    // toList
+    //
+    auto toList() const {
+      return buildList([=,this](auto index){return listRef(index);}, this->length());
+    }
+
 
     /**
      * @brief Return the second input stream appended to the

@@ -5,6 +5,7 @@
 //
 #include <list_processing/operators/Map.hpp>
 #include <list_processing/operators/Pipe.hpp>
+#include <list_processing/operators/ToList.hpp>
 
 #include <list_processing/operators/ForceGet.hpp>
 #include <list_processing/operators/HasData.hpp>
@@ -23,6 +24,8 @@
 #include <list_processing/operators/tape_operators.hpp>
 
 namespace ListProcessing::Operators {
+
+  constexpr auto toList = Details::toList;
 
   constexpr auto pipe = Details::pipe;
   constexpr auto map = Details::map;

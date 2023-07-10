@@ -12,6 +12,7 @@
 // ... List Processing header files
 //
 #include <list_processing/dynamic_stream.hpp>
+#include <list_processing/dynamic_list.hpp>
 #include <list_processing/operators.hpp>
 
 using ListProcessing::Dynamic::empty_stream;
@@ -105,6 +106,15 @@ namespace ListProcessing::Dynamic::Testing {
     EXPECT_EQ(streamRef(3, xs), 4);
 
   }
+
+
+  TEST(DynamicStream, ToList){
+    using ListProcessing::Operators::toList;
+    using ListProcessing::Dynamic::list;
+    EXPECT_EQ(toList(buildStream(3, [](auto x){ return x; })), list(0L, 1L, 2L));
+  }
+
+
 
 
 } // end of namespace ListProcessing::Dynamic::Testing
