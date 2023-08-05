@@ -9,10 +9,11 @@
 namespace ListProcessing::Dynamic {
   using Details::buildStream;
   using Details::empty_stream;
-  using Details::iterate;
+
   using Details::Stream;
-  using Details::stream;
-  using Details::streamOf;
+  using Details::streamIterate;
+  // using Details::stream;
+  // using Details::streamOf;
 
   using Details::Nil;
 

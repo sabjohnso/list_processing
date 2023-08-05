@@ -47,6 +47,9 @@ namespace ListProcessing::Dynamic::Details {
 
   using std::copy_n;
 
+  using std::convertible_to;
+  using std::invocable;
+
   using std::enable_shared_from_this;
   using std::make_shared;
   using std::make_unique;
@@ -64,7 +67,9 @@ namespace ListProcessing::Dynamic::Details {
   using std::common_type_t;
   using std::conditional_t;
   using std::decay_t;
+  using std::invoke_result_t;
   using std::is_same_v;
+  using std::remove_cvref_t;
   using std::result_of_t;
 
   using std::array;

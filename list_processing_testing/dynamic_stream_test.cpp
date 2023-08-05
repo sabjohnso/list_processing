@@ -11,12 +11,9 @@
 //
 // ... List Processing header files
 //
-#include <list_processing/dynamic_stream.hpp>
 #include <list_processing/dynamic_list.hpp>
+#include <list_processing/dynamic_stream.hpp>
 #include <list_processing/operators.hpp>
-
-using ListProcessing::Dynamic::empty_stream;
-using ListProcessing::Dynamic::Stream;
 
 namespace ListProcessing::Dynamic::Testing {
 
@@ -30,11 +27,11 @@ namespace ListProcessing::Dynamic::Testing {
   }
 
   TEST(DynamicStream, FriendEmptyFail) {
-    EXPECT_FALSE(isEmpty(Stream(1, Nil{})));
+    EXPECT_FALSE(isEmpty(cons(1, empty_stream<int>)));
   }
 
   TEST(DynamicStream, MembEmptyFail) {
-    EXPECT_FALSE(Stream(1, Nil{}).isEmpty());
+    EXPECT_FALSE(Stream(1, empty_stream<int>).isEmpty());
   }
 
   TEST(DynamicStream, FObjEmptyFail) {
@@ -64,15 +61,16 @@ namespace ListProcessing::Dynamic::Testing {
   }
 
   TEST(DynamicStream, StreamRef) {
-    auto xs = iterate(0, [](auto x) { return x + 1; });
+    auto xs = streamIterate(0, [](auto x) { return x + 1; });
     EXPECT_EQ(streamRef(0, xs), 0);
     EXPECT_EQ(streamRef(1, xs), 1);
     EXPECT_EQ(streamRef(100, xs), 100);
   }
 
   TEST(DynamicStream, MapInfinite) {
-    auto xs = map(
-      [](auto x) { return x * x; }, iterate(0, [](auto x) { return x + 1; }));
+    auto xs = map([](auto x) { return x * x; }, streamIterate(0, [](auto x) {
+                    return x + 1;
+                  }));
     EXPECT_EQ(streamRef(0, xs), 0);
     EXPECT_EQ(streamRef(1, xs), 1);
     EXPECT_EQ(streamRef(2, xs), 4);
@@ -89,32 +87,62 @@ namespace ListProcessing::Dynamic::Testing {
   }
 
   TEST(DynamicStream, Take) {
-    EXPECT_EQ(length(take(10, iterate(0, [](auto x) { return x + 1; }))), 10);
+    EXPECT_EQ(
+      length(take(10, streamIterate(0, [](auto x) { return x + 1; }))), 10);
+  }
+
+  // Testing a stack overflow on destruction of a long stream
+  TEST(DynamicStream, Pull) {
+    auto xs = buildStream(100000, [](auto) { return 1; });
+    xs.pull();
   }
 
   TEST(DynamicStream, Fold) {
-    EXPECT_EQ(foldL([](auto x, auto y){ return x + y;}, 0, take(4, iterate(1, [](auto x){ return x + 1; }))), 10);
-    EXPECT_EQ(foldL([](auto x, auto y){ return x + y;}, 0, buildStream(4, [](auto x){ return x+1; })), 10);
+
+    EXPECT_EQ(
+      foldL(
+        [](auto x, auto y) { return x + y; },
+        0,
+        take(4, streamIterate(1, [](auto x) { return x + 1; }))),
+      10);
+
+    EXPECT_EQ(
+      foldL(
+        [](auto x, auto y) { return x + y; },
+        0,
+        buildStream(4, [](auto x) { return x + 1; })),
+      10);
+
+    EXPECT_GT(
+      foldL(
+        [](auto x, auto y) { return x + y; },
+        0,
+        buildStream(10000, [](auto) { return 1; })),
+      0);
+
+    EXPECT_GT(
+      foldL(
+        [](auto x, auto y) { return x + y; },
+        0,
+        take(10000, streamIterate(0, [](auto) { return 1; }))),
+      0);
   }
 
-  TEST(DynamicStream, Append){
-    auto xs = append(buildStream(2, [](auto x){ return x+1; }),
-		     buildStream(2, [](auto x){ return x+3; }));
+  TEST(DynamicStream, Append) {
+    auto xs = append(
+      buildStream(2, [](auto x) { return x + 1; }),
+      buildStream(2, [](auto x) { return x + 3; }));
     EXPECT_EQ(streamRef(0, xs), 1);
     EXPECT_EQ(streamRef(1, xs), 2);
     EXPECT_EQ(streamRef(2, xs), 3);
     EXPECT_EQ(streamRef(3, xs), 4);
-
   }
 
-
-  TEST(DynamicStream, ToList){
-    using ListProcessing::Operators::toList;
+  TEST(DynamicStream, ToList) {
     using ListProcessing::Dynamic::list;
-    EXPECT_EQ(toList(buildStream(3, [](auto x){ return x; })), list(0L, 1L, 2L));
+    using ListProcessing::Operators::toList;
+    EXPECT_EQ(
+      toList(buildStream(3, [](auto x) { return x; })), list(0L, 1L, 2L));
   }
-
-
-
 
 } // end of namespace ListProcessing::Dynamic::Testing

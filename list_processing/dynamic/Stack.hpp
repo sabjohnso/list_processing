@@ -15,8 +15,8 @@ namespace ListProcessing::Dynamic::Details {
   class Stack {
 
   public:
-    using value_type      = T;
-    using reference       = value_type&;
+    using value_type = T;
+    using reference = value_type&;
     using const_reference = value_type const&;
 
     Stack()
