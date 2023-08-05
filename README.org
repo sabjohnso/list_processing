@@ -5,7 +5,70 @@
   *List Processing* contains a collection of persistent (immutable)
   data structures for compile-time and runtime evaluation.
 
-* Work
+* Backlog
+** TODO Refactor the Stream destructor
+The stream has a custom destructor to avoid stack overflow, but it is
+not coded well and difficult to follow.
+
+** TODO Test collections for stackoverflow on destruction
+The stream was overflowing on destruction.  It is possible other
+structures have a similar problem but it is not being triggered
+because the test coverage does not use large enough lists.  The stream
+implementation required between 10,000 and 100,000 elements to trigger
+the failure.
+
+** TODO Investigate the benefits of structures base on stream instead of list
+There may be benefit in some cases to have data structures that are
+based on streams rather than lists.
+
+** TODO Compile-time stream
+It is not clear how this should be implemented or if it will be
+beneficial.  More concideration is needed.
+** TODO Compile-time vector
+Compile-time vectors will provide functionality similar to a list
+with the primary difference being that vector are extended from the
+back, rather than the front.
+
+Additionally, there is no empty compile-time vector and the memory
+layout will be the same as a struct with the same element types.
+
+** TODO Dynamic vector
+The objectives of the dynamic vector are to provide a structure with
+faster lookup, when compared to dynamic lists. A tree structure can
+provide O(log(N)) lookup.
+
+** TODO Caching dynamic vector
+A dynamic vector, when combined with a state monad, should be able to
+improve the lookup speed in certain conditions, primarily when the
+access in time and space are correlated. Accessing an element of a
+vector will return the element value and put the opened tree into the
+state.
+
+* Completed Backlog
+** DONE Fix Fold Over Stream
+*** Issue
+Folding over a stream seams to be broken. It is using a trampoline, but something may
+be wrong with the tampoline or a I may be misunderstaning something else.
+
+#+BEGIN_CAPTION: The following source fails with a stack overflow but succeeds for 10000
+#+BEGIN_SRC c++
+EXPECT_GT(foldL([](auto x, auto y){ return x + y;}, 0, buildStream(100000, [](auto x) {return x+1; })), 0);
+#+END_SRC
+
+#+BEGIN_CAPTION: The following source fails with a stack overflow but succeeds for 10000
+#+BEGIN_SRC c++
+EXPECT_GT(foldL([](auto x, auto y){ return x + y;}, 0, take(10000, iterate(0, [](auto ){ return 1; }))), 0);
+#+END_SRC
+
+*** Notes
+It looks like the stack overflow is coming from deletion of the
+stream, not the actual fold operation.
+
+*** Solution
+Use a custom destructor to avoid recursion on stream destruction
+
+* Other
+
 ** TODO Documentation
 *** TODO
 ** TODO Compile-time data structures
@@ -38,4 +101,3 @@ is resulting in code that is difficult to understand.
 There is a significant amount of essentially duplicate code for lists.
 *** TODO List aMap
 The definition of aMap need improvement.  This is being deferred for now.
-
