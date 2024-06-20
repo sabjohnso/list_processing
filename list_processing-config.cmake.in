@@ -1,6 +1,6 @@
 if(NOT TARGET @PROJECT_NAME@::@PROJECT_NAME@)
 
-  if(NOT TARGET type_utility::type_utility)
+  if(NOT TARGET type_utility::header)
     find_package(type_utility REQUIRED)
   endif()
 

@@ -13,7 +13,7 @@ target_include_directories(list_processing_header
 
 target_link_libraries(list_processing_header
   PUBLIC
-  type_utility::type_utility
+  type_utility::header
   function_utility::function_utility)
 
 add_library(list_processing::header ALIAS list_processing_header)
@@ -31,7 +31,7 @@ set_target_properties(list_processing_config
 target_link_libraries(list_processing_config PRIVATE list_processing::header)
 
 add_executable(list_processing::config ALIAS list_processing_config)
-  
+
 install(TARGETS list_processing_header list_processing_config
   EXPORT list_processing_EXPORTS
   RUNTIME DESTINATION ${list_processing_INSTALL_BINDIR}
